@@ -46,16 +46,13 @@ done;
 
 QEMU_SYSTEM="../qemu/build/qemu-system-riscv64"
 FW_BIN="sbi/opensbi/build/platform/generic/firmware/fw_dynamic.bin"
-LINUX_IMAGE="/data/hykang/RVSS/q-vela/linux/arch/riscv/boot/Image"
-#LINUX_IMAGE="$ROOT_PATH/../prebuilt/Image"
-export SMP=4;
+LINUX_IMAGE="$ROOT_PATH/../prebuilt/Image"
+export SMP=1;
 
-# Remove rom option from machine
-#CMD="$QEMU_SYSTEM $DEBUG -m 4G -nographic -machine virt,wg=on -bios $FW_ELF -kernel $LINUX_IMAGE -append console=ttyS0 ro root=/dev/vda -drive if=none,file=$ROOTFS_IMAGE,format=raw,id=hd0 -device virtio-blk-device,drive=hd0 -netdev user,id=net0,net=192.168.100.1/24,dhcpstart=192.168.100.128,hostfwd=tcp::${HOST_PORT}-:22 -device virtio-net-device,netdev=net0 -device virtio-rng-pci  -smp $SMP -semihosting-config enable=on,userspace=on"
 #echo $CMD
 $QEMU_SYSTEM \
-    $DEBUG \
-    -m 4G \
+    -d guest_errors -D ./qemu.log \
+    -m 16384 \
     -nographic \
     -machine virt,wg=on \
     -bios "$FW_BIN" \
@@ -63,8 +60,9 @@ $QEMU_SYSTEM \
     -initrd ubuntu24/ubuntu24-initrd.img \
     -drive file=ubuntu24/ubuntu-24.04-preinstalled-server-riscv64.img,format=raw,if=virtio \
     -append "root=/dev/vda3 rw console=ttyS0 earlycon" \
-    -netdev user,id=net0,net=192.168.100.1/24,dhcpstart=192.168.100.128,hostfwd=tcp::${HOST_PORT}-:22 \
-    -device virtio-net-device,netdev=net0 \
-    -device virtio-rng-pci  \
+    -netdev user,id=net0,host=10.0.2.10,hostfwd=tcp::2211-:22 \
+    -device virtio-net-pci,netdev=net0,romfile="" \
+    -netdev tap,id=net1,ifname=tap0,script=no,downscript=no \
+    -device virtio-net-pci,netdev=net1,romfile="" \
     -smp "$SMP" \
     -semihosting-config enable=on,userspace=on

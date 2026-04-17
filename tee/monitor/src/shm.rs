@@ -94,12 +94,26 @@ impl RegionPermConfig {
     }
 
     pub fn insert_perm(&mut self, conf: PermConfig) -> bool {
+        /*FOR ROS USECASE start*/
+        /*
+        for slot in self.conf_list.iter_mut() {
+            if let Some(ref existing) = slot {
+                if existing.eid == conf.eid {
+                    *slot = Some(conf);
+                    //dbg!("[JADU] insert_perm existing eid true");
+                    return true;
+                }
+            }
+        }
+        */
+        /*FOR ROS USECASE end*/
         for slot in self.conf_list.iter_mut() {
             if slot.is_none() {
                 *slot = Some(conf);
                 return true;
-            }
+           }
         }
         false
     }
+
 }

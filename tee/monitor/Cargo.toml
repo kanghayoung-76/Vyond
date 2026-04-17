@@ -4,7 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "vyond"
+name = "vela"
+#name = "vyond"
 crate-type = ["staticlib"]
 
 [profile.dev]
@@ -24,7 +25,7 @@ opt-level = 'z'
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-semihosting = { package = "semihosting", path = "../modules/semihosting", default-features = false }
+semihosting = { package = "semihosting", path = "./semihosting", default-features = false }
 paste = "1.0"
 volatile-register = "0.2.2"
 bitflags = "2.9.1"

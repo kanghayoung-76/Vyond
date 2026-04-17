@@ -6,7 +6,6 @@ use crate::wg;
 use crate::{Error, OnceCell};
 use core::sync::atomic::compiler_fence;
 use core::sync::atomic::Ordering;
-use semihosting::{heprintln, hprintln};
 
 pub const SMM_BASE: usize = 0x80000000;
 pub const SMM_SIZE: usize = 0x200000;

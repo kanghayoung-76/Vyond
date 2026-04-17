@@ -254,7 +254,8 @@ pub fn is_wg_region_valid(region_idx: usize) -> bool {
 }
 
 pub const WG_MAX_N_REGION: usize = 16;
-pub const NWORLDS: u64 = 8;
+pub const NWORLDS: u64 = 16;
+//pub const NWORLDS: u64 = 8;
 pub const TRUSTED_WID: u64 = NWORLDS - 1;
 pub const OS_WID: u64 = NWORLDS - 2;
 const INIT_VALUE: Option<Region> = None;
@@ -341,11 +342,15 @@ pub fn napot_region_init<'a>(
     }
 
     let region_idx = region_idx.unwrap();
+    //let reg_idx = 4; /*FOR ROS USECASE*/
     let reg_idx = get_free_reg_idx().unwrap();
 
-    if ((unsafe { REG_BITMAP } & (1 << reg_idx)) != 0) || (reg_idx >= WG_MAX_N_REGION) {
-        return Err(Error::MaxReached);
-    }
+    
+    //if !((unsafe { REGION_DEF_BITMAP } & (1 << region_idx)) != 0) { /*FOR ROS USECASE*/
+        if ((unsafe { REG_BITMAP } & (1 << reg_idx)) != 0) || (reg_idx >= WG_MAX_N_REGION) {
+            return Err(Error::MaxReached);
+        }
+    //}                                                               /*FOR ROS USECASE*/
 
     // initialize the region
     unsafe {
@@ -368,6 +373,9 @@ pub fn napot_region_init<'a>(
 }
 
 pub fn get_free_region_idx() -> Option<usize> {
+    /*FOR ROS USECASE start*/
+    //return Some(4);
+    /*FOR ROS USECASE end*/
     return search_rightmost_unset(unsafe { REGION_DEF_BITMAP }, WG_MAX_N_REGION, 0x1);
 }
 
