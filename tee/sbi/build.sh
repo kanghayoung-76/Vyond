@@ -1,9 +1,5 @@
 #!/bin/bash
 
-if [ -z "${CROSS_COMPILE}" ]; then
-    echo "Error: CROSS_COMPILE is not set"
-    exit 1
-fi
 # set environments (dir path...)
 SCRIPT_PATH="$(readlink -f "$0")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
@@ -26,7 +22,7 @@ SBI_OUT="$OUTPUT_DIR/sm"
 BOOTROM_OUT="$OUTPUT_DIR/bootrom"
 
 make -C opensbi O=build PLATFORM_DIR="$SBI_SRC_DIR"/plat/generic FW_PIC=n \
-    FW_PAYLOAD=y PLATFORM_RISCV_XLEN=$BITS PLATFORM_RISCV_ISA=$ISA PLATFORM_RISCV_ABI=$ABI\
-    CROSS_COMPILE=$CROSS_COMPILE \
-    FW_PAYLOAD_PATH=$FW_PAYLOAD_PATH \
+    FW_PAYLOAD=y PLATFORM_RISCV_XLEN=$BITS PLATFORM_RISCV_ISA=$ISA PLATFORM_RISCV_ABI=lp64d \
+    CROSS_COMPILE=riscv64-linux-gnu- \
+    FW_PAYLOAD_PATH="../../../prebuilt/Image" \
     VY_PLATFORM=$VY_PLATFORM

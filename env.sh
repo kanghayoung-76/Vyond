@@ -14,3 +14,5 @@ cd ..
 # Set cross compiler for building fw_payload
 path_to_gcc=`which riscv64-unknown-elf-gcc`
 export CROSS_COMPILE=$(echo "$path_to_gcc" | sed 's/\(.*\)gcc/\1/')
+
+#export PATH=$PATH:~/riscv-hy/bin
