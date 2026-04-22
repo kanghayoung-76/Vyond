@@ -2,7 +2,7 @@
 #[macro_export]
 macro_rules! dbg{
     ($($arg:tt)*) => {
-        {semihosting::hprintln!("[SM] {}:{} : {}", file!(), line!(), format_args!($($arg)*)) };
+        { semihosting::hprintln!("[SM] {}:{} : {}", file!(), line!(), format_args!($($arg)*)) };
     };
 }
 
