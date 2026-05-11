@@ -56,14 +56,14 @@ pub struct RuntimeVAParams {
 
 #[repr(C)]
 pub struct RuntimePAParams {
-    dram_base: usize,
-    dram_size: usize,
-    runtime_base: usize,
-    user_base: usize,
-    free_base: usize,
-    untrusted_base: usize,
-    untrusted_size: usize,
-    free_requested: usize,
+    pub dram_base: usize,
+    pub dram_size: usize,
+    pub runtime_base: usize,
+    pub user_base: usize,
+    pub free_base: usize,
+    pub untrusted_base: usize,
+    pub untrusted_size: usize,
+    pub free_requested: usize,
 }
 
 #[repr(C)]
@@ -100,7 +100,10 @@ pub struct Enclave {
     // enclave execution context
     threads: [Option<thread::State>; MAX_ENCLAVE_THREADS],
 
-    pa_params: RuntimePAParams,
+    pub pa_params: RuntimePAParams,
+
+    // SHA3-512 measurement of enclave memory, computed on first entry
+    pub hash: [u8; 64],
 }
 
 impl Enclave {
@@ -128,7 +131,17 @@ impl Enclave {
             }),
             threads: [Self::THREAD_INIT; MAX_ENCLAVE_THREADS],
             pa_params,
+            hash: [0u8; 64],
         }
+    }
+
+    pub fn compute_hash(&mut self) {
+        self.hash = crate::attest::validate_and_hash_enclave(
+            self.pa_params.dram_base,
+            self.pa_params.runtime_base,
+            self.pa_params.user_base,
+            self.pa_params.free_base,
+        );
     }
 
     pub fn id(&self) -> usize {
@@ -441,6 +454,8 @@ pub fn enter_enclave(tf: &mut TrapFrame, eid: usize) -> Result<(), Error> {
             return Err(Error::NotRunnable);
         }
 
+        // Compute enclave measurement on first entry (pages fully loaded)
+        enclave.compute_hash();
         enclave.switch_to_enclave(tf, true);
 
         return Ok(());

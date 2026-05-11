@@ -23,6 +23,7 @@ unsigned long sbi_sm_stop_enclave(struct sbi_trap_regs *regs, unsigned long requ
 unsigned long sbi_sm_exit_enclave(struct sbi_trap_regs *regs);
 
 unsigned long copy_enclave_create_args(uintptr_t src, struct keystone_sbi_create_t* dest);
+unsigned long sbi_sm_attest_enclave(unsigned long report, unsigned long data, unsigned long size);
 unsigned long sbi_sm_create_shm_region(unsigned long *rid, uintptr_t pa, unsigned long size);
 unsigned long sbi_sm_map_shm_region(struct sbi_trap_regs *regs, unsigned long rid);
 unsigned long sbi_sm_unmap_shm_region(unsigned long rid);
@@ -66,6 +67,9 @@ static int sbi_ecall_vyond_monitor_handler(
         }
         ((struct sbi_trap_regs *)regs)->mepc += 4;
         sbi_trap_exit(regs);
+        break;
+    case SBI_SM_ATTEST_ENCLAVE:
+        retval = sbi_sm_attest_enclave(regs->a0, regs->a1, regs->a2);
         break;
     case SBI_SM_RANDOM:
         static uint64_t w = 0, s = 0xb5ad4eceda1ce2a9;
@@ -157,6 +161,15 @@ unsigned long copy_enclave_create_args(uintptr_t src, struct keystone_sbi_create
     return SBI_ERR_SM_ENCLAVE_REGION_OVERLAPS;
   else
     return SBI_ERR_SM_ENCLAVE_SUCCESS;
+}
+
+/* MPRV wrappers callable from Rust (SM) */
+int sm_mprv_read(void *dst, uintptr_t src_va, size_t len) {
+  return copy_to_sm(dst, src_va, len);
+}
+
+int sm_mprv_write(uintptr_t dst_va, const void *src, size_t len) {
+  return copy_from_sm(dst_va, (void*)src, len);
 }
 
 static void sbi_trap_error(const char *msg, int rc,

@@ -11,6 +11,8 @@ use semihosting::{heprintln, hprintln};
 pub mod cpu;
 
 pub mod api;
+pub mod attest;
+pub mod crypto;
 pub mod enclave;
 pub mod encoding;
 pub mod isolator;
@@ -25,6 +27,14 @@ pub mod thread;
 pub mod trap;
 #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
 pub mod wg;
+
+// SM key material — populated by sm_init on cold boot.
+// In production these should be provisioned by the bootloader (sanctum ROM).
+pub static mut SM_HASH: [u8; crypto::MDSIZE] = [0u8; crypto::MDSIZE];
+pub static mut SM_SIGNATURE: [u8; crypto::SIGNATURE_SIZE] = [0u8; crypto::SIGNATURE_SIZE];
+pub static mut SM_PUBLIC_KEY: [u8; crypto::PUBLIC_KEY_SIZE] = [0u8; crypto::PUBLIC_KEY_SIZE];
+pub static mut SM_PRIVATE_KEY: [u8; crypto::PRIVATE_KEY_SIZE] = [0u8; crypto::PRIVATE_KEY_SIZE];
+pub static mut DEV_PUBLIC_KEY: [u8; crypto::PUBLIC_KEY_SIZE] = [0u8; crypto::PUBLIC_KEY_SIZE];
 
 #[derive(Debug, PartialEq)]
 pub enum Error {
@@ -83,6 +93,8 @@ pub extern "C" fn sm_init(cold_boot: bool) -> isize {
             );
             return -1;
         }
+
+        crypto::sm_init_keys();
 
         isolator::sm_init_done();
 

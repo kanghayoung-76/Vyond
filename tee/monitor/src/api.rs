@@ -1,3 +1,4 @@
+use crate::attest;
 use crate::cpu;
 use crate::dbg;
 use crate::enclave;
@@ -98,6 +99,19 @@ pub extern "C" fn sbi_sm_exit_enclave(regs: &mut TrapFrame) -> isize {
         Err(err) => {
             dbg!("Failed {:?}", err);
             panic!("Failed {:?}", err);
+        }
+    };
+    ret as isize
+}
+
+#[no_mangle]
+pub extern "C" fn sbi_sm_attest_enclave(report: usize, data: usize, size: usize) -> isize {
+    dbg!("[attest_enclave] eid {:?}", cpu::get_enclave_id());
+    let ret = match attest::attest_enclave(report, data, size) {
+        Ok(_) => Error::Success,
+        Err(err) => {
+            dbg!("Failed {:?}", err);
+            err
         }
     };
     ret as isize

@@ -59,7 +59,7 @@ $QEMU_SYSTEM \
     -kernel "$LINUX_IMAGE" \
     -initrd ubuntu24/ubuntu24-initrd.img \
     -drive file=../../ubuntu-24.04-preinstalled-server-riscv64.img,format=raw,if=virtio \
-    -append "root=/dev/vda3 rw console=ttyS0 earlycon" \
+    -append "root=/dev/vda3 rw console=ttyS0 earlycon cma=256M" \
     -netdev user,id=net0,host=10.0.2.10,hostfwd=tcp::2211-:22 \
     -device virtio-net-pci,netdev=net0,romfile="" \
     -netdev tap,id=net1,ifname=tap0,script=no,downscript=no \

@@ -241,7 +241,7 @@ Host::run(const std::string& nonce) {
       SharedBuffer{enclave.getSharedBuffer(), enclave.getSharedBufferSize()},
       nonce, nullptr};
 
-  enclave.registerOcallDispatch([&run_data](void* buffer) {
+  enclave.registerOcallDispatch([&run_data](void* buffer, size_t size) {
     assert(buffer == (void*)run_data.shared_buffer.ptr());
     dispatch_ocall(run_data);
   });
