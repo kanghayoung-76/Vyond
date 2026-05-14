@@ -97,24 +97,29 @@ const DEV_PUBLIC_KEY_BYTES: [u8; 32] = [
 
 // Matches the sanctum_sm_size used in verifier/verifier.cpp:compute_expected_sm_hash()
 const SANCTUM_SM_SIZE: usize = 0x1ff000;
-// SM firmware is loaded at FW_TEXT_START by OpenSBI
 const FW_TEXT_START: usize = 0x80000000;
 
+// Linker symbol marking start of .data (end of text+rodata).
+// OpenSBI writes dynamic values (_load_start, _link_start) into .data before
+// sm_init_keys() runs, so .data in memory != .data in the binary file.
+// We measure ONLY text+rodata [FW_TEXT_START, _fw_rw_start), which is never
+// modified at runtime and matches the binary file byte-for-byte.
+extern "C" {
+    static _fw_rw_start: u8;
+}
+
 pub fn sm_init_keys() {
-    // Compute SM_HASH: hash SANCTUM_SM_SIZE bytes from FW_TEXT_START,
-    // matching what the verifier does with fw_jump.bin (zero-padded to same size).
+    let fw_rw_start = unsafe { core::ptr::addr_of!(_fw_rw_start) as usize };
+    let measure_end = fw_rw_start;
+
     let mut ctx = Sha3Ctx::zeroed();
     hash_init(&mut ctx);
-    // fw_jump.bin is smaller than SANCTUM_SM_SIZE; memory beyond the binary
-    // is zero (BSS/stack cleared by OpenSBI before jumping here), matching
-    // the verifier's zero-padded buffer.
+
+    // Phase 1: hash text+rodata [FW_TEXT_START, _fw_rw_start) from memory
     let mut offset = 0usize;
-    while offset < SANCTUM_SM_SIZE {
-        let chunk = if SANCTUM_SM_SIZE - offset >= RISCV_PGSIZE {
-            RISCV_PGSIZE
-        } else {
-            SANCTUM_SM_SIZE - offset
-        };
+    while FW_TEXT_START + offset < measure_end {
+        let remaining = measure_end - FW_TEXT_START - offset;
+        let chunk = remaining.min(RISCV_PGSIZE);
         unsafe {
             sha3_update(
                 &mut ctx as *mut Sha3Ctx,
@@ -124,20 +129,44 @@ pub fn sm_init_keys() {
         }
         offset += chunk;
     }
+
+    // Phase 2: feed zeros for [_fw_rw_start, FW_TEXT_START+SANCTUM_SM_SIZE),
+    // matching the verifier's zero-padded buffer beyond 0x40000.
+    let zeros = [0u8; RISCV_PGSIZE];
+    while offset < SANCTUM_SM_SIZE {
+        let chunk = (SANCTUM_SM_SIZE - offset).min(RISCV_PGSIZE);
+        unsafe {
+            sha3_update(&mut ctx as *mut Sha3Ctx, zeros.as_ptr(), chunk);
+        }
+        offset += chunk;
+    }
+
     unsafe {
         hash_finalize(&mut crate::SM_HASH, &mut ctx);
     }
 
-    // Generate SM keypair using cycle counter as entropy seed.
-    let mut seed = [0u8; 32];
-    let cycles: u64;
+    // Derive SM keypair from H(SK_D || H_SM) truncated to 32 bytes,
+    // matching Keystone bootloader's key derivation (bootloader.c).
+    let mut seed_ctx = Sha3Ctx::zeroed();
+    hash_init(&mut seed_ctx);
     unsafe {
-        core::arch::asm!("rdcycle {0}", out(reg) cycles);
+        sha3_update(
+            &mut seed_ctx as *mut Sha3Ctx,
+            DEV_SECRET_KEY.as_ptr(),
+            DEV_SECRET_KEY.len(),
+        );
+        sha3_update(
+            &mut seed_ctx as *mut Sha3Ctx,
+            crate::SM_HASH.as_ptr(),
+            MDSIZE,
+        );
     }
-    let cb = cycles.to_le_bytes();
-    for i in 0..4 {
-        seed[i * 8..(i + 1) * 8].copy_from_slice(&cb);
+    let mut seed_full = [0u8; MDSIZE];
+    unsafe {
+        sha3_final(seed_full.as_mut_ptr(), &mut seed_ctx as *mut Sha3Ctx);
     }
+    let mut seed = [0u8; 32];
+    seed.copy_from_slice(&seed_full[..32]);
 
     unsafe {
         ed25519_create_keypair(

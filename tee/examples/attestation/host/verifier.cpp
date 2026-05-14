@@ -53,7 +53,7 @@ Verifier::verify_hashes(
   } else {
     printf(
         "Either the enclave hash or the SM hash (or both) does not "
-        "match with expeced.\n");
+        "match with expected.\n");
     report.printPretty();
   }
 }
@@ -88,6 +88,11 @@ Verifier::compute_expected_sm_hash(byte* expected_sm_hash) {
   // the bootloader. See keystone/bootrom/bootloader.c for how it is
   // computed in the bootloader.
   const size_t sanctum_sm_size = 0x1ff000;
+  // Only the text+rodata region [0, _fw_rw_start - FW_TEXT_START) = [0, 0x40000)
+  // is measured. The .data section beyond 0x40000 is written by OpenSBI startup
+  // before sm_init_keys() runs, so it differs between runtime and binary file.
+  // The SM hashes only text+rodata from memory and zero-pads the rest.
+  const size_t text_size = 0x40000;
   std::vector<byte> sm_content(sanctum_sm_size, 0);
 
   {
@@ -97,7 +102,7 @@ Verifier::compute_expected_sm_hash(byte* expected_sm_hash) {
       throw std::runtime_error(
           "Error opening sm_bin_file_: " + sm_bin_file_ + ", " +
           std::strerror(errno));
-    if (fread(sm_content.data(), 1, sm_content.size(), sm_bin) <= 0)
+    if (fread(sm_content.data(), 1, text_size, sm_bin) <= 0)
       throw std::runtime_error(
           "Error reading sm_bin_file_: " + sm_bin_file_ + ", " +
           std::strerror(errno));

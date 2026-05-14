@@ -47,10 +47,11 @@ done;
 QEMU_SYSTEM="../qemu/build/qemu-system-riscv64"
 FW_BIN="sbi/opensbi/build/platform/generic/firmware/fw_dynamic.bin"
 LINUX_IMAGE="$ROOT_PATH/../prebuilt/Image"
-export SMP=4;
+export SMP=1;
 
 #echo $CMD
 $QEMU_SYSTEM \
+    -s -accel tcg,thread=multi \
     -d guest_errors -D ./qemu.log \
     -m 16384 \
     -nographic \
