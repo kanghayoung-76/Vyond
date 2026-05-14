@@ -1,0 +1,13 @@
+# Target labels
+ eyrie-wg-fault-eyrie
+# Source files and their labels
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie-complete.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/runtime/src/eyrie-wg-fault-eyrie-stamp/eyrie-wg-fault-eyrie-build.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/runtime/src/eyrie-wg-fault-eyrie-stamp/eyrie-wg-fault-eyrie-configure.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/runtime/src/eyrie-wg-fault-eyrie-stamp/eyrie-wg-fault-eyrie-download.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/runtime/src/eyrie-wg-fault-eyrie-stamp/eyrie-wg-fault-eyrie-install.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/runtime/src/eyrie-wg-fault-eyrie-stamp/eyrie-wg-fault-eyrie-mkdir.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/runtime/src/eyrie-wg-fault-eyrie-stamp/eyrie-wg-fault-eyrie-patch.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/runtime/src/eyrie-wg-fault-eyrie-stamp/eyrie-wg-fault-eyrie-update.rule

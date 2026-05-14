@@ -206,7 +206,12 @@ impl Enclave {
         //}
         (0..MAX_ENCLAVE_REGIONS).for_each(|memid| {
             if let Some(ref region) = self.regions[memid] {
-                let _ = isolator::set_isolator(region.id, false);
+                if region.r_type == RegionType::RegionEPM {
+                    // WGC slot virtualization: EPM slot is NOT loaded eagerly.
+                    // The SM ACCESS FAULT handler loads it on-demand.
+                } else {
+                    let _ = isolator::set_isolator(region.id, false);
+                }
             }
         });
 
@@ -329,19 +334,26 @@ pub fn create_enclave<'a>(create_args: &KeystoneSBICreate) -> Result<&'a Enclave
             (1 << crate::encoding::MSTATUS_MPP_SHIFT) | crate::encoding::MSTATUS_FS,
         ));
 
-        // Temporarily disabled for new shared memory model
-        //if let Ok(region) = isolator::region_init(
-        //    create_args.utm_region.paddr,
-        //    create_args.utm_region.size,
-        //    enclave.id(),
-        //    false,
-        //) {
-        //    enclave.regions[1] = Some(Region {
-        //        id: region,
-        //        r_type: RegionType::RegionUTM,
-        //    });
-        //    return Ok(enclave);
-        //}
+        // Register UTM region for WGC slot virtualization (on-demand loading)
+        if create_args.utm_region.size > 0 {
+            if let Ok(utm_region_id) = isolator::region_init(
+                create_args.utm_region.paddr,
+                create_args.utm_region.size,
+                enclave.id(),
+                false,
+            ) {
+                enclave.regions[1] = Some(Region {
+                    id: utm_region_id,
+                    r_type: RegionType::RegionUTM,
+                    paddr: create_args.utm_region.paddr,
+                    size: create_args.utm_region.size,
+                    perm_conf: shm::RegionPermConfig {
+                        owner_id: enclave.id(),
+                        conf_list: [None; MAX_ENCLAVES],
+                    },
+                });
+            }
+        }
 
         // An example use of shared memory
         //let rid = match create_shared_mem(
@@ -370,6 +382,38 @@ pub fn find_enclave<'a>(eid: usize) -> Option<&'a mut Enclave> {
         }
     }
     None
+}
+
+/// Returns (dram_base, dram_size) for the given EID, or None if not found.
+pub fn get_enclave_dram_info(eid: usize) -> Option<(usize, usize)> {
+    find_enclave(eid).map(|e| (e.pa_params.dram_base, e.pa_params.dram_size))
+}
+
+/// Loads the WGC slot for the EPM region containing fault_addr.
+/// Returns true if slot was loaded (resume), false if not found (exit enclave).
+pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
+    if let Some(enclave) = find_enclave(eid) {
+        let dram_base = enclave.pa_params.dram_base;
+        let dram_size = enclave.pa_params.dram_size;
+        dbg!(
+            "load_enclave_slot: eid={} fault=0x{:x} epm=[0x{:x}, 0x{:x}) runtime_base=0x{:x} user_base=0x{:x}",
+            eid, fault_addr,
+            dram_base, dram_base + dram_size,
+            enclave.pa_params.runtime_base,
+            enclave.pa_params.user_base
+        );
+        if fault_addr >= dram_base && fault_addr < dram_base + dram_size {
+            for memid in 0..MAX_ENCLAVE_REGIONS {
+                if let Some(ref region) = enclave.regions[memid] {
+                    if region.r_type == RegionType::RegionEPM {
+                        let _ = isolator::set_isolator(region.id, false);
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    false
 }
 
 /*

@@ -1,0 +1,3 @@
+wg-slot-test/CMakeFiles/wg-slot.dir/eapp/wg_slot.c.o: \
+ /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/wg-slot-test/eapp/wg_slot.c \
+ /data/hykang/riscv-hy/sysroot/usr/include/stdc-predef.h

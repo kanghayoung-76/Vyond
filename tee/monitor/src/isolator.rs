@@ -125,8 +125,12 @@ pub fn region_init(start: usize, size: usize, eid: usize, shared: bool) -> Resul
     }
     #[cfg(feature = "isolator_wg")]
     {
-        let region_idx = wg::region_init(start, size, 3 << (eid * 2), true)?;
-        wg::set_wg(region_idx)?;
+        // TODO(slot-virt): pWID assignment is temporary (eid+1); replace with dynamic LRU table.
+        // WID 0 is reserved for legacy/untrusted world (has default OS DRAM access via osm_init).
+        let region_idx = wg::region_init(start, size, 3 << ((eid + 1) * 2), true)?;
+        // WGC slot virtualization: do NOT write EPM slot to hardware at create time.
+        // The ACCESS FAULT handler loads it on-demand when the enclave first accesses EPM.
+        // wg::set_wg(region_idx)?;
         Ok(region_idx)
     }
     #[cfg(feature = "isolator_hybrid")]

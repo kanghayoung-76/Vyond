@@ -1,0 +1,300 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ASSERT	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	17;"	d	file:
+ASSERT	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	15;"	d	file:
+CSR_GetTickCount	sbi/plat/mpfs/csr_helper.c	/^HSSTicks_t CSR_GetTickCount(void)$/;"	f
+CSR_GetTime	sbi/plat/mpfs/csr_helper.c	/^HSSTicks_t CSR_GetTime(void)$/;"	f
+F	sbi/plat/generic/crypto/ed25519/fe.c	485;"	d	file:
+F	sbi/plat/generic/crypto/ed25519/fe.c	517;"	d	file:
+FCR_TRIG_LEVEL_MASK	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	65;"	d	file:
+FU540_CLINT_ADDR	sbi/plat/sifive/fu540/platform.c	29;"	d	file:
+FU540_HART_COUNT	sbi/plat/sifive/fu540/platform.c	25;"	d	file:
+FU540_PLIC_ADDR	sbi/plat/sifive/fu540/platform.c	31;"	d	file:
+FU540_PLIC_NUM_PRIORITIES	sbi/plat/sifive/fu540/platform.c	33;"	d	file:
+FU540_PLIC_NUM_SOURCES	sbi/plat/sifive/fu540/platform.c	32;"	d	file:
+FU540_PRCI_BASE_ADDR	sbi/plat/sifive/fu540/platform.c	41;"	d	file:
+FU540_PRCI_CLKMUXSTATUSREG	sbi/plat/sifive/fu540/platform.c	42;"	d	file:
+FU540_PRCI_CLKMUX_STATUS_TLCLKSEL	sbi/plat/sifive/fu540/platform.c	43;"	d	file:
+FU540_SYS_CLK	sbi/plat/sifive/fu540/platform.c	27;"	d	file:
+FU540_TLB_RANGE_FLUSH_LIMIT	sbi/plat/sifive/fu540/platform.c	46;"	d	file:
+FU540_UART0_ADDR	sbi/plat/sifive/fu540/platform.c	35;"	d	file:
+FU540_UART1_ADDR	sbi/plat/sifive/fu540/platform.c	36;"	d	file:
+FU540_UART_BAUDRATE	sbi/plat/sifive/fu540/platform.c	37;"	d	file:
+GETC_EOF	sbi/plat/mpfs/platform.c	113;"	d	file:
+HSS_GetTickCount	sbi/plat/mpfs/hss_clock.c	/^HSSTicks_t HSS_GetTickCount(void)$/;"	f
+HSS_GetTime	sbi/plat/mpfs/hss_clock.c	/^HSSTicks_t HSS_GetTime(void)$/;"	f
+HSS_SpinDelay_MilliSecs	sbi/plat/mpfs/hss_clock.c	/^void HSS_SpinDelay_MilliSecs(uint32_t milliseconds)$/;"	f
+HSS_SpinDelay_Secs	sbi/plat/mpfs/hss_clock.c	/^void HSS_SpinDelay_Secs(uint32_t seconds)$/;"	f
+HSS_Timer_IsElapsed	sbi/plat/mpfs/hss_clock.c	/^bool HSS_Timer_IsElapsed(HSSTicks_t startTick, HSSTicks_t durationInTicks)$/;"	f
+HSS_UART_HELPER_MAX_GETLINE	sbi/plat/mpfs/uart_helper.c	72;"	d	file:
+IIRF_DATA_TIMEOUT	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	83;"	d	file:
+IIRF_MASK	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	67;"	d	file:
+IIRF_MMI	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	80;"	d	file:
+IIRF_MODEM_STATUS	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	78;"	d	file:
+IIRF_RX_DATA	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	81;"	d	file:
+IIRF_RX_LINE_STATUS	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	82;"	d	file:
+IIRF_THRE	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	79;"	d	file:
+INVALID_INTERRUPT	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	69;"	d	file:
+MPFS_CLINT_ADDR	sbi/plat/mpfs/platform.c	55;"	d	file:
+MPFS_HART_COUNT	sbi/plat/mpfs/platform.c	52;"	d	file:
+MPFS_HART_STACK_SIZE	sbi/plat/mpfs/platform.c	53;"	d	file:
+MPFS_PLIC_ADDR	sbi/plat/mpfs/platform.c	57;"	d	file:
+MPFS_PLIC_NUM_PRIORITIES	sbi/plat/mpfs/platform.c	59;"	d	file:
+MPFS_PLIC_NUM_SOURCES	sbi/plat/mpfs/platform.c	58;"	d	file:
+MPFS_TLB_RANGE_FLUSH_LIMIT	sbi/plat/mpfs/platform.c	212;"	d	file:
+MSS_SYS_COMMON_RET_OFFSET	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	35;"	d	file:
+MSS_SYS_DIGEST_CHECK_RET_OFFSET	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	39;"	d	file:
+MSS_SYS_DIGITAL_SIG_RET_OFFSET	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	36;"	d	file:
+MSS_SYS_GENERATE_OTP_RET_OFFSET	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	40;"	d	file:
+MSS_SYS_PUF_EMULATION_RET_OFFSET	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	38;"	d	file:
+MSS_SYS_SECURE_NVM_READ_RET_OFFSET	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	37;"	d	file:
+MSS_SYS_authenticate_bitstream	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_authenticate_bitstream$/;"	f
+MSS_SYS_authenticate_iap_image	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_authenticate_iap_image$/;"	f
+MSS_SYS_authenticate_uic_bitstream	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_authenticate_uic_bitstream$/;"	f
+MSS_SYS_debug_fabric_snapshot	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_debug_fabric_snapshot$/;"	f
+MSS_SYS_debug_live_probe	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_debug_live_probe$/;"	f
+MSS_SYS_debug_read_apb	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_debug_read_apb$/;"	f
+MSS_SYS_debug_read_mem	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_debug_read_mem$/;"	f
+MSS_SYS_debug_read_probe	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^ MSS_SYS_debug_read_probe$/;"	f
+MSS_SYS_debug_select_mem	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_debug_select_mem$/;"	f
+MSS_SYS_debug_terminate	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_debug_terminate$/;"	f
+MSS_SYS_debug_write_apb	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_debug_write_apb$/;"	f
+MSS_SYS_debug_write_mem	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_debug_write_mem$/;"	f
+MSS_SYS_debug_write_probe	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_debug_write_probe$/;"	f
+MSS_SYS_digest_check	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_digest_check$/;"	f
+MSS_SYS_digital_signature_service	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_digital_signature_service$/;"	f
+MSS_SYS_execute_iap	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_execute_iap$/;"	f
+MSS_SYS_execute_uic_script	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_execute_uic_script$/;"	f
+MSS_SYS_get_design_info	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_get_design_info$/;"	f
+MSS_SYS_get_device_certificate	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_get_device_certificate$/;"	f
+MSS_SYS_get_serial_number	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_get_serial_number$/;"	f
+MSS_SYS_get_user_code	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_get_user_code$/;"	f
+MSS_SYS_nonce_service	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_nonce_service$/;"	f
+MSS_SYS_one_way_passcode	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_one_way_passcode$/;"	f
+MSS_SYS_otp_generate	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_otp_generate$/;"	f
+MSS_SYS_otp_match	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^uint16_t MSS_SYS_otp_match$/;"	f
+MSS_SYS_puf_emulation_service	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_puf_emulation_service$/;"	f
+MSS_SYS_query_security	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_query_security$/;"	f
+MSS_SYS_read_debug_info	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_read_debug_info$/;"	f
+MSS_SYS_read_digest	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_read_digest$/;"	f
+MSS_SYS_read_envm_parameter	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_read_envm_parameter$/;"	f
+MSS_SYS_read_response	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^uint16_t MSS_SYS_read_response$/;"	f
+MSS_SYS_secure_nvm_read	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_secure_nvm_read$/;"	f
+MSS_SYS_secure_nvm_write	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_secure_nvm_write$/;"	f
+MSS_SYS_select_service_mode	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_select_service_mode$/;"	f
+MSS_SYS_spi_copy	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_spi_copy$/;"	f
+MSS_SYS_unlock_debug_passcode	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^MSS_SYS_unlock_debug_passcode$/;"	f
+MSS_UART0_HI_BASE	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	27;"	d	file:
+MSS_UART0_LO_BASE	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	21;"	d	file:
+MSS_UART1_HI_BASE	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	28;"	d	file:
+MSS_UART1_LO_BASE	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	22;"	d	file:
+MSS_UART2_HI_BASE	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	29;"	d	file:
+MSS_UART2_LO_BASE	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	23;"	d	file:
+MSS_UART3_HI_BASE	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	30;"	d	file:
+MSS_UART3_LO_BASE	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	24;"	d	file:
+MSS_UART4_HI_BASE	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	31;"	d	file:
+MSS_UART4_LO_BASE	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	25;"	d	file:
+MSS_UART_DATA_READY	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	71;"	d	file:
+MSS_UART_clear_break	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_clear_break$/;"	f
+MSS_UART_disable_afclear	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_disable_afclear$/;"	f
+MSS_UART_disable_afm	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_disable_afm$/;"	f
+MSS_UART_disable_half_duplex	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_disable_half_duplex$/;"	f
+MSS_UART_disable_rx_timeout	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_disable_rx_timeout$/;"	f
+MSS_UART_disable_tx_time_guard	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_disable_tx_time_guard$/;"	f
+MSS_UART_enable_afclear	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_enable_afclear$/;"	f
+MSS_UART_enable_afm	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_enable_afm$/;"	f
+MSS_UART_enable_half_duplex	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_enable_half_duplex$/;"	f
+MSS_UART_enable_rx_timeout	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_enable_rx_timeout$/;"	f
+MSS_UART_enable_tx_time_guard	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_enable_tx_time_guard$/;"	f
+MSS_UART_fill_tx_fifo	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_fill_tx_fifo$/;"	f
+MSS_UART_get_modem_status	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_get_modem_status$/;"	f
+MSS_UART_get_rx	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_get_rx$/;"	f
+MSS_UART_get_rx_status	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_get_rx_status$/;"	f
+MSS_UART_get_tx_status	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_get_tx_status$/;"	f
+MSS_UART_init	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_init$/;"	f
+MSS_UART_irda_init	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_irda_init$/;"	f
+MSS_UART_lin_init	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^void MSS_UART_lin_init$/;"	f
+MSS_UART_polled_tx	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_polled_tx$/;"	f
+MSS_UART_polled_tx_string	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_polled_tx_string$/;"	f
+MSS_UART_set_address	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_set_address$/;"	f
+MSS_UART_set_break	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_set_break$/;"	f
+MSS_UART_set_filter_length	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_set_filter_length$/;"	f
+MSS_UART_set_loopback	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_set_loopback$/;"	f
+MSS_UART_set_ready_mode	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_set_ready_mode$/;"	f
+MSS_UART_set_rx_endian	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_set_rx_endian$/;"	f
+MSS_UART_set_tx_endian	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_set_tx_endian$/;"	f
+MSS_UART_set_usart_mode	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_set_usart_mode$/;"	f
+MSS_UART_smartcard_init	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_smartcard_init$/;"	f
+MSS_UART_tx_complete	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^MSS_UART_tx_complete$/;"	f
+NO_BLOCK	sbi/plat/mpfs/platform.c	112;"	d	file:
+NULL_BUFFER	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	26;"	d	file:
+SBI_EXT_EXPERIMENTAL_VYOND_MONITOR	sbi/plat/generic/vyond.c	177;"	d	file:
+STATUS_ERROR_MASK	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	88;"	d	file:
+SYNC_ASYNC_MODE_MASK	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	73;"	d	file:
+TX_COMPLETE	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	62;"	d	file:
+TX_FIFO_SIZE	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	63;"	d	file:
+clint	sbi/plat/mpfs/platform.c	/^static struct clint_data clint = {$/;"	v	typeref:struct:clint_data	file:
+clint	sbi/plat/sifive/fu540/platform.c	/^static struct clint_data clint = {$/;"	v	typeref:struct:clint_data	file:
+cmov	sbi/plat/generic/crypto/ed25519/ge.c	/^static void cmov(ge_precomp *t, const ge_precomp *u, unsigned char b) {$/;"	f	file:
+config_baud_divisors	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^config_baud_divisors$/;"	f	file:
+console_initialized	sbi/plat/mpfs/platform.c	/^static bool console_initialized = false;$/;"	v	file:
+copy_enclave_create_args	sbi/plat/generic/vyond.c	/^unsigned long copy_enclave_create_args(uintptr_t src, struct keystone_sbi_create_t* dest){$/;"	f
+d	sbi/plat/generic/crypto/ed25519/ge.c	/^static const fe d = {$/;"	v	file:
+d2	sbi/plat/generic/crypto/ed25519/ge.c	/^static const fe d2 = {$/;"	v	file:
+div_ceil	sbi/plat/generic/crypto/hkdf_sha3_512/hkdf_sha3_512.c	/^static int div_ceil(int op1, int op2)$/;"	f	file:
+ecall_vyond_monitor	sbi/plat/generic/vyond.c	/^struct sbi_ecall_extension ecall_vyond_monitor = {$/;"	v	typeref:struct:sbi_ecall_extension
+ed25519_create_keypair	sbi/plat/generic/crypto/ed25519/keypair.c	/^void ed25519_create_keypair(unsigned char *public_key, unsigned char *private_key, const unsigned char *seed) {$/;"	f
+ed25519_sign	sbi/plat/generic/crypto/ed25519/sign.c	/^void ed25519_sign(unsigned char *signature, const unsigned char *message, size_t message_len, const unsigned char *public_key, const unsigned char *private_key) {$/;"	f
+equal	sbi/plat/generic/crypto/ed25519/ge.c	/^static unsigned char equal(signed char b, signed char c) {$/;"	f	file:
+execute_ss_interrupt_mode	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^static uint16_t execute_ss_interrupt_mode$/;"	f	file:
+execute_ss_polling_mode	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^static uint16_t execute_ss_polling_mode$/;"	f	file:
+fe_0	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_0(fe h) {$/;"	f
+fe_1	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_1(fe h) {$/;"	f
+fe_add	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_add(fe h, const fe f, const fe g) {$/;"	f
+fe_cmov	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_cmov(fe f, const fe g, unsigned int b) {$/;"	f
+fe_copy	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_copy(fe h, const fe f) {$/;"	f
+fe_cswap	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_cswap(fe f,fe g,unsigned int b) {$/;"	f
+fe_frombytes	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_frombytes(fe h, const unsigned char *s) {$/;"	f
+fe_invert	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_invert(fe out, const fe z) {$/;"	f
+fe_isnegative	sbi/plat/generic/crypto/ed25519/fe.c	/^int fe_isnegative(const fe f) {$/;"	f
+fe_isnonzero	sbi/plat/generic/crypto/ed25519/fe.c	/^int fe_isnonzero(const fe f) {$/;"	f
+fe_mul	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_mul(fe h, const fe f, const fe g) {$/;"	f
+fe_mul121666	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_mul121666(fe h, fe f) {$/;"	f
+fe_neg	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_neg(fe h, const fe f) {$/;"	f
+fe_pow22523	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_pow22523(fe out, const fe z) {$/;"	f
+fe_sq	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_sq(fe h, const fe f) {$/;"	f
+fe_sq2	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_sq2(fe h, const fe f) {$/;"	f
+fe_sub	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_sub(fe h, const fe f, const fe g) {$/;"	f
+fe_tobytes	sbi/plat/generic/crypto/ed25519/fe.c	/^void fe_tobytes(unsigned char *s, const fe h) {$/;"	f
+fu540_console_init	sbi/plat/sifive/fu540/platform.c	/^static int fu540_console_init(void)$/;"	f	file:
+fu540_final_init	sbi/plat/sifive/fu540/platform.c	/^static int fu540_final_init(bool cold_boot)$/;"	f	file:
+fu540_get_tlbr_flush_limit	sbi/plat/sifive/fu540/platform.c	/^static u64 fu540_get_tlbr_flush_limit(void)$/;"	f	file:
+fu540_hart_index2id	sbi/plat/sifive/fu540/platform.c	/^static u32 fu540_hart_index2id[FU540_HART_COUNT - 1] = {$/;"	v	file:
+fu540_ipi_init	sbi/plat/sifive/fu540/platform.c	/^static int fu540_ipi_init(bool cold_boot)$/;"	f	file:
+fu540_irqchip_init	sbi/plat/sifive/fu540/platform.c	/^static int fu540_irqchip_init(bool cold_boot)$/;"	f	file:
+fu540_modify_dt	sbi/plat/sifive/fu540/platform.c	/^static void fu540_modify_dt(void *fdt)$/;"	f	file:
+fu540_timer_init	sbi/plat/sifive/fu540/platform.c	/^static int fu540_timer_init(bool cold_boot)$/;"	f	file:
+fw_platform_init	sbi/plat/generic/platform.c	/^unsigned long fw_platform_init(unsigned long arg0, unsigned long arg1,$/;"	f
+fw_platform_lookup_special	sbi/plat/generic/platform.c	/^static void fw_platform_lookup_special(void *fdt, int root_offset)$/;"	f	file:
+g5c_message_plic_IRQHandler	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^g5c_message_plic_IRQHandler$/;"	f
+g_int_service_response_offset	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^uint16_t g_int_service_response_offset;$/;"	v
+g_int_service_response_size	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^uint16_t g_int_service_response_size;$/;"	v
+g_message_interrupt_counter	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^volatile uint8_t g_message_interrupt_counter = 0u;$/;"	v
+g_message_received	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^volatile uint8_t g_message_received = 0u;$/;"	v
+g_mss_uart0_hi	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^mss_uart_instance_t g_mss_uart0_hi;$/;"	v
+g_mss_uart0_lo	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^mss_uart_instance_t g_mss_uart0_lo;$/;"	v
+g_mss_uart1_hi	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^mss_uart_instance_t g_mss_uart1_hi;$/;"	v
+g_mss_uart1_lo	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^mss_uart_instance_t g_mss_uart1_lo;$/;"	v
+g_mss_uart2_hi	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^mss_uart_instance_t g_mss_uart2_hi;$/;"	v
+g_mss_uart2_lo	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^mss_uart_instance_t g_mss_uart2_lo;$/;"	v
+g_mss_uart3_hi	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^mss_uart_instance_t g_mss_uart3_hi;$/;"	v
+g_mss_uart3_lo	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^mss_uart_instance_t g_mss_uart3_lo;$/;"	v
+g_mss_uart4_hi	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^mss_uart_instance_t g_mss_uart4_hi;$/;"	v
+g_mss_uart4_lo	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^mss_uart_instance_t g_mss_uart4_lo;$/;"	v
+g_service_mode	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^uint8_t g_service_mode = 0u;$/;"	v
+g_uart_axi_pos	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^static uint8_t g_uart_axi_pos = 0x0u;$/;"	v	file:
+ge_add	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_add(ge_p1p1 *r, const ge_p3 *p, const ge_cached *q) {$/;"	f
+ge_double_scalarmult_vartime	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_double_scalarmult_vartime(ge_p2 *r, const unsigned char *a, const ge_p3 *A, const unsigned char *b) {$/;"	f
+ge_frombytes_negate_vartime	sbi/plat/generic/crypto/ed25519/ge.c	/^int ge_frombytes_negate_vartime(ge_p3 *h, const unsigned char *s) {$/;"	f
+ge_madd	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_madd(ge_p1p1 *r, const ge_p3 *p, const ge_precomp *q) {$/;"	f
+ge_msub	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_msub(ge_p1p1 *r, const ge_p3 *p, const ge_precomp *q) {$/;"	f
+ge_p1p1_to_p2	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_p1p1_to_p2(ge_p2 *r, const ge_p1p1 *p) {$/;"	f
+ge_p1p1_to_p3	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_p1p1_to_p3(ge_p3 *r, const ge_p1p1 *p) {$/;"	f
+ge_p2_0	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_p2_0(ge_p2 *h) {$/;"	f
+ge_p2_dbl	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_p2_dbl(ge_p1p1 *r, const ge_p2 *p) {$/;"	f
+ge_p3_0	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_p3_0(ge_p3 *h) {$/;"	f
+ge_p3_dbl	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_p3_dbl(ge_p1p1 *r, const ge_p3 *p) {$/;"	f
+ge_p3_to_cached	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_p3_to_cached(ge_cached *r, const ge_p3 *p) {$/;"	f
+ge_p3_to_p2	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_p3_to_p2(ge_p2 *r, const ge_p3 *p) {$/;"	f
+ge_p3_tobytes	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_p3_tobytes(unsigned char *s, const ge_p3 *h) {$/;"	f
+ge_scalarmult_base	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_scalarmult_base(ge_p3 *h, const unsigned char *a) {$/;"	f
+ge_sub	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_sub(ge_p1p1 *r, const ge_p3 *p, const ge_cached *q) {$/;"	f
+ge_tobytes	sbi/plat/generic/crypto/ed25519/ge.c	/^void ge_tobytes(unsigned char *s, const ge_p2 *h) {$/;"	f
+generic_cold_boot_allowed	sbi/plat/generic/platform.c	/^static bool generic_cold_boot_allowed(u32 hartid)$/;"	f	file:
+generic_console_init	sbi/plat/generic/platform.c	/^static int generic_console_init(void)$/;"	f	file:
+generic_domains_init	sbi/plat/generic/platform.c	/^static int generic_domains_init(void)$/;"	f	file:
+generic_early_exit	sbi/plat/generic/platform.c	/^static void generic_early_exit(void)$/;"	f	file:
+generic_early_init	sbi/plat/generic/platform.c	/^static int generic_early_init(bool cold_boot)$/;"	f	file:
+generic_extensions_init	sbi/plat/generic/platform.c	/^static int generic_extensions_init(struct sbi_hart_features *hfeatures)$/;"	f	file:
+generic_final_exit	sbi/plat/generic/platform.c	/^static void generic_final_exit(void)$/;"	f	file:
+generic_final_init	sbi/plat/generic/platform.c	/^static int generic_final_init(bool cold_boot)$/;"	f	file:
+generic_hart_index2id	sbi/plat/generic/platform.c	/^static u32 generic_hart_index2id[SBI_HARTMASK_MAX_BITS] = { 0 };$/;"	v	file:
+generic_nascent_init	sbi/plat/generic/platform.c	/^static int generic_nascent_init(void)$/;"	f	file:
+generic_plat	sbi/plat/generic/platform.c	/^static const struct platform_override *generic_plat = NULL;$/;"	v	typeref:struct:platform_override	file:
+generic_plat_match	sbi/plat/generic/platform.c	/^static const struct fdt_match *generic_plat_match = NULL;$/;"	v	typeref:struct:fdt_match	file:
+generic_pmu_init	sbi/plat/generic/platform.c	/^static int generic_pmu_init(void)$/;"	f	file:
+generic_pmu_xlate_to_mhpmevent	sbi/plat/generic/platform.c	/^static uint64_t generic_pmu_xlate_to_mhpmevent(uint32_t event_idx,$/;"	f	file:
+generic_tlbr_flush_limit	sbi/plat/generic/platform.c	/^static u64 generic_tlbr_flush_limit(void)$/;"	f	file:
+generic_vendor_ext_check	sbi/plat/generic/platform.c	/^static bool generic_vendor_ext_check(void)$/;"	f	file:
+generic_vendor_ext_provider	sbi/plat/generic/platform.c	/^static int generic_vendor_ext_provider(long funcid,$/;"	f	file:
+get_uart_instance	sbi/plat/mpfs/uart_helper.c	/^static inline mss_uart_instance_t *get_uart_instance(int hartid)$/;"	f	file:
+global_init	sbi/plat/mpfs/drivers/mss_uart/mss_uart.c	/^static void global_init$/;"	f	file:
+gp_int_service_response	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^uint8_t* gp_int_service_response;$/;"	v
+hart_idx2id	sbi/plat/mpfs/platform.c	/^static u32 hart_idx2id[MPFS_HART_COUNT - 1] = {$/;"	v	file:
+hkdf_expand	sbi/plat/generic/crypto/hkdf_sha3_512/hkdf_sha3_512.c	/^int hkdf_expand(const unsigned char *prk, int prk_len,$/;"	f
+hkdf_extract	sbi/plat/generic/crypto/hkdf_sha3_512/hkdf_sha3_512.c	/^void hkdf_extract(const unsigned char *salt, int salt_len,$/;"	f
+hkdf_sha3_512	sbi/plat/generic/crypto/hkdf_sha3_512/hkdf_sha3_512.c	/^int hkdf_sha3_512(const unsigned char *salt, int salt_len,$/;"	f
+hmac_sha3	sbi/plat/generic/crypto/hmac_sha3/hmac_sha3.c	/^void hmac_sha3(const unsigned char *key, int key_len,$/;"	f
+hmac_sha3_final	sbi/plat/generic/crypto/hmac_sha3/hmac_sha3.c	/^void hmac_sha3_final(hmac_sha3_ctx_t *ctx, unsigned char *hash)$/;"	f
+hmac_sha3_init	sbi/plat/generic/crypto/hmac_sha3/hmac_sha3.c	/^void hmac_sha3_init(hmac_sha3_ctx_t *ctx,$/;"	f
+hmac_sha3_update	sbi/plat/generic/crypto/hmac_sha3/hmac_sha3.c	/^void hmac_sha3_update(hmac_sha3_ctx_t *ctx,$/;"	f
+load_3	sbi/plat/generic/crypto/ed25519/fe.c	/^static uint64_t load_3(const unsigned char *in) {$/;"	f	file:
+load_3	sbi/plat/generic/crypto/ed25519/sc.c	/^static uint64_t load_3(const unsigned char *in) {$/;"	f	file:
+load_4	sbi/plat/generic/crypto/ed25519/fe.c	/^static uint64_t load_4(const unsigned char *in) {$/;"	f	file:
+load_4	sbi/plat/generic/crypto/ed25519/sc.c	/^static uint64_t load_4(const unsigned char *in) {$/;"	f	file:
+mpfs_console_getc	sbi/plat/mpfs/platform.c	/^static int mpfs_console_getc(void)$/;"	f	file:
+mpfs_console_init	sbi/plat/mpfs/platform.c	/^static int mpfs_console_init(void)$/;"	f	file:
+mpfs_console_putc	sbi/plat/mpfs/platform.c	/^static void mpfs_console_putc(char ch)$/;"	f	file:
+mpfs_early_init	sbi/plat/mpfs/platform.c	/^static int mpfs_early_init(bool cold_boot)$/;"	f	file:
+mpfs_final_init	sbi/plat/mpfs/platform.c	/^static int mpfs_final_init(bool cold_boot)$/;"	f	file:
+mpfs_get_tlbr_flush_limit	sbi/plat/mpfs/platform.c	/^static u64 mpfs_get_tlbr_flush_limit(void)$/;"	f	file:
+mpfs_ipi_init	sbi/plat/mpfs/platform.c	/^static int mpfs_ipi_init(bool cold_boot)$/;"	f	file:
+mpfs_irqchip_init	sbi/plat/mpfs/platform.c	/^static int mpfs_irqchip_init(bool cold_boot)$/;"	f	file:
+mpfs_reset_check	sbi/plat/mpfs/platform.c	/^static int mpfs_reset_check(u32 type, u32 reason)$/;"	f	file:
+mpfs_timer_init	sbi/plat/mpfs/platform.c	/^static int mpfs_timer_init(bool cold_boot)$/;"	f	file:
+mss_sys_interrupt_handler	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^mss_sys_service_handler_t mss_sys_interrupt_handler;$/;"	v
+negative	sbi/plat/generic/crypto/ed25519/ge.c	/^static unsigned char negative(signed char b) {$/;"	f	file:
+platform	sbi/plat/generic/platform.c	/^struct sbi_platform platform = {$/;"	v	typeref:struct:sbi_platform
+platform	sbi/plat/mpfs/platform.c	/^const struct sbi_platform platform = {$/;"	v	typeref:struct:sbi_platform
+platform	sbi/plat/sifive/fu540/platform.c	/^const struct sbi_platform platform = {$/;"	v	typeref:struct:sbi_platform
+platform_has_mlevel_imsic	sbi/plat/generic/platform.c	/^static bool platform_has_mlevel_imsic = false;$/;"	v	file:
+platform_ops	sbi/plat/generic/platform.c	/^const struct sbi_platform_operations platform_ops = {$/;"	v	typeref:struct:sbi_platform_operations
+platform_ops	sbi/plat/mpfs/platform.c	/^const struct sbi_platform_operations platform_ops = {$/;"	v	typeref:struct:sbi_platform_operations
+platform_ops	sbi/plat/sifive/fu540/platform.c	/^const struct sbi_platform_operations platform_ops = {$/;"	v	typeref:struct:sbi_platform_operations
+platform_override_modules	sbi/plat/generic/platform_override_modules.c	/^const struct platform_override *platform_override_modules[] = {$/;"	v	typeref:struct:platform_override
+platform_override_modules_size	sbi/plat/generic/platform_override_modules.c	/^unsigned long platform_override_modules_size = sizeof(platform_override_modules) \/ sizeof(const struct platform_override *);$/;"	v
+plic	sbi/plat/mpfs/platform.c	/^static struct plic_data plic = { MPFS_PLIC_ADDR, MPFS_PLIC_NUM_SOURCES };$/;"	v	typeref:struct:plic_data	file:
+plic	sbi/plat/sifive/fu540/platform.c	/^static struct plic_data plic = {$/;"	v	typeref:struct:plic_data	file:
+prepare_key	sbi/plat/generic/crypto/hmac_sha3/hmac_sha3.c	/^static void prepare_key(const unsigned char *key, int key_len,$/;"	f	file:
+request_system_service	sbi/plat/mpfs/drivers/mss_sys_services/mss_sys_services.c	/^static uint16_t request_system_service$/;"	f	file:
+sbi_ecall_vyond_monitor_handler	sbi/plat/generic/vyond.c	/^static int sbi_ecall_vyond_monitor_handler($/;"	f	file:
+sbi_trap_error	sbi/plat/generic/vyond.c	/^static void sbi_trap_error(const char *msg, int rc,$/;"	f	file:
+sbi_trap_handler_keystone_enclave	sbi/plat/generic/vyond.c	/^void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)$/;"	f
+sc_muladd	sbi/plat/generic/crypto/ed25519/sc.c	/^void sc_muladd(unsigned char *s, const unsigned char *a, const unsigned char *b, const unsigned char *c) {$/;"	f
+sc_reduce	sbi/plat/generic/crypto/ed25519/sc.c	/^void sc_reduce(unsigned char *s) {$/;"	f
+select	sbi/plat/generic/crypto/ed25519/ge.c	/^static void select(ge_precomp *t, int pos, signed char b) {$/;"	f	file:
+sha3	sbi/plat/generic/crypto/sha3/sha3.c	/^void *sha3(const void *in, size_t inlen, void *md, int mdlen)$/;"	f
+sha3_final	sbi/plat/generic/crypto/sha3/sha3.c	/^int sha3_final(void *md, sha3_ctx_t *c)$/;"	f
+sha3_init	sbi/plat/generic/crypto/sha3/sha3.c	/^int sha3_init(sha3_ctx_t *c, int mdlen)$/;"	f
+sha3_keccakf	sbi/plat/generic/crypto/sha3/sha3.c	/^void sha3_keccakf(uint64_t st[25])$/;"	f
+sha3_update	sbi/plat/generic/crypto/sha3/sha3.c	/^int sha3_update(sha3_ctx_t *c, const void *data, size_t len)$/;"	f
+sifive_fu540	sbi/plat/generic/sifive_fu540.c	/^const struct platform_override sifive_fu540 = {$/;"	v	typeref:struct:platform_override
+sifive_fu540_fdt_fixup	sbi/plat/generic/sifive_fu540.c	/^static int sifive_fu540_fdt_fixup(void *fdt, const struct fdt_match *match)$/;"	f	file:
+sifive_fu540_match	sbi/plat/generic/sifive_fu540.c	/^static const struct fdt_match sifive_fu540_match[] = {$/;"	v	typeref:struct:fdt_match	file:
+sifive_fu540_tlbr_flush_limit	sbi/plat/generic/sifive_fu540.c	/^static u64 sifive_fu540_tlbr_flush_limit(const struct fdt_match *match)$/;"	f	file:
+slide	sbi/plat/generic/crypto/ed25519/ge.c	/^static void slide(signed char *r, const unsigned char *a) {$/;"	f	file:
+sm_mprv_read	sbi/plat/generic/vyond.c	/^int sm_mprv_read(void *dst, uintptr_t src_va, size_t len) {$/;"	f
+sm_mprv_write	sbi/plat/generic/vyond.c	/^int sm_mprv_write(uintptr_t dst_va, const void *src, size_t len) {$/;"	f
+sqrtm1	sbi/plat/generic/crypto/ed25519/ge.c	/^static const fe sqrtm1 = {$/;"	v	file:
+sv39_translate	sbi/plat/generic/vyond.c	/^static uintptr_t sv39_translate(uintptr_t satp, uintptr_t va)$/;"	f	file:
+uart_getchar	sbi/plat/mpfs/uart_helper.c	/^bool uart_getchar(uint8_t *pbuf, int32_t timeout_sec, bool do_sec_tick)$/;"	f
+uart_getline	sbi/plat/mpfs/uart_helper.c	/^ssize_t uart_getline(char **pBuffer, size_t *pBufLen)$/;"	f
+uart_putc	sbi/plat/mpfs/uart_helper.c	/^void uart_putc(int hartid, const char ch)$/;"	f
+uart_putstring	sbi/plat/mpfs/uart_helper.c	/^int uart_putstring(int hartid, const char *p)$/;"	f
+vyond_monitor_init	sbi/plat/generic/vyond.c	/^int vyond_monitor_init(int cold_boot)$/;"	f
+wgrocket	sbi/plat/generic/wgrocket.c	/^const struct platform_override wgrocket = {$/;"	v	typeref:struct:platform_override
+wgrocket_match	sbi/plat/generic/wgrocket.c	/^static const struct fdt_match wgrocket_match[] = {$/;"	v	typeref:struct:fdt_match	file:

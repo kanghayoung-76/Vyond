@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie/sys/entry.S
+asm/csr.h
+-
+util/asm_helpers.h
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie/sys/util/asm_helpers.h
+
+include/util/asm_helpers.h
+
+tmplib/asm/csr.h
+linux/const.h
+-
+
+tmplib/linux/const.h
+

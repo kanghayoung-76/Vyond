@@ -8,7 +8,7 @@ file(REMOVE_RECURSE
   "pkg/attestor"
   "pkg/attestor-runner"
   "pkg/eyrie-rt"
-  "pkg/fw_jump.bin"
+  "pkg/fw_payload.bin"
   "pkg/loader.bin"
 )
 

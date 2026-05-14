@@ -67,7 +67,7 @@ CMAKE_BINARY_DIR = /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build
 
 # Special rule for the target edit_cache
 edit_cache:
-	@echo "Running external command ..."
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
 	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
@@ -77,7 +77,7 @@ edit_cache/fast: edit_cache
 
 # Special rule for the target rebuild_cache
 rebuild_cache:
-	@echo "Running external command ..."
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake to regenerate build system..."
 	/usr/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
@@ -116,6 +116,279 @@ depend:
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
+#=============================================================================
+# Target rules for targets named examples
+
+# Build rule for target.
+examples: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 examples
+.PHONY : examples
+
+# fast build rule for target.
+examples/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/examples.dir/build.make CMakeFiles/examples.dir/build
+.PHONY : examples/fast
+
+#=============================================================================
+# Target rules for targets named hello
+
+# Build rule for target.
+hello: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 hello
+.PHONY : hello
+
+# fast build rule for target.
+hello/fast:
+	$(MAKE) $(MAKESILENT) -f hello/CMakeFiles/hello.dir/build.make hello/CMakeFiles/hello.dir/build
+.PHONY : hello/fast
+
+#=============================================================================
+# Target rules for targets named hello-runner
+
+# Build rule for target.
+hello-runner: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 hello-runner
+.PHONY : hello-runner
+
+# fast build rule for target.
+hello-runner/fast:
+	$(MAKE) $(MAKESILENT) -f hello/CMakeFiles/hello-runner.dir/build.make hello/CMakeFiles/hello-runner.dir/build
+.PHONY : hello-runner/fast
+
+#=============================================================================
+# Target rules for targets named eyrie-hello-eyrie
+
+# Build rule for target.
+eyrie-hello-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-hello-eyrie
+.PHONY : eyrie-hello-eyrie
+
+# fast build rule for target.
+eyrie-hello-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f hello/CMakeFiles/eyrie-hello-eyrie.dir/build.make hello/CMakeFiles/eyrie-hello-eyrie.dir/build
+.PHONY : eyrie-hello-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named hello-eyrie
+
+# Build rule for target.
+hello-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 hello-eyrie
+.PHONY : hello-eyrie
+
+# fast build rule for target.
+hello-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f hello/CMakeFiles/hello-eyrie.dir/build.make hello/CMakeFiles/hello-eyrie.dir/build
+.PHONY : hello-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named hello-package
+
+# Build rule for target.
+hello-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 hello-package
+.PHONY : hello-package
+
+# fast build rule for target.
+hello-package/fast:
+	$(MAKE) $(MAKESILENT) -f hello/CMakeFiles/hello-package.dir/build.make hello/CMakeFiles/hello-package.dir/build
+.PHONY : hello-package/fast
+
+#=============================================================================
+# Target rules for targets named attestor
+
+# Build rule for target.
+attestor: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 attestor
+.PHONY : attestor
+
+# fast build rule for target.
+attestor/fast:
+	$(MAKE) $(MAKESILENT) -f attestation/CMakeFiles/attestor.dir/build.make attestation/CMakeFiles/attestor.dir/build
+.PHONY : attestor/fast
+
+#=============================================================================
+# Target rules for targets named attestor-runner
+
+# Build rule for target.
+attestor-runner: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 attestor-runner
+.PHONY : attestor-runner
+
+# fast build rule for target.
+attestor-runner/fast:
+	$(MAKE) $(MAKESILENT) -f attestation/CMakeFiles/attestor-runner.dir/build.make attestation/CMakeFiles/attestor-runner.dir/build
+.PHONY : attestor-runner/fast
+
+#=============================================================================
+# Target rules for targets named eyrie-attestor-eyrie
+
+# Build rule for target.
+eyrie-attestor-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-attestor-eyrie
+.PHONY : eyrie-attestor-eyrie
+
+# fast build rule for target.
+eyrie-attestor-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f attestation/CMakeFiles/eyrie-attestor-eyrie.dir/build.make attestation/CMakeFiles/eyrie-attestor-eyrie.dir/build
+.PHONY : eyrie-attestor-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named attestor-eyrie
+
+# Build rule for target.
+attestor-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 attestor-eyrie
+.PHONY : attestor-eyrie
+
+# fast build rule for target.
+attestor-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f attestation/CMakeFiles/attestor-eyrie.dir/build.make attestation/CMakeFiles/attestor-eyrie.dir/build
+.PHONY : attestor-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named attestor-package
+
+# Build rule for target.
+attestor-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 attestor-package
+.PHONY : attestor-package
+
+# fast build rule for target.
+attestor-package/fast:
+	$(MAKE) $(MAKESILENT) -f attestation/CMakeFiles/attestor-package.dir/build.make attestation/CMakeFiles/attestor-package.dir/build
+.PHONY : attestor-package/fast
+
+#=============================================================================
+# Target rules for targets named wg-fault
+
+# Build rule for target.
+wg-fault: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-fault
+.PHONY : wg-fault
+
+# fast build rule for target.
+wg-fault/fast:
+	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault.dir/build.make wg-fault-test/CMakeFiles/wg-fault.dir/build
+.PHONY : wg-fault/fast
+
+#=============================================================================
+# Target rules for targets named wg-fault-runner
+
+# Build rule for target.
+wg-fault-runner: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-fault-runner
+.PHONY : wg-fault-runner
+
+# fast build rule for target.
+wg-fault-runner/fast:
+	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault-runner.dir/build.make wg-fault-test/CMakeFiles/wg-fault-runner.dir/build
+.PHONY : wg-fault-runner/fast
+
+#=============================================================================
+# Target rules for targets named eyrie-wg-fault-eyrie
+
+# Build rule for target.
+eyrie-wg-fault-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-wg-fault-eyrie
+.PHONY : eyrie-wg-fault-eyrie
+
+# fast build rule for target.
+eyrie-wg-fault-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie.dir/build.make wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie.dir/build
+.PHONY : eyrie-wg-fault-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named wg-fault-eyrie
+
+# Build rule for target.
+wg-fault-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-fault-eyrie
+.PHONY : wg-fault-eyrie
+
+# fast build rule for target.
+wg-fault-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault-eyrie.dir/build.make wg-fault-test/CMakeFiles/wg-fault-eyrie.dir/build
+.PHONY : wg-fault-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named wg-fault-package
+
+# Build rule for target.
+wg-fault-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-fault-package
+.PHONY : wg-fault-package
+
+# fast build rule for target.
+wg-fault-package/fast:
+	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault-package.dir/build.make wg-fault-test/CMakeFiles/wg-fault-package.dir/build
+.PHONY : wg-fault-package/fast
+
+#=============================================================================
+# Target rules for targets named wg-slot
+
+# Build rule for target.
+wg-slot: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-slot
+.PHONY : wg-slot
+
+# fast build rule for target.
+wg-slot/fast:
+	$(MAKE) $(MAKESILENT) -f wg-slot-test/CMakeFiles/wg-slot.dir/build.make wg-slot-test/CMakeFiles/wg-slot.dir/build
+.PHONY : wg-slot/fast
+
+#=============================================================================
+# Target rules for targets named wg-slot-runner
+
+# Build rule for target.
+wg-slot-runner: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-slot-runner
+.PHONY : wg-slot-runner
+
+# fast build rule for target.
+wg-slot-runner/fast:
+	$(MAKE) $(MAKESILENT) -f wg-slot-test/CMakeFiles/wg-slot-runner.dir/build.make wg-slot-test/CMakeFiles/wg-slot-runner.dir/build
+.PHONY : wg-slot-runner/fast
+
+#=============================================================================
+# Target rules for targets named eyrie-wg-slot-eyrie
+
+# Build rule for target.
+eyrie-wg-slot-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-wg-slot-eyrie
+.PHONY : eyrie-wg-slot-eyrie
+
+# fast build rule for target.
+eyrie-wg-slot-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.dir/build.make wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.dir/build
+.PHONY : eyrie-wg-slot-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named wg-slot-eyrie
+
+# Build rule for target.
+wg-slot-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-slot-eyrie
+.PHONY : wg-slot-eyrie
+
+# fast build rule for target.
+wg-slot-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f wg-slot-test/CMakeFiles/wg-slot-eyrie.dir/build.make wg-slot-test/CMakeFiles/wg-slot-eyrie.dir/build
+.PHONY : wg-slot-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named wg-slot-package
+
+# Build rule for target.
+wg-slot-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-slot-package
+.PHONY : wg-slot-package
+
+# fast build rule for target.
+wg-slot-package/fast:
+	$(MAKE) $(MAKESILENT) -f wg-slot-test/CMakeFiles/wg-slot-package.dir/build.make wg-slot-test/CMakeFiles/wg-slot-package.dir/build
+.PHONY : wg-slot-package/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -124,6 +397,27 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... attestor-eyrie"
+	@echo "... attestor-package"
+	@echo "... examples"
+	@echo "... eyrie-attestor-eyrie"
+	@echo "... eyrie-hello-eyrie"
+	@echo "... eyrie-wg-fault-eyrie"
+	@echo "... eyrie-wg-slot-eyrie"
+	@echo "... hello-eyrie"
+	@echo "... hello-package"
+	@echo "... wg-fault-eyrie"
+	@echo "... wg-fault-package"
+	@echo "... wg-slot-eyrie"
+	@echo "... wg-slot-package"
+	@echo "... attestor"
+	@echo "... attestor-runner"
+	@echo "... hello"
+	@echo "... hello-runner"
+	@echo "... wg-fault"
+	@echo "... wg-fault-runner"
+	@echo "... wg-slot"
+	@echo "... wg-slot-runner"
 .PHONY : help
 
 

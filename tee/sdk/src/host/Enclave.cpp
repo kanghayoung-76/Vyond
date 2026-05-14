@@ -178,7 +178,7 @@ Enclave::init(
     destroy();
     return Error::DeviceError;
   }
-  if (!pMemory->allocUtm(params.getUntrustedSize())) {
+  if (params.getUntrustedSize() > 0 && !pMemory->allocUtm(params.getUntrustedSize())) {
     ERROR("failed to init untrusted memory - ioctl() failed");
     destroy();
     return Error::DeviceError;
@@ -204,7 +204,7 @@ Enclave::init(
     destroy();
     return Error::DeviceError;
   }
-  if (!mapUntrusted(params.getUntrustedSize())) {
+  if (params.getUntrustedSize() > 0 && !mapUntrusted(params.getUntrustedSize())) {
     ERROR(
         "failed to finalize enclave - cannot obtain the untrusted buffer "
         "pointer \n");

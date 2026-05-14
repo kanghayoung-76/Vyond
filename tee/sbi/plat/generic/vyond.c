@@ -21,6 +21,56 @@ unsigned long sbi_sm_enter_enclave(struct sbi_trap_regs *regs, unsigned long eid
 unsigned long sbi_sm_resume_enclave(struct sbi_trap_regs *regs, unsigned long eid);
 unsigned long sbi_sm_stop_enclave(struct sbi_trap_regs *regs, unsigned long request);
 unsigned long sbi_sm_exit_enclave(struct sbi_trap_regs *regs);
+/* WGC slot virtualization helpers */
+uintptr_t    sbi_sm_get_enclave_id(void);
+long         sbi_sm_handle_wgc_fault(uintptr_t eid, uintptr_t fault_addr);
+
+/*
+ * SV39 VA→PA translation executed from M-mode.
+ *
+ * M-mode loads use physical addresses UNLESS mstatus.MPRV=1, in which
+ * case they use the privilege level in mstatus.MPP and go through satp.
+ * We must clear MPRV before reading PTEs, otherwise we'd be recursively
+ * applying VA translation to what we think are physical PTE addresses —
+ * producing completely wrong results.
+ *
+ * Returns 0 if the address is unmapped or the mode is not SV39.
+ */
+static uintptr_t sv39_translate(uintptr_t satp, uintptr_t va)
+{
+    if ((satp >> 60) != 8)   /* mode field: 8 = SV39 */
+        return 0;
+
+    /* Save and clear MPRV so our PTE loads are truly physical. */
+    uintptr_t orig_mstatus = csr_read(CSR_MSTATUS);
+    if (orig_mstatus & MSTATUS_MPRV)
+        csr_write(CSR_MSTATUS, orig_mstatus & ~MSTATUS_MPRV);
+
+    uintptr_t pt_pa = (satp & 0x00000FFFFFFFFFFF) << 12;
+    uintptr_t result = 0;
+
+    for (int level = 2; level >= 0; level--) {
+        int shift = 12 + level * 9;
+        uintptr_t vpn = (va >> shift) & 0x1FF;
+        uintptr_t pte = *(volatile uint64_t *)(pt_pa + vpn * 8);
+
+        if (!(pte & 0x1))          /* V bit clear: not mapped */
+            goto done;
+        if (pte & 0xE) {           /* R/W/X set: leaf PTE */
+            uintptr_t leaf_ppn = (pte >> 10) & 0x00000FFFFFFFFFFF;
+            uintptr_t offset_mask = (1UL << shift) - 1;
+            result = (leaf_ppn << 12) | (va & offset_mask);
+            goto done;
+        }
+        /* Non-leaf: descend */
+        pt_pa = ((pte >> 10) & 0x00000FFFFFFFFFFF) << 12;
+    }
+
+done:
+    if (orig_mstatus & MSTATUS_MPRV)
+        csr_write(CSR_MSTATUS, orig_mstatus);
+    return result;
+}
 
 unsigned long copy_enclave_create_args(uintptr_t src, struct keystone_sbi_create_t* dest);
 unsigned long sbi_sm_attest_enclave(unsigned long report, unsigned long data, unsigned long size);
@@ -219,7 +269,6 @@ static void sbi_trap_error(const char *msg, int rc,
 		   regs->t6);
 
     sbi_sm_exit_enclave((struct sbi_trap_regs*) regs);
-unsigned long copy_enclave_create_args(uintptr_t src, struct keystone_sbi_create_t *dest);
 }
 
 
@@ -297,6 +346,42 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
 		    rc  = sbi_ecall_handler(regs);
 		    msg = "ecall handler failed";
 		break;
+	    case CAUSE_FETCH_ACCESS:
+	    case CAUSE_LOAD_ACCESS:
+	    case CAUSE_STORE_ACCESS: {
+		    uintptr_t eid = sbi_sm_get_enclave_id();
+		    /* When the enclave MMU is active (satp SV39 mode), mtval is a
+		     * virtual address.  Translate it to PA via a software page-table
+		     * walk.  In bare mode satp==0 so mtval is already PA. */
+		    uintptr_t satp = csr_read(CSR_SATP);
+		    uintptr_t phys_addr;
+		    if ((satp >> 60) == 8) {
+		        phys_addr = sv39_translate(satp, mtval);
+		        if (phys_addr == 0) {
+		            sbi_printf("[SM] ACCESS FAULT: eid=%lu va=0x%lx translation failed -> exit\n",
+		                       eid, mtval);
+		            sbi_sm_exit_enclave((struct sbi_trap_regs*) regs);
+		            rc = SBI_OK;
+		            break;
+		        }
+		    } else {
+		        phys_addr = mtval;  /* bare mode: mtval is PA */
+		    }
+		    long ret = sbi_sm_handle_wgc_fault(eid, phys_addr);
+		    if (ret == 0) {
+		        /* Slot loaded - just return. CPU will mret to same mepc,
+		         * retry the faulting instruction, WGC now allows it. */
+		        sbi_printf("[SM] WGC slot loaded: eid=%lu phys=0x%lx va=0x%lx mcause=0x%lx -> resuming\n",
+		                   eid, phys_addr, mtval, mcause);
+		        rc = SBI_OK;
+		    } else {
+		        sbi_printf("[SM] ACCESS FAULT: eid=%lu phys=0x%lx va=0x%lx not in EPM -> exit\n",
+		                   eid, phys_addr, mtval);
+		        sbi_sm_exit_enclave((struct sbi_trap_regs*) regs);
+		        rc = SBI_OK;
+		    }
+		    break;
+		}
 	    default:
 		    /* If the trap came from S or U mode, redirect it there */
 		    trap.epc = regs->mepc;

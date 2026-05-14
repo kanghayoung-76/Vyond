@@ -71,8 +71,8 @@ attestation/CMakeFiles/attestor-package: attestation/pkg/eyrie-rt
 attestation/CMakeFiles/attestor-package: attestation/pkg/loader.bin
 attestation/CMakeFiles/attestor-package: attestation/pkg/attestor
 attestation/CMakeFiles/attestor-package: attestation/pkg/attestor-runner
-attestation/CMakeFiles/attestor-package: attestation/pkg/fw_jump.bin
-	cd /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation && /usr/bin/makeself --noprogress /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/pkg attestor.ke "Keystone Enclave Package" ./attestor-runner attestor eyrie-rt loader.bin --sm-bin fw_jump.bin
+attestation/CMakeFiles/attestor-package: attestation/pkg/fw_payload.bin
+	cd /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation && /usr/bin/makeself --noprogress /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/pkg attestor.ke "Keystone Enclave Package" ./attestor-runner attestor eyrie-rt loader.bin --sm-bin fw_payload.bin
 
 attestation/pkg/.options_log: attestation/.options_log
 attestation/pkg/.options_log: attestation/pkg
@@ -94,10 +94,10 @@ attestation/pkg/eyrie-rt: attestation/pkg
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Generating pkg/eyrie-rt"
 	cd /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation && cp eyrie-rt /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/pkg/eyrie-rt
 
-attestation/pkg/fw_jump.bin: /data/hykang/RVSS/WGTEE_project/Vyond/tee/sbi/opensbi/build/platform/generic/firmware/fw_jump.bin
-attestation/pkg/fw_jump.bin: attestation/pkg
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Generating pkg/fw_jump.bin"
-	cd /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation && cp /data/hykang/RVSS/WGTEE_project/Vyond/tee/sbi/opensbi/build/platform/generic/firmware/fw_jump.bin /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/pkg/fw_jump.bin
+attestation/pkg/fw_payload.bin: /data/hykang/RVSS/WGTEE_project/Vyond/tee/sbi/opensbi/build/platform/generic/firmware/fw_payload.bin
+attestation/pkg/fw_payload.bin: attestation/pkg
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Generating pkg/fw_payload.bin"
+	cd /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation && cp /data/hykang/RVSS/WGTEE_project/Vyond/tee/sbi/opensbi/build/platform/generic/firmware/fw_payload.bin /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/pkg/fw_payload.bin
 
 attestation/pkg/loader.bin: attestation/loader.bin
 attestation/pkg/loader.bin: attestation/pkg
@@ -129,7 +129,7 @@ attestor-package: attestation/pkg/.options_log
 attestor-package: attestation/pkg/attestor
 attestor-package: attestation/pkg/attestor-runner
 attestor-package: attestation/pkg/eyrie-rt
-attestor-package: attestation/pkg/fw_jump.bin
+attestor-package: attestation/pkg/fw_payload.bin
 attestor-package: attestation/pkg/loader.bin
 attestor-package: attestation/CMakeFiles/attestor-package.dir/build.make
 .PHONY : attestor-package

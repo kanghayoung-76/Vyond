@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie-complete.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/runtime/src/eyrie-wg-fault-eyrie-stamp/eyrie-wg-fault-eyrie-build.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/runtime/src/eyrie-wg-fault-eyrie-stamp/eyrie-wg-fault-eyrie-configure.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/runtime/src/eyrie-wg-fault-eyrie-stamp/eyrie-wg-fault-eyrie-download.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/runtime/src/eyrie-wg-fault-eyrie-stamp/eyrie-wg-fault-eyrie-install.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/runtime/src/eyrie-wg-fault-eyrie-stamp/eyrie-wg-fault-eyrie-mkdir.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/runtime/src/eyrie-wg-fault-eyrie-stamp/eyrie-wg-fault-eyrie-patch.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/runtime/src/eyrie-wg-fault-eyrie-stamp/eyrie-wg-fault-eyrie-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"eyrie-wg-fault-eyrie"
+		],
+		"name" : "eyrie-wg-fault-eyrie"
+	}
+}

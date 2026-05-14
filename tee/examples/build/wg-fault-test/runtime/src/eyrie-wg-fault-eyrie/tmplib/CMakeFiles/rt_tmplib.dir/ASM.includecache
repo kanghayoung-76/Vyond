@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-fault-test/runtime/src/eyrie-wg-fault-eyrie/tmplib/uaccess.S
+linux/linkage.h
+-
+asm/asm.h
+-
+asm/csr.h
+-
+
+tmplib/asm/asm.h
+
+tmplib/asm/csr.h
+linux/const.h
+-
+
+tmplib/linux/const.h
+
+tmplib/linux/linkage.h
+

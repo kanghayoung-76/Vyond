@@ -168,10 +168,13 @@ pub fn enter_enclave_context(eid: usize) {
         CPU_STATE[hartid].is_enclave = true;
         CPU_STATE[hartid].eid = eid;
     }
-    // Switch mlwid to the enclave's WID so bus transactions carry the enclave's identity.
-    // Without this, all transactions go out as OS_WID (6) and WGChecker isolation has no effect.
+    // Switch mlwid to pWID = eid+1.
+    // TODO(slot-virt): replace with dynamic pWID lookup from LRU assignment table.
+    // WID 0 is excluded: it has default OS DRAM access via osm_init perm, so enclave 0
+    // would never fault without an EPM slot. Enclaves use WIDs 1-5 to ensure WGC denies
+    // access when no EPM slot is loaded, triggering the ACCESS FAULT handler.
     #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
-    csr_write_custom!(MLWID_CSR, eid);
+    csr_write_custom!(MLWID_CSR, eid + 1);
 }
 
 pub fn exit_enclave_context() {

@@ -105,6 +105,37 @@ pub extern "C" fn sbi_sm_exit_enclave(regs: &mut TrapFrame) -> isize {
 }
 
 #[no_mangle]
+pub extern "C" fn sbi_sm_get_enclave_id() -> usize {
+    cpu::get_enclave_id()
+}
+
+#[no_mangle]
+pub extern "C" fn sbi_sm_get_enclave_dram_info(
+    eid: usize,
+    out_base: *mut usize,
+    out_size: *mut usize,
+) -> isize {
+    match enclave::get_enclave_dram_info(eid) {
+        Some((base, size)) => {
+            unsafe {
+                *out_base = base;
+                *out_size = size;
+            }
+            0
+        }
+        None => -1,
+    }
+}
+
+/// Loads the WGC slot for the EPM region that contains fault_addr.
+/// Returns 0 if slot loaded (caller should resume at same mepc),
+/// returns -1 if not in any registered EPM (caller should exit enclave).
+#[no_mangle]
+pub extern "C" fn sbi_sm_handle_wgc_fault(eid: usize, fault_addr: usize) -> isize {
+    if enclave::load_enclave_slot(eid, fault_addr) { 0 } else { -1 }
+}
+
+#[no_mangle]
 pub extern "C" fn sbi_sm_attest_enclave(report: usize, data: usize, size: usize) -> isize {
     dbg!("[attest_enclave] eid {:?}", cpu::get_enclave_id());
     let ret = match attest::attest_enclave(report, data, size) {
