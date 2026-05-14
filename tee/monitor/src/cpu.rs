@@ -132,6 +132,11 @@ macro_rules! csr_clear {
     }}
 }
 
+// mlwid CSR address (WorldGuard Machine-mode Local World ID)
+const MLWID_CSR: usize = 0x390;
+// Must match wg::OS_WID = NWORLDS - 2
+const OS_WID: usize = 6;
+
 /* hart state for regulating SBI */
 struct CpuState {
     is_enclave: bool,
@@ -163,9 +168,16 @@ pub fn enter_enclave_context(eid: usize) {
         CPU_STATE[hartid].is_enclave = true;
         CPU_STATE[hartid].eid = eid;
     }
+    // Switch mlwid to the enclave's WID so bus transactions carry the enclave's identity.
+    // Without this, all transactions go out as OS_WID (6) and WGChecker isolation has no effect.
+    #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+    csr_write_custom!(MLWID_CSR, eid);
 }
 
 pub fn exit_enclave_context() {
     let hartid = csr_read!(mhartid) as usize;
     unsafe { CPU_STATE[hartid].is_enclave = false };
+    // Restore mlwid to OS_WID so the OS/host transactions go out as world 6.
+    #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+    csr_write_custom!(MLWID_CSR, OS_WID);
 }
