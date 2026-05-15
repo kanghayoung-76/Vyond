@@ -214,11 +214,25 @@ impl Enclave {
         //{
         //    let _ = pmp::set_keystone(os_region_id(), pmp::PMP_NO_PERM);
         //}
+        let eid = self.eid;
         (0..MAX_ENCLAVE_REGIONS).for_each(|memid| {
             if let Some(ref region) = self.regions[memid] {
                 if region.r_type == RegionType::RegionEPM {
                     // WGC slot virtualization: EPM slot is NOT loaded eagerly.
                     // The SM ACCESS FAULT handler loads it on-demand.
+                } else if region.r_type == RegionType::RegionUTM {
+                    // Use the dynamically assigned WID (or placeholder if not yet assigned)
+                    // so the UTM perm matches mlwid on every enclave entry, including reuse.
+                    #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+                    {
+                        let wid = crate::wid::get_assigned_wid(eid)
+                            .unwrap_or(crate::wid::ENCLAVE_WID_MIN);
+                        let _ = isolator::set_isolator_with_wid(region.id, wid);
+                    }
+                    #[cfg(not(any(feature = "isolator_wg", feature = "isolator_hybrid")))]
+                    {
+                        let _ = isolator::set_isolator(region.id, false);
+                    }
                 } else {
                     let _ = isolator::set_isolator(region.id, false);
                 }
@@ -484,16 +498,15 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
         // requires no lock (single runner)
         for i in 0..MAX_ENCLAVE_REGIONS {
             if let Some(region) = &enclave.regions[i] {
-                if region.r_type == RegionType::RegionInvalid
-                    || region.r_type == RegionType::RegionUTM
-                {
+                if region.r_type == RegionType::RegionInvalid {
                     continue;
                 }
-                //1.a Clear all pages
                 let rid = region.id;
-
-                //1.b free pmp/wg region
-                let _ = isolator::set_isolator(rid, true);
+                // UTM is untrusted memory — skip WGC reset (already cleared by switch_to_host),
+                // but still free the software region slot to prevent exhaustion.
+                if region.r_type != RegionType::RegionUTM {
+                    let _ = isolator::set_isolator(rid, true);
+                }
                 let _ = isolator::region_free(rid);
             }
         }

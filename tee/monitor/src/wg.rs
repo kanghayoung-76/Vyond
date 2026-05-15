@@ -483,7 +483,6 @@ pub fn set_wg_for_enclave(region_idx: usize, wid: usize) -> Result<(), Error> {
     Ok(())
 }
 
-// not used
 pub fn set_wg(region_idx: usize) -> Result<(), Error> {
     if !is_wg_region_valid(region_idx) {
         return Err(Error::Invalid);
