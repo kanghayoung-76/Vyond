@@ -168,13 +168,15 @@ pub fn enter_enclave_context(eid: usize) {
         CPU_STATE[hartid].is_enclave = true;
         CPU_STATE[hartid].eid = eid;
     }
-    // Switch mlwid to pWID = eid+1.
-    // TODO(slot-virt): replace with dynamic pWID lookup from LRU assignment table.
-    // WID 0 is excluded: it has default OS DRAM access via osm_init perm, so enclave 0
-    // would never fault without an EPM slot. Enclaves use WIDs 1-5 to ensure WGC denies
-    // access when no EPM slot is loaded, triggering the ACCESS FAULT handler.
+    // Switch mlwid to the dynamically assigned WID for this enclave.
+    // If no WID has been assigned yet (first entry), use ENCLAVE_WID_MIN (WID 1) as a
+    // placeholder so the WGC will deny access and trigger the ACCESS FAULT handler,
+    // which calls load_enclave_slot to assign the proper WID via the LRU table.
     #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
-    csr_write_custom!(MLWID_CSR, eid + 1);
+    {
+        let wid = crate::wid::get_assigned_wid(eid).unwrap_or(crate::wid::ENCLAVE_WID_MIN);
+        csr_write_custom!(MLWID_CSR, wid);
+    }
 }
 
 pub fn exit_enclave_context() {

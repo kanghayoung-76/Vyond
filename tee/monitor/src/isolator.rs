@@ -178,6 +178,14 @@ pub fn set_isolator(region_idx: usize, destroy: bool) -> Result<(), Error> {
 //     }
 // }
 
+/// Sets a WGC slot for an enclave EPM region using a dynamically assigned WID.
+/// Only available with the `isolator_wg` or `isolator_hybrid` features.
+/// Called from the ACCESS FAULT handler (load_enclave_slot) during slot virtualization.
+#[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+pub fn set_isolator_with_wid(region_idx: usize, wid: usize) -> Result<(), Error> {
+    wg::set_wg_for_enclave(region_idx, wid)
+}
+
 pub fn reset_isolator(region_idx: usize, destroy: bool) -> Result<(), Error> {
     #[cfg(feature = "isolator_pmp")]
     {

@@ -16,9 +16,11 @@ set(CMAKE_MAKEFILE_DEPENDS
   "attestation/runtime/tmp/eyrie-attestor-eyrie-mkdirs.cmake"
   "hello/runtime/tmp/eyrie-hello-eyrie-mkdirs.cmake"
   "wg-fault-test/runtime/tmp/eyrie-wg-fault-eyrie-mkdirs.cmake"
+  "wg-lru-test/runtime/tmp/eyrie-wg-lru-eyrie-mkdirs.cmake"
   "wg-slot-test/runtime/tmp/eyrie-wg-slot-eyrie-mkdirs.cmake"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/hello/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/wg-fault-test/CMakeLists.txt"
+  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/wg-lru-test/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/wg-slot-test/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/cmake/macros.cmake"
   "/usr/share/cmake-3.28/Modules/CMakeASMInformation.cmake"
@@ -86,6 +88,12 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/eyrie-wg-slot-eyrie-patch-info.txt"
   "wg-slot-test/runtime/tmp/eyrie-wg-slot-eyrie-cfgcmd.txt"
   "wg-slot-test/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "wg-lru-test/runtime/tmp/eyrie-wg-lru-eyrie-mkdirs.cmake"
+  "wg-lru-test/runtime/src/eyrie-wg-lru-eyrie-stamp/eyrie-wg-lru-eyrie-custominfo.txt"
+  "wg-lru-test/runtime/src/eyrie-wg-lru-eyrie-stamp/eyrie-wg-lru-eyrie-update-info.txt"
+  "wg-lru-test/runtime/src/eyrie-wg-lru-eyrie-stamp/eyrie-wg-lru-eyrie-patch-info.txt"
+  "wg-lru-test/runtime/tmp/eyrie-wg-lru-eyrie-cfgcmd.txt"
+  "wg-lru-test/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
@@ -111,4 +119,9 @@ set(CMAKE_DEPEND_INFO_FILES
   "wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.dir/DependInfo.cmake"
   "wg-slot-test/CMakeFiles/wg-slot-eyrie.dir/DependInfo.cmake"
   "wg-slot-test/CMakeFiles/wg-slot-package.dir/DependInfo.cmake"
+  "wg-lru-test/CMakeFiles/wg-lru.dir/DependInfo.cmake"
+  "wg-lru-test/CMakeFiles/wg-lru-runner.dir/DependInfo.cmake"
+  "wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/DependInfo.cmake"
+  "wg-lru-test/CMakeFiles/wg-lru-eyrie.dir/DependInfo.cmake"
+  "wg-lru-test/CMakeFiles/wg-lru-package.dir/DependInfo.cmake"
   )

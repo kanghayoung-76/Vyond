@@ -27,6 +27,8 @@ pub mod thread;
 pub mod trap;
 #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
 pub mod wg;
+#[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+pub mod wid;
 
 // SM key material — populated by sm_init on cold boot.
 // In production these should be provisioned by the bootloader (sanctum ROM).

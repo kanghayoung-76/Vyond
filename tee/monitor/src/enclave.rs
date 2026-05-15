@@ -111,10 +111,11 @@ impl Enclave {
     const THREAD_INIT: Option<thread::State> = None;
 
     pub fn allocate<'a>(pa_params: RuntimePAParams) -> Result<&'a mut Enclave, Error> {
-        for eid in 0..MAX_ENCLAVES {
-            if unsafe { ENCLAVES[eid].is_none() } {
-                unsafe { ENCLAVES[eid] = Some(Enclave::new(eid, pa_params)) };
-                return Ok(unsafe { ENCLAVES[eid].as_mut().unwrap() });
+        for slot in 0..MAX_ENCLAVES {
+            if unsafe { ENCLAVES[slot].is_none() } {
+                // slot index is the EID — freed slots are immediately reusable
+                unsafe { ENCLAVES[slot] = Some(Enclave::new(slot, pa_params)) };
+                return Ok(unsafe { ENCLAVES[slot].as_mut().unwrap() });
             }
         }
 
@@ -149,7 +150,16 @@ impl Enclave {
     }
 
     pub fn free(eid: usize) -> Result<(), Error> {
-        unsafe { ENCLAVES[eid] = None };
+        unsafe {
+            for slot in 0..MAX_ENCLAVES {
+                if let Some(ref e) = ENCLAVES[slot] {
+                    if e.eid == eid {
+                        ENCLAVES[slot] = None;
+                        return Ok(());
+                    }
+                }
+            }
+        }
         Ok(())
     }
 
@@ -277,7 +287,7 @@ impl Enclave {
     }
 }
 
-pub const MAX_ENCLAVES: usize = 8; // FIXME: should be associated with NWORLDS
+pub const MAX_ENCLAVES: usize = 1024;
 pub const MAX_SHARED_REGIONS: usize = 8;
 
 const INIT_VALUE: Option<Enclave> = None;
@@ -287,7 +297,13 @@ const INIT_SHM: Option<Region> = None;
 static mut SHARED_MEM: [Option<Region>; MAX_SHARED_REGIONS] = [INIT_SHM; MAX_SHARED_REGIONS];
 
 pub fn enclave_exists(enclaves: &[Option<Enclave>], eid: usize) -> bool {
-    (eid < enclaves.len()) && enclaves[eid].is_some()
+    enclaves.iter().any(|slot| {
+        if let Some(ref e) = slot {
+            e.eid == eid
+        } else {
+            false
+        }
+    })
 }
 
 /* This handles creation of a new enclave, based on arguments provided
@@ -325,7 +341,7 @@ pub fn create_enclave<'a>(create_args: &KeystoneSBICreate) -> Result<&'a Enclave
             size: create_args.epm_region.size,
             perm_conf: shm::RegionPermConfig {
                 owner_id: enclave.id(),
-                conf_list: [None; MAX_ENCLAVES],
+                conf_list: [None; shm::MAX_SHM_SHARERS],
             },
         });
 
@@ -349,7 +365,7 @@ pub fn create_enclave<'a>(create_args: &KeystoneSBICreate) -> Result<&'a Enclave
                     size: create_args.utm_region.size,
                     perm_conf: shm::RegionPermConfig {
                         owner_id: enclave.id(),
-                        conf_list: [None; MAX_ENCLAVES],
+                        conf_list: [None; shm::MAX_SHM_SHARERS],
                     },
                 });
             }
@@ -376,9 +392,13 @@ pub fn create_enclave<'a>(create_args: &KeystoneSBICreate) -> Result<&'a Enclave
 }
 
 pub fn find_enclave<'a>(eid: usize) -> Option<&'a mut Enclave> {
-    if eid < MAX_ENCLAVES {
-        if let Some(enclave) = unsafe { ENCLAVES[eid].as_mut() } {
-            return Some(enclave);
+    unsafe {
+        for slot in 0..MAX_ENCLAVES {
+            if let Some(ref mut enclave) = ENCLAVES[slot] {
+                if enclave.eid == eid {
+                    return Some(enclave);
+                }
+            }
         }
     }
     None
@@ -406,7 +426,16 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
             for memid in 0..MAX_ENCLAVE_REGIONS {
                 if let Some(ref region) = enclave.regions[memid] {
                     if region.r_type == RegionType::RegionEPM {
-                        let _ = isolator::set_isolator(region.id, false);
+                        let region_id = region.id;
+                        // Assign (or re-use) a hardware WID slot for this enclave's EPM
+                        // and program the WGC hardware slot with the correct WID-based perm.
+                        #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+                        {
+                            let wid = crate::wid::assign_wid(eid, region_id);
+                            let _ = isolator::set_isolator_with_wid(region_id, wid);
+                            // Update mlwid so the current hart uses the newly assigned WID
+                            csr_write_custom!(0x390, wid);
+                        }
                         return true;
                     }
                 }
@@ -473,7 +502,11 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
             enclave.regions[idx] = None;
         });
 
-        // 2. release eid
+        // 2. Release WID slot assignment for this enclave
+        #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+        crate::wid::release_wid_for_eid(eid);
+
+        // 3. release eid
         let _ = Enclave::free(eid);
 
         return Ok(());
@@ -630,7 +663,7 @@ pub fn create_shared_mem(paddr: usize, size: usize) -> Result<usize, Error> {
                         size: size,
                         perm_conf: shm::RegionPermConfig {
                             owner_id: 11, /*untrusted eid */
-                            conf_list: [None; MAX_ENCLAVES],
+                            conf_list: [None; shm::MAX_SHM_SHARERS],
                         },
                     };
                     region.perm_conf.insert_perm(shm::PermConfig {
@@ -805,8 +838,8 @@ pub fn remove_region_by_idx(idx: usize) -> bool {
 
 pub fn display() {
     hprintln!("Display Enclaves");
-    for eid in 0..MAX_ENCLAVES {
-        if let Some(enclave) = find_enclave(eid) {
+    for slot in 0..MAX_ENCLAVES {
+        if let Some(enclave) = unsafe { ENCLAVES[slot].as_mut() } {
             hprintln!("+--------+--------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+--------+");
             hprintln!("|                                                                 Enclave                                                                         |");
             hprintln!("+--------+--------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+--------+");
@@ -871,7 +904,7 @@ pub fn display() {
                     hprint!("|{:>16x}", region.size);
                     hprint!("|{:>16}", region.perm_conf.owner_id);
                     let mut cfg_cnt = 0;
-                    for cid in 0..MAX_ENCLAVES {
+                    for cid in 0..shm::MAX_SHM_SHARERS {
                         if let Some(_) = region.perm_conf.conf_list[cid] {
                             cfg_cnt += 1;
                         }
@@ -881,7 +914,7 @@ pub fn display() {
                         "+--------+--------+----------------+----------------+----------------+----------------+"
                     );
 
-                    for cid in 0..MAX_ENCLAVES {
+                    for cid in 0..shm::MAX_SHM_SHARERS {
                         if let Some(conf) = region.perm_conf.conf_list[cid] {
                             hprintln!("");
                             hprintln!("+--------+--------+--------+");
@@ -893,7 +926,7 @@ pub fn display() {
                         }
                     }
 
-                    for cid in 0..MAX_ENCLAVES {
+                    for cid in 0..shm::MAX_SHM_SHARERS {
                         if let Some(conf) = region.perm_conf.conf_list[cid] {
                             hprint!("|{:>8}", conf.eid);
                             hprint!("|{:>8x}", conf.st_perm);
@@ -945,7 +978,7 @@ pub fn display() {
                 hprint!("|{:>16x}", region.size);
                 hprint!("|{:>16}", region.perm_conf.owner_id);
                 let mut cfg_cnt = 0;
-                for cid in 0..MAX_ENCLAVES {
+                for cid in 0..shm::MAX_SHM_SHARERS {
                     if let Some(_) = region.perm_conf.conf_list[cid] {
                         cfg_cnt += 1;
                     }
@@ -955,7 +988,7 @@ pub fn display() {
                         "+--------+--------+----------------+----------------+----------------+----------------+"
                     );
 
-                for cid in 0..MAX_ENCLAVES {
+                for cid in 0..shm::MAX_SHM_SHARERS {
                     if let Some(conf) = region.perm_conf.conf_list[cid] {
                         hprintln!("");
                         hprintln!("+--------+--------+--------+--------+");
@@ -967,7 +1000,7 @@ pub fn display() {
                     }
                 }
 
-                for cid in 0..MAX_ENCLAVES {
+                for cid in 0..shm::MAX_SHM_SHARERS {
                     if let Some(conf) = region.perm_conf.conf_list[cid] {
                         hprint!("|{:>8}", conf.eid);
                         hprint!("|{:>8x}", conf.st_perm);

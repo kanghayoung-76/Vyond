@@ -389,6 +389,71 @@ wg-slot-package/fast:
 	$(MAKE) $(MAKESILENT) -f wg-slot-test/CMakeFiles/wg-slot-package.dir/build.make wg-slot-test/CMakeFiles/wg-slot-package.dir/build
 .PHONY : wg-slot-package/fast
 
+#=============================================================================
+# Target rules for targets named wg-lru
+
+# Build rule for target.
+wg-lru: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-lru
+.PHONY : wg-lru
+
+# fast build rule for target.
+wg-lru/fast:
+	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru.dir/build.make wg-lru-test/CMakeFiles/wg-lru.dir/build
+.PHONY : wg-lru/fast
+
+#=============================================================================
+# Target rules for targets named wg-lru-runner
+
+# Build rule for target.
+wg-lru-runner: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-lru-runner
+.PHONY : wg-lru-runner
+
+# fast build rule for target.
+wg-lru-runner/fast:
+	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru-runner.dir/build.make wg-lru-test/CMakeFiles/wg-lru-runner.dir/build
+.PHONY : wg-lru-runner/fast
+
+#=============================================================================
+# Target rules for targets named eyrie-wg-lru-eyrie
+
+# Build rule for target.
+eyrie-wg-lru-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-wg-lru-eyrie
+.PHONY : eyrie-wg-lru-eyrie
+
+# fast build rule for target.
+eyrie-wg-lru-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/build.make wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/build
+.PHONY : eyrie-wg-lru-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named wg-lru-eyrie
+
+# Build rule for target.
+wg-lru-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-lru-eyrie
+.PHONY : wg-lru-eyrie
+
+# fast build rule for target.
+wg-lru-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru-eyrie.dir/build.make wg-lru-test/CMakeFiles/wg-lru-eyrie.dir/build
+.PHONY : wg-lru-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named wg-lru-package
+
+# Build rule for target.
+wg-lru-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-lru-package
+.PHONY : wg-lru-package
+
+# fast build rule for target.
+wg-lru-package/fast:
+	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru-package.dir/build.make wg-lru-test/CMakeFiles/wg-lru-package.dir/build
+.PHONY : wg-lru-package/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -403,11 +468,14 @@ help:
 	@echo "... eyrie-attestor-eyrie"
 	@echo "... eyrie-hello-eyrie"
 	@echo "... eyrie-wg-fault-eyrie"
+	@echo "... eyrie-wg-lru-eyrie"
 	@echo "... eyrie-wg-slot-eyrie"
 	@echo "... hello-eyrie"
 	@echo "... hello-package"
 	@echo "... wg-fault-eyrie"
 	@echo "... wg-fault-package"
+	@echo "... wg-lru-eyrie"
+	@echo "... wg-lru-package"
 	@echo "... wg-slot-eyrie"
 	@echo "... wg-slot-package"
 	@echo "... attestor"
@@ -416,6 +484,8 @@ help:
 	@echo "... hello-runner"
 	@echo "... wg-fault"
 	@echo "... wg-fault-runner"
+	@echo "... wg-lru"
+	@echo "... wg-lru-runner"
 	@echo "... wg-slot"
 	@echo "... wg-slot-runner"
 .PHONY : help

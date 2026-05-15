@@ -1,6 +1,7 @@
 use crate::dbg;
-use crate::enclave;
 use bitflags::bitflags;
+
+pub const MAX_SHM_SHARERS: usize = 8;
 
 bitflags! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -67,7 +68,7 @@ impl PermConfig {
 #[derive(Clone, Copy, Default)]
 pub struct RegionPermConfig {
     pub owner_id: usize,
-    pub conf_list: [Option<PermConfig>; enclave::MAX_ENCLAVES],
+    pub conf_list: [Option<PermConfig>; MAX_SHM_SHARERS],
 }
 
 impl RegionPermConfig {

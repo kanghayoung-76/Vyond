@@ -10,7 +10,7 @@ platform-runcmd = qemu-system-riscv$(PLATFORM_RISCV_XLEN) -M virt -m 256M \
 
 # Blobs to build
 FW_TEXT_START=0x80000000
-FW_ENC_SIZE = 0x0 #0x8000000
+FW_ENC_SIZE = 0x340000  # SM binary end ~0x803396A8, so offset 0x340000 clears bss
 FW_DYNAMIC=y
 FW_JUMP=y
 ifeq ($(PLATFORM_RISCV_XLEN), 32)
@@ -27,7 +27,7 @@ ifeq ($(PLATFORM_RISCV_XLEN), 32)
   FW_PAYLOAD_OFFSET=0x400000
 else
   # This needs to be 2MB aligned for 64-bit system
-  FW_PAYLOAD_OFFSET=0x200000 # TODO: ADD FW_ENC_SIZE
+  FW_PAYLOAD_OFFSET=$(shell printf "0x%X" $$((0x200000 + $(FW_ENC_SIZE))))
 endif
 FW_PAYLOAD_FDT_ADDR=$(FW_JUMP_FDT_ADDR) # TODO: ADD FW_ENC_SIZE
 ifdef PLATFORM

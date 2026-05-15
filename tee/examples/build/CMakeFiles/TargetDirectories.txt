@@ -29,3 +29,10 @@
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/CMakeFiles/wg-slot-package.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/CMakeFiles/edit_cache.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/CMakeFiles/rebuild_cache.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-lru-test/CMakeFiles/wg-lru.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-lru-test/CMakeFiles/wg-lru-runner.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-lru-test/CMakeFiles/wg-lru-eyrie.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-lru-test/CMakeFiles/wg-lru-package.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-lru-test/CMakeFiles/edit_cache.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-lru-test/CMakeFiles/rebuild_cache.dir

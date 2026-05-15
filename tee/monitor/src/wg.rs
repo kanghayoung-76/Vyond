@@ -213,7 +213,7 @@ pub fn region_free(region_idx: usize) -> Result<(), Error> {
         region.index()
     };
     unsafe {
-        REGION_DEF_BITMAP &= !(1 << region_idx);
+        REGION_VALID[region_idx] = false;
         REG_BITMAP &= !(1 << reg_idx);
     }
     if region.needs_two_entries() {
@@ -250,10 +250,13 @@ pub fn detect_region_overlap(addr: usize, size: usize) -> bool {
 }
 
 pub fn is_wg_region_valid(region_idx: usize) -> bool {
-    return (unsafe { REGION_DEF_BITMAP } & (1 << region_idx)) != 0;
+    region_idx < WG_MAX_N_REGION && unsafe { REGION_VALID[region_idx] }
 }
 
-pub const WG_MAX_N_REGION: usize = 16;
+pub const WG_MAX_N_REGION: usize = 1024;
+// Hardware WGC slot count — REG_BITMAP is usize (64-bit), so this must stay <= 64.
+// The actual hardware nslots register value is typically 16.
+const WGC_HW_SLOTS: usize = 32;
 pub const NWORLDS: u64 = 8;
 pub const TRUSTED_WID: u64 = NWORLDS - 1;
 pub const OS_WID: u64 = NWORLDS - 2;
@@ -262,7 +265,9 @@ const INIT_VALUE: Option<Region> = None;
 /* PMP region getter/setters */
 static mut REGIONS: [Option<Region>; WG_MAX_N_REGION] = [INIT_VALUE; WG_MAX_N_REGION];
 static mut REG_BITMAP: usize = 1;
-static mut REGION_DEF_BITMAP: usize = 1; // slot[0] is a special rule slot so we don't use it.
+// REGION_VALID[i] == true means logical region slot i is in use.
+// Slot 0 is reserved (never allocated); handled by starting get_free_region_idx at index 1.
+static mut REGION_VALID: [bool; WG_MAX_N_REGION] = [false; WG_MAX_N_REGION];
 
 /// PMP region type
 pub struct Region {
@@ -343,7 +348,7 @@ pub fn napot_region_init<'a>(
     let region_idx = region_idx.unwrap();
     let reg_idx = get_free_reg_idx().unwrap();
 
-    if ((unsafe { REG_BITMAP } & (1 << reg_idx)) != 0) || (reg_idx >= WG_MAX_N_REGION) {
+    if ((unsafe { REG_BITMAP } & (1 << reg_idx)) != 0) || (reg_idx >= WGC_HW_SLOTS) {
         return Err(Error::MaxReached);
     }
 
@@ -360,7 +365,7 @@ pub fn napot_region_init<'a>(
     };
 
     unsafe {
-        REGION_DEF_BITMAP |= 1 << region_idx;
+        REGION_VALID[region_idx] = true;
         REG_BITMAP |= 1 << reg_idx;
     }
 
@@ -368,15 +373,23 @@ pub fn napot_region_init<'a>(
 }
 
 pub fn get_free_region_idx() -> Option<usize> {
-    return search_rightmost_unset(unsafe { REGION_DEF_BITMAP }, WG_MAX_N_REGION, 0x1);
+    unsafe {
+        for i in 1..WG_MAX_N_REGION {
+            // start at 1; slot 0 is reserved
+            if !REGION_VALID[i] {
+                return Some(i);
+            }
+        }
+    }
+    None
 }
 
 pub fn get_free_reg_idx() -> Option<usize> {
-    return search_rightmost_unset(unsafe { REG_BITMAP }, WG_MAX_N_REGION, 0x1);
+    return search_rightmost_unset(unsafe { REG_BITMAP }, WGC_HW_SLOTS, 0x1);
 }
 
 pub fn get_conseq_free_reg_idx() -> Option<usize> {
-    return search_rightmost_unset(unsafe { REG_BITMAP }, WG_MAX_N_REGION, 0x3);
+    return search_rightmost_unset(unsafe { REG_BITMAP }, WGC_HW_SLOTS, 0x3);
 }
 
 fn search_rightmost_unset(bitmap: usize, max: usize, mask: usize) -> Option<usize> {
@@ -409,7 +422,7 @@ pub fn tor_region_init<'a>(
     let reg_idx = get_conseq_free_reg_idx().unwrap();
     if ((unsafe { REG_BITMAP } & (1 << reg_idx)) != 0)
         || ((unsafe { REG_BITMAP } & (1 << reg_idx + 1)) != 0)
-        || (reg_idx + 1 > WG_MAX_N_REGION)
+        || (reg_idx + 1 > WGC_HW_SLOTS)
     {
         return Err(Error::MaxReached);
     }
@@ -428,7 +441,7 @@ pub fn tor_region_init<'a>(
             index: reg_idx,
         });
 
-        REGION_DEF_BITMAP |= 1 << region_idx;
+        REGION_VALID[region_idx] = true;
         REG_BITMAP |= 1 << reg_idx;
     }
     if reg_idx > 0 {
@@ -436,6 +449,38 @@ pub fn tor_region_init<'a>(
     }
 
     Ok(region_idx)
+}
+
+/// Sets a WGC slot for an enclave region, computing the perm from the given WID.
+/// The perm is `3 << (wid * 2)` which grants R+W access for that specific WID only.
+pub fn set_wg_for_enclave(region_idx: usize, wid: usize) -> Result<(), Error> {
+    if !is_wg_region_valid(region_idx) {
+        return Err(Error::Invalid);
+    }
+
+    let region = unsafe { REGIONS[region_idx].as_ref().unwrap() };
+    let reg_idx = if region.is_tor() {
+        region.index() + 1
+    } else {
+        region.index()
+    };
+
+    let perm = (3u64 << (wid * 2)) as u64;
+
+    let dram = WGChecker::new(WGC_DRAM_BASE);
+    if region.is_tor() {
+        dram.set_slot_cfg(reg_idx - 1, 0x0);
+        dram.set_slot_addr(reg_idx - 1, (region.addr() >> 2) as u64);
+        dram.set_slot_perm(reg_idx - 1, 0);
+    }
+    dram.set_slot_cfg(
+        reg_idx,
+        WGC_CFG_ER | WGC_CFG_EW | WGC_CFG_IR | WGC_CFG_IW | region.mode,
+    );
+    dram.set_slot_addr(reg_idx, region.wgaddr_val());
+    dram.set_slot_perm(reg_idx, perm);
+
+    Ok(())
 }
 
 // not used
@@ -532,11 +577,7 @@ pub fn display() {
 pub fn display_regions() {
     hprintln!("Display WG Regions");
     unsafe {
-        hprintln!(
-            "REGION_DEF_BITMAP : {:x}, REG_BITMAP: {:x}",
-            REGION_DEF_BITMAP,
-            REG_BITMAP
-        );
+        hprintln!("REG_BITMAP: {:x}", REG_BITMAP);
     }
     hprintln!("+----------------+----------------+--------+--------+--------+----+");
     hprintln!("+     address    +     size       +  mode  +  perm  + overlap+ idx+");
