@@ -369,13 +369,9 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
 		    }
 		    long ret = sbi_sm_handle_wgc_fault(eid, phys_addr);
 		    if (ret == 0) {
-		        /* Slot loaded - just return. CPU will mret to same mepc,
-		         * retry the faulting instruction, WGC now allows it. */
-		        sbi_printf("[SM] WGC slot loaded: eid=%lu phys=0x%lx va=0x%lx mcause=0x%lx -> resuming\n",
-		                   eid, phys_addr, mtval, mcause);
 		        rc = SBI_OK;
 		    } else {
-		        sbi_printf("[SM] ACCESS FAULT: eid=%lu phys=0x%lx va=0x%lx not in EPM -> exit\n",
+		        sbi_printf("[SM] ACCESS FAULT: eid=%lu phys=0x%lx va=0x%lx not in region -> exit\n",
 		                   eid, phys_addr, mtval);
 		        sbi_sm_exit_enclave((struct sbi_trap_regs*) regs);
 		        rc = SBI_OK;

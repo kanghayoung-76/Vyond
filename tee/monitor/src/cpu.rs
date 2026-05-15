@@ -176,7 +176,7 @@ pub fn enter_enclave_context(eid: usize) {
     {
         if let Some(wid) = crate::wid::get_assigned_wid(eid) {
             // WID already assigned and HW slot still valid — no fault needed.
-            semihosting::hprintln!("[WID] reuse: eid={} WID={} (HW slot valid, skip fault)", eid, wid);
+            semihosting::hprintln!("[WGC:EPM] eid={} | REUSE  WID={}", eid, wid);
             csr_write_custom!(MLWID_CSR, wid);
         } else {
             // No WID yet — use placeholder so WGC triggers ACCESS FAULT → assign path.

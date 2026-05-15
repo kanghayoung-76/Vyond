@@ -1,0 +1,13 @@
+# Target labels
+ eyrie-shm-ocall-eyrie
+# Source files and their labels
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/CMakeFiles/eyrie-shm-ocall-eyrie
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/CMakeFiles/eyrie-shm-ocall-eyrie.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/CMakeFiles/eyrie-shm-ocall-eyrie-complete.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-build.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-configure.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-download.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-install.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-mkdir.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-patch.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-update.rule

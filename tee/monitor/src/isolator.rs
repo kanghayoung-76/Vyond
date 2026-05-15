@@ -186,6 +186,27 @@ pub fn set_isolator_with_wid(region_idx: usize, wid: usize) -> Result<(), Error>
     wg::set_wg_for_enclave(region_idx, wid)
 }
 
+/// Programs a SHM WGC slot accessible by both host (OS_WID) and the given enclave WID.
+/// Called from the ACCESS FAULT handler when an enclave first touches a SHM region.
+#[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+pub fn set_shm_for_host_enclave(region_idx: usize, enclave_wid: usize) -> Result<(), Error> {
+    wg::set_wg_for_host_enclave_shm(region_idx, enclave_wid)
+}
+
+/// Programs a SHM WGC slot accessible by host (OS_WID) only.
+/// Called once at create_shared_mem time so the host can populate the buffer
+/// before the enclave runs.
+#[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+pub fn set_shm_host_only(region_idx: usize) -> Result<(), Error> {
+    wg::set_wg_for_host_shm(region_idx)
+}
+
+/// Programs a SHM WGC slot with a raw perm bitmap (used for enclave-enclave SHM).
+#[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+pub fn set_shm_perm(region_idx: usize, perm: u64) -> Result<(), Error> {
+    wg::set_wg_for_shm_perm(region_idx, perm)
+}
+
 pub fn reset_isolator(region_idx: usize, destroy: bool) -> Result<(), Error> {
     #[cfg(feature = "isolator_pmp")]
     {
@@ -223,13 +244,13 @@ pub fn display_isolator() {
     }
     #[cfg(feature = "isolator_wg")]
     {
-        enclave::display();
-        wg::display_regions();
+        //enclave::display();
+        //wg::display_regions();
     }
     #[cfg(feature = "isolator_hybrid")]
     {
-        pmp::display();
-        wg::display()
+        //pmp::display();
+        //wg::display()
     }
 }
 

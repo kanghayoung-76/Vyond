@@ -50,6 +50,8 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/cmake_install.cmake")
   include("/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-lru-test/cmake_install.cmake")
   include("/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/cmake_install.cmake")
+  include("/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/cmake_install.cmake")
+  include("/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/ros/cmake_install.cmake")
 
 endif()
 

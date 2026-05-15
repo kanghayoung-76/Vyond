@@ -214,30 +214,17 @@ impl Enclave {
         //{
         //    let _ = pmp::set_keystone(os_region_id(), pmp::PMP_NO_PERM);
         //}
-        let eid = self.eid;
         (0..MAX_ENCLAVE_REGIONS).for_each(|memid| {
             if let Some(ref region) = self.regions[memid] {
                 if region.r_type == RegionType::RegionEPM {
                     // WGC slot virtualization: EPM slot is NOT loaded eagerly.
                     // The SM ACCESS FAULT handler loads it on-demand.
-                } else if region.r_type == RegionType::RegionUTM {
-                    // Use the dynamically assigned WID (or placeholder if not yet assigned)
-                    // so the UTM perm matches mlwid on every enclave entry, including reuse.
-                    #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
-                    {
-                        let wid = crate::wid::get_assigned_wid(eid)
-                            .unwrap_or(crate::wid::ENCLAVE_WID_MIN);
-                        let _ = isolator::set_isolator_with_wid(region.id, wid);
-                    }
-                    #[cfg(not(any(feature = "isolator_wg", feature = "isolator_hybrid")))]
-                    {
-                        let _ = isolator::set_isolator(region.id, false);
-                    }
                 } else {
                     let _ = isolator::set_isolator(region.id, false);
                 }
             }
         });
+        // SHM regions are fault-based (lazy): no eager programming here.
 
         // Setup any platform specific defenses
         cpu::enter_enclave_context(self.eid);
@@ -261,13 +248,8 @@ impl Enclave {
             }
         });
 
-        (0..MAX_ENCLAVE_REGIONS).for_each(|memid| {
-            if let Some(region) = self.regions[memid].as_ref() {
-                if region.r_type == RegionType::RegionUTM {
-                    let _ = isolator::reset_isolator(region.id, false);
-                }
-            }
-        });
+        // SHM WGC slot is intentionally left active: OS_WID bits remain so
+        // the host can read/write the shared buffer during OCALL handling.
         let _ = isolator::set_isolator(os_region_id(), false);
 
         let interrupts = MIP_SSIP | MIP_STIP | MIP_SEIP;
@@ -364,40 +346,23 @@ pub fn create_enclave<'a>(create_args: &KeystoneSBICreate) -> Result<&'a Enclave
             (1 << crate::encoding::MSTATUS_MPP_SHIFT) | crate::encoding::MSTATUS_FS,
         ));
 
-        // Register UTM region for WGC slot virtualization (on-demand loading)
+        // Create a host-enclave shared memory region for OCALL communication.
+        // The physical memory (formerly "utm_region") is registered as a SHM
+        // owned by the host (EID 11) and shared with this enclave.
+        // The WGC slot starts host-only; enclave bits are added on first fault.
         if create_args.utm_region.size > 0 {
-            if let Ok(utm_region_id) = isolator::region_init(
+            match create_shared_mem(
                 create_args.utm_region.paddr,
                 create_args.utm_region.size,
-                enclave.id(),
-                false,
             ) {
-                enclave.regions[1] = Some(Region {
-                    id: utm_region_id,
-                    r_type: RegionType::RegionUTM,
-                    paddr: create_args.utm_region.paddr,
-                    size: create_args.utm_region.size,
-                    perm_conf: shm::RegionPermConfig {
-                        owner_id: enclave.id(),
-                        conf_list: [None; shm::MAX_SHM_SHARERS],
-                    },
-                });
+                Ok(rid) => {
+                    let _ = share_shm_region(rid, enclave.id(), shm::Perm::FULL);
+                }
+                Err(err) => {
+                    heprintln!("[create_enclave] failed to create SHM for ocall: {:?}", err);
+                }
             }
         }
-
-        // An example use of shared memory
-        //let rid = match create_shared_mem(
-        //    enclave.id(),
-        //    create_args.utm_region.paddr,
-        //    create_args.utm_region.size,
-        //) {
-        //    Ok(rid) => rid,
-        //    Err(err) => {
-        //        panic!("Failed to create a shared memory {:?}", err);
-        //    }
-        //};
-
-        //change_shm_region(rid, 3i8.into())?;
 
         return Ok(enclave);
     }
@@ -429,25 +394,21 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
     if let Some(enclave) = find_enclave(eid) {
         let dram_base = enclave.pa_params.dram_base;
         let dram_size = enclave.pa_params.dram_size;
-        dbg!(
-            "load_enclave_slot: eid={} fault=0x{:x} epm=[0x{:x}, 0x{:x}) runtime_base=0x{:x} user_base=0x{:x}",
-            eid, fault_addr,
-            dram_base, dram_base + dram_size,
-            enclave.pa_params.runtime_base,
-            enclave.pa_params.user_base
-        );
         if fault_addr >= dram_base && fault_addr < dram_base + dram_size {
             for memid in 0..MAX_ENCLAVE_REGIONS {
                 if let Some(ref region) = enclave.regions[memid] {
                     if region.r_type == RegionType::RegionEPM {
                         let region_id = region.id;
-                        // Assign (or re-use) a hardware WID slot for this enclave's EPM
-                        // and program the WGC hardware slot with the correct WID-based perm.
                         #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
                         {
-                            let wid = crate::wid::assign_wid(eid, region_id);
+                            let (wid, action) = crate::wid::assign_wid(eid, region_id);
+                            match action {
+                                crate::wid::WIDAction::Assigned { slot } =>
+                                    heprintln!("[WGC:EPM] eid={} fault=0x{:x} | ASSIGN slot={} WID={}", eid, fault_addr, slot, wid),
+                                crate::wid::WIDAction::Evicted { slot, evicted_eid } =>
+                                    heprintln!("[WGC:EPM] eid={} fault=0x{:x} | EVICT  slot={} WID={} (was eid={}) -> new eid={}", eid, fault_addr, slot, wid, evicted_eid, eid),
+                            }
                             let _ = isolator::set_isolator_with_wid(region_id, wid);
-                            // Update mlwid so the current hart uses the newly assigned WID
                             csr_write_custom!(0x390, wid);
                         }
                         return true;
@@ -456,6 +417,58 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
             }
         }
     }
+
+    // Check global SHM table: fault may be on a shared memory region this enclave
+    // has been granted access to.  Load the WGC slot with OS_WID | enclave_wid so
+    // both host and enclave can reach it.
+    for memid in 0..MAX_SHARED_REGIONS {
+        unsafe {
+            if let Some(ref region) = SHARED_MEM[memid] {
+                if fault_addr >= region.paddr
+                    && fault_addr < region.paddr + region.size
+                    && region.perm_conf.get_perm(eid).is_some()
+                {
+                    #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+                    {
+                        // Compute perm bitmap from ALL current sharers:
+                        //   eid=11 (host sentinel) → OS_WID=6
+                        //   other eid              → dynamically assigned WID (skip if none yet)
+                        #[derive(Copy, Clone)]
+                        struct PermEntry { wid: usize, eid: usize }
+                        let mut entries = [PermEntry { wid: 0, eid: 0 }; 8];
+                        let mut n = 0usize;
+                        let mut perm: u64 = 0;
+                        for conf_opt in region.perm_conf.conf_list.iter() {
+                            if let Some(c) = conf_opt {
+                                let w = if c.eid == 11 {
+                                    crate::wg::OS_WID as usize
+                                } else {
+                                    match crate::wid::get_assigned_wid(c.eid) {
+                                        Some(w) => w,
+                                        None    => continue,
+                                    }
+                                };
+                                perm |= 3u64 << (w as u64 * 2);
+                                if n < 8 { entries[n] = PermEntry { wid: w, eid: c.eid }; n += 1; }
+                            }
+                        }
+                        hprint!("[WGC:SHM] eid={} fault=0x{:x} size=0x{:x} | LOAD",
+                            eid, fault_addr, region.size);
+                        for i in 0..n {
+                            let e = &entries[i];
+                            if i == 0 { hprint!(" "); } else { hprint!("+"); }
+                            if e.eid == 11 { hprint!("WID={}(OS)", e.wid); }
+                            else           { hprint!("WID={}(eid={})", e.wid, e.eid); }
+                        }
+                        hprintln!("");
+                        let _ = isolator::set_shm_perm(region.id, perm);
+                    }
+                    return true;
+                }
+            }
+        }
+    }
+
     false
 }
 
@@ -502,11 +515,7 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
                     continue;
                 }
                 let rid = region.id;
-                // UTM is untrusted memory — skip WGC reset (already cleared by switch_to_host),
-                // but still free the software region slot to prevent exhaustion.
-                if region.r_type != RegionType::RegionUTM {
-                    let _ = isolator::set_isolator(rid, true);
-                }
+                let _ = isolator::set_isolator(rid, true);
                 let _ = isolator::region_free(rid);
             }
         }
@@ -666,6 +675,11 @@ extern "C" {
 //pub fn create_shared_mem(eid: usize, paddr: usize, size: usize) -> Result<usize, Error> {
 pub fn create_shared_mem(paddr: usize, size: usize) -> Result<usize, Error> {
     if let Ok(region_idx) = isolator::region_init(paddr, size, 11 /*untrusted eid */, true) {
+        // Eagerly program the WGC slot so the host (OS_WID) can access the
+        // shared buffer immediately, before any enclave runs.
+        #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+        let _ = isolator::set_shm_host_only(region_idx);
+
         for i in 0..MAX_SHARED_REGIONS {
             if unsafe { SHARED_MEM[i].is_none() } {
                 unsafe {
@@ -688,7 +702,7 @@ pub fn create_shared_mem(paddr: usize, size: usize) -> Result<usize, Error> {
                     SHARED_MEM[i] = Some(region);
                 }
 
-                display();
+                //display();
                 return Ok(region_idx);
             }
         }
@@ -709,7 +723,7 @@ pub fn map_shm_region(regs: &mut TrapFrame, rid: usize) -> Result<(), Error> {
             regs.a3 = region.size;
             if let Some(perm) = region.perm_conf.get_perm_mut(11) {
                 perm.increment_map();
-                display();
+                //display();
                 return Ok(());
             }
         }
@@ -722,7 +736,7 @@ pub fn unmap_shm_region(rid: usize) -> Result<(), Error> {
         if let Some(region) = get_shm_region_by_rid(rid) {
             if let Some(perm) = region.perm_conf.get_perm_mut(11) {
                 perm.decrement_map();
-                display();
+                //display();
                 return Ok(());
             }
             dbg!("Not found perm info for 11 (host id)");
@@ -738,7 +752,7 @@ pub fn change_shm_region(rid: usize, dyn_perm: shm::Perm) -> Result<(), Error> {
             if let Some(enclave) = find_enclave(cpu::get_enclave_id()) {
                 if let Some(perm) = region.perm_conf.get_perm_mut(enclave.id()) {
                     if perm.update_dyn_perm(dyn_perm) {
-                        display();
+                        //display();
                         return Ok(());
                     }
                     dbg!(
@@ -761,7 +775,7 @@ pub fn change_shm_region(rid: usize, dyn_perm: shm::Perm) -> Result<(), Error> {
         } else {
             if let Some(perm) = region.perm_conf.get_perm_mut(11 /*host */) {
                 if perm.update_dyn_perm(dyn_perm) {
-                    display();
+                    //display();
                     return Ok(());
                 }
                 dbg!(
@@ -778,7 +792,7 @@ pub fn change_shm_region(rid: usize, dyn_perm: shm::Perm) -> Result<(), Error> {
         }
     }
     dbg!("[change_shm_region] region not found for rid {:?}", rid);
-    display();
+    //display();
     Err(Error::InvalidId)
 }
 
@@ -812,7 +826,7 @@ pub fn share_shm_region(rid: usize, eid2share: usize, st_perm: shm::Perm) -> Res
         dbg!("[share_shm_region] region rid {:?} not found", rid);
         return Err(Error::Invalid);
     }
-    display();
+    //display();
     Ok(())
 }
 

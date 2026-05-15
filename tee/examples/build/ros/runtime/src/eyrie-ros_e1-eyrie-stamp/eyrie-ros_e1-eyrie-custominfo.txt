@@ -1,0 +1,9 @@
+# This is a generated file and its contents are an internal implementation detail.
+# The download step will be re-executed if anything in this file changes.
+# No other meaning or use of this file is supported.
+
+method=custom
+command=rm;-rf;/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/ros/runtime/src/eyrie-ros_e1-eyrie;&&;cp;-ar;/data/hykang/RVSS/WGTEE_project/Vyond/tee/runtime;/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/ros/runtime/src/eyrie-ros_e1-eyrie
+source_dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/ros/runtime/src/eyrie-ros_e1-eyrie
+work_dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/ros/runtime/src
+

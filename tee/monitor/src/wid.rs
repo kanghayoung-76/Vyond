@@ -1,5 +1,9 @@
 use crate::spinlock::SpinLock;
-use semihosting::hprintln;
+
+pub enum WIDAction {
+    Assigned { slot: usize },
+    Evicted  { slot: usize, evicted_eid: usize },
+}
 
 /// WID (World ID) slot virtualization for WGC enclave regions.
 ///
@@ -48,10 +52,10 @@ pub fn get_assigned_wid(eid: usize) -> Option<usize> {
 ///
 /// 1. If eid already has a WID, update last_used and return it.
 /// 2. Find the lowest-numbered free WID slot and assign it.
-/// 3. If no free slots: evict the LRU slot (calling wg::reset_wg), then assign.
+/// 3. If no free slots: evict the LRU slot, then assign.
 ///
-/// Returns the assigned WID (1-5).
-pub fn assign_wid(eid: usize, region_id: usize) -> usize {
+/// Returns (wid, WIDAction). Caller is responsible for logging.
+pub fn assign_wid(eid: usize, region_id: usize) -> (usize, WIDAction) {
     let mut state = WID_STATE.lock();
 
     state.clock += 1;
@@ -62,7 +66,7 @@ pub fn assign_wid(eid: usize, region_id: usize) -> usize {
         if let Some(ref mut entry) = state.slots[i] {
             if entry.eid == eid {
                 entry.last_used = now;
-                return i + ENCLAVE_WID_MIN;
+                return (i + ENCLAVE_WID_MIN, WIDAction::Assigned { slot: i });
             }
         }
     }
@@ -70,14 +74,9 @@ pub fn assign_wid(eid: usize, region_id: usize) -> usize {
     // 2. Find lowest-numbered free slot
     for i in 0..NUM_ENCLAVE_WIDS {
         if state.slots[i].is_none() {
-            state.slots[i] = Some(WIDEntry {
-                eid,
-                region_id,
-                last_used: now,
-            });
+            state.slots[i] = Some(WIDEntry { eid, region_id, last_used: now });
             let wid = i + ENCLAVE_WID_MIN;
-            hprintln!("[WID] assign: eid={} -> WID={} (slot {}, region={})", eid, wid, i, region_id);
-            return wid;
+            return (wid, WIDAction::Assigned { slot: i });
         }
     }
 
@@ -94,28 +93,14 @@ pub fn assign_wid(eid: usize, region_id: usize) -> usize {
     }
 
     let evicted_wid = lru_idx + ENCLAVE_WID_MIN;
-    let evicted_region_id;
-    {
-        let evicted = state.slots[lru_idx].as_ref().unwrap();
-        hprintln!(
-            "[WID] EVICT: slot {} WID={} eid={} region={} -> eid={} region={}",
-            lru_idx, evicted_wid, evicted.eid, evicted.region_id, eid, region_id
-        );
-        evicted_region_id = evicted.region_id;
-    }
+    let evicted_eid = state.slots[lru_idx].as_ref().unwrap().eid;
 
-    // Assign the freed slot to the new eid before dropping lock, then reset HW outside lock.
-    state.slots[lru_idx] = Some(WIDEntry {
-        eid,
-        region_id,
-        last_used: now,
-    });
+    state.slots[lru_idx] = Some(WIDEntry { eid, region_id, last_used: now });
     drop(state);
 
-    // reset_wg writes WGC MMIO registers; do this after releasing the lock.
-    let _ = crate::wg::reset_wg(evicted_region_id);
+    crate::wg::invalidate_wid_in_all_slots(evicted_wid);
 
-    evicted_wid
+    (evicted_wid, WIDAction::Evicted { slot: lru_idx, evicted_eid })
 }
 
 /// Clears any WID assignment for this eid (called on enclave destroy).
@@ -123,7 +108,11 @@ pub fn release_wid_for_eid(eid: usize) {
     let mut state = WID_STATE.lock();
     for i in 0..NUM_ENCLAVE_WIDS {
         if state.slots[i].map_or(false, |e| e.eid == eid) {
+            let wid = i + ENCLAVE_WID_MIN;
             state.slots[i] = None;
+            drop(state);
+            // Clear all HW slots carrying this WID (EPM + any SHM slots).
+            crate::wg::invalidate_wid_in_all_slots(wid);
             return;
         }
     }

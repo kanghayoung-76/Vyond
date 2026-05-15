@@ -519,6 +519,175 @@ wg-reuse-package/fast:
 	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-package.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-package.dir/build
 .PHONY : wg-reuse-package/fast
 
+#=============================================================================
+# Target rules for targets named shm-ocall
+
+# Build rule for target.
+shm-ocall: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 shm-ocall
+.PHONY : shm-ocall
+
+# fast build rule for target.
+shm-ocall/fast:
+	$(MAKE) $(MAKESILENT) -f shm-ocall-test/CMakeFiles/shm-ocall.dir/build.make shm-ocall-test/CMakeFiles/shm-ocall.dir/build
+.PHONY : shm-ocall/fast
+
+#=============================================================================
+# Target rules for targets named shm-ocall-runner
+
+# Build rule for target.
+shm-ocall-runner: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 shm-ocall-runner
+.PHONY : shm-ocall-runner
+
+# fast build rule for target.
+shm-ocall-runner/fast:
+	$(MAKE) $(MAKESILENT) -f shm-ocall-test/CMakeFiles/shm-ocall-runner.dir/build.make shm-ocall-test/CMakeFiles/shm-ocall-runner.dir/build
+.PHONY : shm-ocall-runner/fast
+
+#=============================================================================
+# Target rules for targets named eyrie-shm-ocall-eyrie
+
+# Build rule for target.
+eyrie-shm-ocall-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-shm-ocall-eyrie
+.PHONY : eyrie-shm-ocall-eyrie
+
+# fast build rule for target.
+eyrie-shm-ocall-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f shm-ocall-test/CMakeFiles/eyrie-shm-ocall-eyrie.dir/build.make shm-ocall-test/CMakeFiles/eyrie-shm-ocall-eyrie.dir/build
+.PHONY : eyrie-shm-ocall-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named shm-ocall-eyrie
+
+# Build rule for target.
+shm-ocall-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 shm-ocall-eyrie
+.PHONY : shm-ocall-eyrie
+
+# fast build rule for target.
+shm-ocall-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f shm-ocall-test/CMakeFiles/shm-ocall-eyrie.dir/build.make shm-ocall-test/CMakeFiles/shm-ocall-eyrie.dir/build
+.PHONY : shm-ocall-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named shm-ocall-package
+
+# Build rule for target.
+shm-ocall-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 shm-ocall-package
+.PHONY : shm-ocall-package
+
+# fast build rule for target.
+shm-ocall-package/fast:
+	$(MAKE) $(MAKESILENT) -f shm-ocall-test/CMakeFiles/shm-ocall-package.dir/build.make shm-ocall-test/CMakeFiles/shm-ocall-package.dir/build
+.PHONY : shm-ocall-package/fast
+
+#=============================================================================
+# Target rules for targets named ros-runner
+
+# Build rule for target.
+ros-runner: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ros-runner
+.PHONY : ros-runner
+
+# fast build rule for target.
+ros-runner/fast:
+	$(MAKE) $(MAKESILENT) -f ros/CMakeFiles/ros-runner.dir/build.make ros/CMakeFiles/ros-runner.dir/build
+.PHONY : ros-runner/fast
+
+#=============================================================================
+# Target rules for targets named ros_e1
+
+# Build rule for target.
+ros_e1: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ros_e1
+.PHONY : ros_e1
+
+# fast build rule for target.
+ros_e1/fast:
+	$(MAKE) $(MAKESILENT) -f ros/CMakeFiles/ros_e1.dir/build.make ros/CMakeFiles/ros_e1.dir/build
+.PHONY : ros_e1/fast
+
+#=============================================================================
+# Target rules for targets named ros_e2
+
+# Build rule for target.
+ros_e2: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ros_e2
+.PHONY : ros_e2
+
+# fast build rule for target.
+ros_e2/fast:
+	$(MAKE) $(MAKESILENT) -f ros/CMakeFiles/ros_e2.dir/build.make ros/CMakeFiles/ros_e2.dir/build
+.PHONY : ros_e2/fast
+
+#=============================================================================
+# Target rules for targets named eyrie-ros_e1-eyrie
+
+# Build rule for target.
+eyrie-ros_e1-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-ros_e1-eyrie
+.PHONY : eyrie-ros_e1-eyrie
+
+# fast build rule for target.
+eyrie-ros_e1-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f ros/CMakeFiles/eyrie-ros_e1-eyrie.dir/build.make ros/CMakeFiles/eyrie-ros_e1-eyrie.dir/build
+.PHONY : eyrie-ros_e1-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named ros_e1-eyrie
+
+# Build rule for target.
+ros_e1-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ros_e1-eyrie
+.PHONY : ros_e1-eyrie
+
+# fast build rule for target.
+ros_e1-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f ros/CMakeFiles/ros_e1-eyrie.dir/build.make ros/CMakeFiles/ros_e1-eyrie.dir/build
+.PHONY : ros_e1-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named eyrie-ros_e2-eyrie
+
+# Build rule for target.
+eyrie-ros_e2-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-ros_e2-eyrie
+.PHONY : eyrie-ros_e2-eyrie
+
+# fast build rule for target.
+eyrie-ros_e2-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f ros/CMakeFiles/eyrie-ros_e2-eyrie.dir/build.make ros/CMakeFiles/eyrie-ros_e2-eyrie.dir/build
+.PHONY : eyrie-ros_e2-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named ros_e2-eyrie
+
+# Build rule for target.
+ros_e2-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ros_e2-eyrie
+.PHONY : ros_e2-eyrie
+
+# fast build rule for target.
+ros_e2-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f ros/CMakeFiles/ros_e2-eyrie.dir/build.make ros/CMakeFiles/ros_e2-eyrie.dir/build
+.PHONY : ros_e2-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named ros-package
+
+# Build rule for target.
+ros-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ros-package
+.PHONY : ros-package
+
+# fast build rule for target.
+ros-package/fast:
+	$(MAKE) $(MAKESILENT) -f ros/CMakeFiles/ros-package.dir/build.make ros/CMakeFiles/ros-package.dir/build
+.PHONY : ros-package/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -532,12 +701,20 @@ help:
 	@echo "... examples"
 	@echo "... eyrie-attestor-eyrie"
 	@echo "... eyrie-hello-eyrie"
+	@echo "... eyrie-ros_e1-eyrie"
+	@echo "... eyrie-ros_e2-eyrie"
+	@echo "... eyrie-shm-ocall-eyrie"
 	@echo "... eyrie-wg-fault-eyrie"
 	@echo "... eyrie-wg-lru-eyrie"
 	@echo "... eyrie-wg-reuse-eyrie"
 	@echo "... eyrie-wg-slot-eyrie"
 	@echo "... hello-eyrie"
 	@echo "... hello-package"
+	@echo "... ros-package"
+	@echo "... ros_e1-eyrie"
+	@echo "... ros_e2-eyrie"
+	@echo "... shm-ocall-eyrie"
+	@echo "... shm-ocall-package"
 	@echo "... wg-fault-eyrie"
 	@echo "... wg-fault-package"
 	@echo "... wg-lru-eyrie"
@@ -550,6 +727,11 @@ help:
 	@echo "... attestor-runner"
 	@echo "... hello"
 	@echo "... hello-runner"
+	@echo "... ros-runner"
+	@echo "... ros_e1"
+	@echo "... ros_e2"
+	@echo "... shm-ocall"
+	@echo "... shm-ocall-runner"
 	@echo "... wg-fault"
 	@echo "... wg-fault-runner"
 	@echo "... wg-lru"
