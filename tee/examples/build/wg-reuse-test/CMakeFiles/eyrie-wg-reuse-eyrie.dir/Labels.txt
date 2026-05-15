@@ -1,0 +1,13 @@
+# Target labels
+ eyrie-wg-reuse-eyrie
+# Source files and their labels
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie-complete.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/runtime/src/eyrie-wg-reuse-eyrie-stamp/eyrie-wg-reuse-eyrie-build.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/runtime/src/eyrie-wg-reuse-eyrie-stamp/eyrie-wg-reuse-eyrie-configure.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/runtime/src/eyrie-wg-reuse-eyrie-stamp/eyrie-wg-reuse-eyrie-download.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/runtime/src/eyrie-wg-reuse-eyrie-stamp/eyrie-wg-reuse-eyrie-install.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/runtime/src/eyrie-wg-reuse-eyrie-stamp/eyrie-wg-reuse-eyrie-mkdir.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/runtime/src/eyrie-wg-reuse-eyrie-stamp/eyrie-wg-reuse-eyrie-patch.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/runtime/src/eyrie-wg-reuse-eyrie-stamp/eyrie-wg-reuse-eyrie-update.rule

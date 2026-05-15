@@ -68,6 +68,7 @@ all: attestation/all
 all: wg-fault-test/all
 all: wg-slot-test/all
 all: wg-lru-test/all
+all: wg-reuse-test/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -76,6 +77,7 @@ preinstall: attestation/preinstall
 preinstall: wg-fault-test/preinstall
 preinstall: wg-slot-test/preinstall
 preinstall: wg-lru-test/preinstall
+preinstall: wg-reuse-test/preinstall
 .PHONY : preinstall
 
 # The main recursive "clean" target.
@@ -85,6 +87,7 @@ clean: attestation/clean
 clean: wg-fault-test/clean
 clean: wg-slot-test/clean
 clean: wg-lru-test/clean
+clean: wg-reuse-test/clean
 .PHONY : clean
 
 #=============================================================================
@@ -172,6 +175,27 @@ wg-lru-test/clean: wg-lru-test/CMakeFiles/wg-lru-package.dir/clean
 .PHONY : wg-lru-test/clean
 
 #=============================================================================
+# Directory level rules for directory wg-reuse-test
+
+# Recursive "all" directory target.
+wg-reuse-test/all: wg-reuse-test/CMakeFiles/wg-reuse.dir/all
+wg-reuse-test/all: wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/all
+wg-reuse-test/all: wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/all
+.PHONY : wg-reuse-test/all
+
+# Recursive "preinstall" directory target.
+wg-reuse-test/preinstall:
+.PHONY : wg-reuse-test/preinstall
+
+# Recursive "clean" directory target.
+wg-reuse-test/clean: wg-reuse-test/CMakeFiles/wg-reuse.dir/clean
+wg-reuse-test/clean: wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/clean
+wg-reuse-test/clean: wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/clean
+wg-reuse-test/clean: wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/clean
+wg-reuse-test/clean: wg-reuse-test/CMakeFiles/wg-reuse-package.dir/clean
+.PHONY : wg-reuse-test/clean
+
+#=============================================================================
 # Directory level rules for directory wg-slot-test
 
 # Recursive "all" directory target.
@@ -201,6 +225,7 @@ CMakeFiles/examples.dir/all: attestation/CMakeFiles/attestor-package.dir/all
 CMakeFiles/examples.dir/all: wg-fault-test/CMakeFiles/wg-fault-package.dir/all
 CMakeFiles/examples.dir/all: wg-slot-test/CMakeFiles/wg-slot-package.dir/all
 CMakeFiles/examples.dir/all: wg-lru-test/CMakeFiles/wg-lru-package.dir/all
+CMakeFiles/examples.dir/all: wg-reuse-test/CMakeFiles/wg-reuse-package.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/examples.dir/build.make CMakeFiles/examples.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/examples.dir/build.make CMakeFiles/examples.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num= "Built target examples"
@@ -229,12 +254,12 @@ CMakeFiles/examples.dir/clean:
 hello/CMakeFiles/hello.dir/all:
 	$(MAKE) $(MAKESILENT) -f hello/CMakeFiles/hello.dir/build.make hello/CMakeFiles/hello.dir/depend
 	$(MAKE) $(MAKESILENT) -f hello/CMakeFiles/hello.dir/build.make hello/CMakeFiles/hello.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=48,49 "Built target hello"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=46 "Built target hello"
 .PHONY : hello/CMakeFiles/hello.dir/all
 
 # Build rule for subdir invocation for target.
 hello/CMakeFiles/hello.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 1
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 hello/CMakeFiles/hello.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : hello/CMakeFiles/hello.dir/rule
@@ -255,7 +280,7 @@ hello/CMakeFiles/hello.dir/clean:
 hello/CMakeFiles/hello-runner.dir/all:
 	$(MAKE) $(MAKESILENT) -f hello/CMakeFiles/hello-runner.dir/build.make hello/CMakeFiles/hello-runner.dir/depend
 	$(MAKE) $(MAKESILENT) -f hello/CMakeFiles/hello-runner.dir/build.make hello/CMakeFiles/hello-runner.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=60 "Built target hello-runner"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=56 "Built target hello-runner"
 .PHONY : hello/CMakeFiles/hello-runner.dir/all
 
 # Build rule for subdir invocation for target.
@@ -281,12 +306,12 @@ hello/CMakeFiles/hello-runner.dir/clean:
 hello/CMakeFiles/eyrie-hello-eyrie.dir/all:
 	$(MAKE) $(MAKESILENT) -f hello/CMakeFiles/eyrie-hello-eyrie.dir/build.make hello/CMakeFiles/eyrie-hello-eyrie.dir/depend
 	$(MAKE) $(MAKESILENT) -f hello/CMakeFiles/eyrie-hello-eyrie.dir/build.make hello/CMakeFiles/eyrie-hello-eyrie.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=22,23,24,25,26,27,28 "Built target eyrie-hello-eyrie"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=19,20,21,22,23 "Built target eyrie-hello-eyrie"
 .PHONY : hello/CMakeFiles/eyrie-hello-eyrie.dir/all
 
 # Build rule for subdir invocation for target.
 hello/CMakeFiles/eyrie-hello-eyrie.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 7
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 hello/CMakeFiles/eyrie-hello-eyrie.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : hello/CMakeFiles/eyrie-hello-eyrie.dir/rule
@@ -307,12 +332,12 @@ hello/CMakeFiles/eyrie-hello-eyrie.dir/clean:
 hello/CMakeFiles/hello-eyrie.dir/all: hello/CMakeFiles/eyrie-hello-eyrie.dir/all
 	$(MAKE) $(MAKESILENT) -f hello/CMakeFiles/hello-eyrie.dir/build.make hello/CMakeFiles/hello-eyrie.dir/depend
 	$(MAKE) $(MAKESILENT) -f hello/CMakeFiles/hello-eyrie.dir/build.make hello/CMakeFiles/hello-eyrie.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=50,51,52 "Built target hello-eyrie"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=47,48 "Built target hello-eyrie"
 .PHONY : hello/CMakeFiles/hello-eyrie.dir/all
 
 # Build rule for subdir invocation for target.
 hello/CMakeFiles/hello-eyrie.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 10
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 7
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 hello/CMakeFiles/hello-eyrie.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : hello/CMakeFiles/hello-eyrie.dir/rule
@@ -336,12 +361,12 @@ hello/CMakeFiles/hello-package.dir/all: hello/CMakeFiles/eyrie-hello-eyrie.dir/a
 hello/CMakeFiles/hello-package.dir/all: hello/CMakeFiles/hello-eyrie.dir/all
 	$(MAKE) $(MAKESILENT) -f hello/CMakeFiles/hello-package.dir/build.make hello/CMakeFiles/hello-package.dir/depend
 	$(MAKE) $(MAKESILENT) -f hello/CMakeFiles/hello-package.dir/build.make hello/CMakeFiles/hello-package.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=53,54,55,56,57,58,59 "Built target hello-package"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=49,50,51,52,53,54,55 "Built target hello-package"
 .PHONY : hello/CMakeFiles/hello-package.dir/all
 
 # Build rule for subdir invocation for target.
 hello/CMakeFiles/hello-package.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 16
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 hello/CMakeFiles/hello-package.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : hello/CMakeFiles/hello-package.dir/rule
@@ -388,12 +413,12 @@ attestation/CMakeFiles/attestor.dir/clean:
 attestation/CMakeFiles/attestor-runner.dir/all:
 	$(MAKE) $(MAKESILENT) -f attestation/CMakeFiles/attestor-runner.dir/build.make attestation/CMakeFiles/attestor-runner.dir/depend
 	$(MAKE) $(MAKESILENT) -f attestation/CMakeFiles/attestor-runner.dir/build.make attestation/CMakeFiles/attestor-runner.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=13,14,15 "Built target attestor-runner"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=11,12 "Built target attestor-runner"
 .PHONY : attestation/CMakeFiles/attestor-runner.dir/all
 
 # Build rule for subdir invocation for target.
 attestation/CMakeFiles/attestor-runner.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 attestation/CMakeFiles/attestor-runner.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : attestation/CMakeFiles/attestor-runner.dir/rule
@@ -414,7 +439,7 @@ attestation/CMakeFiles/attestor-runner.dir/clean:
 attestation/CMakeFiles/eyrie-attestor-eyrie.dir/all:
 	$(MAKE) $(MAKESILENT) -f attestation/CMakeFiles/eyrie-attestor-eyrie.dir/build.make attestation/CMakeFiles/eyrie-attestor-eyrie.dir/depend
 	$(MAKE) $(MAKESILENT) -f attestation/CMakeFiles/eyrie-attestor-eyrie.dir/build.make attestation/CMakeFiles/eyrie-attestor-eyrie.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=16,17,18,19,20,21 "Built target eyrie-attestor-eyrie"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=13,14,15,16,17,18 "Built target eyrie-attestor-eyrie"
 .PHONY : attestation/CMakeFiles/eyrie-attestor-eyrie.dir/all
 
 # Build rule for subdir invocation for target.
@@ -440,12 +465,12 @@ attestation/CMakeFiles/eyrie-attestor-eyrie.dir/clean:
 attestation/CMakeFiles/attestor-eyrie.dir/all: attestation/CMakeFiles/eyrie-attestor-eyrie.dir/all
 	$(MAKE) $(MAKESILENT) -f attestation/CMakeFiles/attestor-eyrie.dir/build.make attestation/CMakeFiles/attestor-eyrie.dir/depend
 	$(MAKE) $(MAKESILENT) -f attestation/CMakeFiles/attestor-eyrie.dir/build.make attestation/CMakeFiles/attestor-eyrie.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=2,3,4 "Built target attestor-eyrie"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=2,3 "Built target attestor-eyrie"
 .PHONY : attestation/CMakeFiles/attestor-eyrie.dir/all
 
 # Build rule for subdir invocation for target.
 attestation/CMakeFiles/attestor-eyrie.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 9
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 8
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 attestation/CMakeFiles/attestor-eyrie.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : attestation/CMakeFiles/attestor-eyrie.dir/rule
@@ -469,12 +494,12 @@ attestation/CMakeFiles/attestor-package.dir/all: attestation/CMakeFiles/eyrie-at
 attestation/CMakeFiles/attestor-package.dir/all: attestation/CMakeFiles/attestor-eyrie.dir/all
 	$(MAKE) $(MAKESILENT) -f attestation/CMakeFiles/attestor-package.dir/build.make attestation/CMakeFiles/attestor-package.dir/depend
 	$(MAKE) $(MAKESILENT) -f attestation/CMakeFiles/attestor-package.dir/build.make attestation/CMakeFiles/attestor-package.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=5,6,7,8,9,10,11,12 "Built target attestor-package"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=4,5,6,7,8,9,10 "Built target attestor-package"
 .PHONY : attestation/CMakeFiles/attestor-package.dir/all
 
 # Build rule for subdir invocation for target.
 attestation/CMakeFiles/attestor-package.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 21
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 attestation/CMakeFiles/attestor-package.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : attestation/CMakeFiles/attestor-package.dir/rule
@@ -495,12 +520,12 @@ attestation/CMakeFiles/attestor-package.dir/clean:
 wg-fault-test/CMakeFiles/wg-fault.dir/all:
 	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault.dir/build.make wg-fault-test/CMakeFiles/wg-fault.dir/depend
 	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault.dir/build.make wg-fault-test/CMakeFiles/wg-fault.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=61,62 "Built target wg-fault"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=57 "Built target wg-fault"
 .PHONY : wg-fault-test/CMakeFiles/wg-fault.dir/all
 
 # Build rule for subdir invocation for target.
 wg-fault-test/CMakeFiles/wg-fault.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 1
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-fault-test/CMakeFiles/wg-fault.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : wg-fault-test/CMakeFiles/wg-fault.dir/rule
@@ -521,12 +546,12 @@ wg-fault-test/CMakeFiles/wg-fault.dir/clean:
 wg-fault-test/CMakeFiles/wg-fault-runner.dir/all:
 	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault-runner.dir/build.make wg-fault-test/CMakeFiles/wg-fault-runner.dir/depend
 	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault-runner.dir/build.make wg-fault-test/CMakeFiles/wg-fault-runner.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=73 "Built target wg-fault-runner"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=66,67 "Built target wg-fault-runner"
 .PHONY : wg-fault-test/CMakeFiles/wg-fault-runner.dir/all
 
 # Build rule for subdir invocation for target.
 wg-fault-test/CMakeFiles/wg-fault-runner.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-fault-test/CMakeFiles/wg-fault-runner.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : wg-fault-test/CMakeFiles/wg-fault-runner.dir/rule
@@ -547,7 +572,7 @@ wg-fault-test/CMakeFiles/wg-fault-runner.dir/clean:
 wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie.dir/all:
 	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie.dir/build.make wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie.dir/depend
 	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie.dir/build.make wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=29,30,31,32,33,34 "Built target eyrie-wg-fault-eyrie"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=24,25,26,27,28,29 "Built target eyrie-wg-fault-eyrie"
 .PHONY : wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie.dir/all
 
 # Build rule for subdir invocation for target.
@@ -573,12 +598,12 @@ wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie.dir/clean:
 wg-fault-test/CMakeFiles/wg-fault-eyrie.dir/all: wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie.dir/all
 	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault-eyrie.dir/build.make wg-fault-test/CMakeFiles/wg-fault-eyrie.dir/depend
 	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault-eyrie.dir/build.make wg-fault-test/CMakeFiles/wg-fault-eyrie.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=63,64,65 "Built target wg-fault-eyrie"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=58,59 "Built target wg-fault-eyrie"
 .PHONY : wg-fault-test/CMakeFiles/wg-fault-eyrie.dir/all
 
 # Build rule for subdir invocation for target.
 wg-fault-test/CMakeFiles/wg-fault-eyrie.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 9
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 8
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-fault-test/CMakeFiles/wg-fault-eyrie.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : wg-fault-test/CMakeFiles/wg-fault-eyrie.dir/rule
@@ -602,12 +627,12 @@ wg-fault-test/CMakeFiles/wg-fault-package.dir/all: wg-fault-test/CMakeFiles/eyri
 wg-fault-test/CMakeFiles/wg-fault-package.dir/all: wg-fault-test/CMakeFiles/wg-fault-eyrie.dir/all
 	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault-package.dir/build.make wg-fault-test/CMakeFiles/wg-fault-package.dir/depend
 	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault-package.dir/build.make wg-fault-test/CMakeFiles/wg-fault-package.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=66,67,68,69,70,71,72 "Built target wg-fault-package"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=60,61,62,63,64,65 "Built target wg-fault-package"
 .PHONY : wg-fault-test/CMakeFiles/wg-fault-package.dir/all
 
 # Build rule for subdir invocation for target.
 wg-fault-test/CMakeFiles/wg-fault-package.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 17
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-fault-test/CMakeFiles/wg-fault-package.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : wg-fault-test/CMakeFiles/wg-fault-package.dir/rule
@@ -628,12 +653,12 @@ wg-fault-test/CMakeFiles/wg-fault-package.dir/clean:
 wg-slot-test/CMakeFiles/wg-slot.dir/all:
 	$(MAKE) $(MAKESILENT) -f wg-slot-test/CMakeFiles/wg-slot.dir/build.make wg-slot-test/CMakeFiles/wg-slot.dir/depend
 	$(MAKE) $(MAKESILENT) -f wg-slot-test/CMakeFiles/wg-slot.dir/build.make wg-slot-test/CMakeFiles/wg-slot.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=87,88 "Built target wg-slot"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=90 "Built target wg-slot"
 .PHONY : wg-slot-test/CMakeFiles/wg-slot.dir/all
 
 # Build rule for subdir invocation for target.
 wg-slot-test/CMakeFiles/wg-slot.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 1
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-slot-test/CMakeFiles/wg-slot.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : wg-slot-test/CMakeFiles/wg-slot.dir/rule
@@ -680,12 +705,12 @@ wg-slot-test/CMakeFiles/wg-slot-runner.dir/clean:
 wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.dir/all:
 	$(MAKE) $(MAKESILENT) -f wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.dir/build.make wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.dir/depend
 	$(MAKE) $(MAKESILENT) -f wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.dir/build.make wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=42,43,44,45,46,47 "Built target eyrie-wg-slot-eyrie"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=41,42,43,44,45 "Built target eyrie-wg-slot-eyrie"
 .PHONY : wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.dir/all
 
 # Build rule for subdir invocation for target.
 wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.dir/rule
@@ -706,12 +731,12 @@ wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.dir/clean:
 wg-slot-test/CMakeFiles/wg-slot-eyrie.dir/all: wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.dir/all
 	$(MAKE) $(MAKESILENT) -f wg-slot-test/CMakeFiles/wg-slot-eyrie.dir/build.make wg-slot-test/CMakeFiles/wg-slot-eyrie.dir/depend
 	$(MAKE) $(MAKESILENT) -f wg-slot-test/CMakeFiles/wg-slot-eyrie.dir/build.make wg-slot-test/CMakeFiles/wg-slot-eyrie.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=89,90,91 "Built target wg-slot-eyrie"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=91,92 "Built target wg-slot-eyrie"
 .PHONY : wg-slot-test/CMakeFiles/wg-slot-eyrie.dir/all
 
 # Build rule for subdir invocation for target.
 wg-slot-test/CMakeFiles/wg-slot-eyrie.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 9
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 7
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-slot-test/CMakeFiles/wg-slot-eyrie.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : wg-slot-test/CMakeFiles/wg-slot-eyrie.dir/rule
@@ -735,12 +760,12 @@ wg-slot-test/CMakeFiles/wg-slot-package.dir/all: wg-slot-test/CMakeFiles/eyrie-w
 wg-slot-test/CMakeFiles/wg-slot-package.dir/all: wg-slot-test/CMakeFiles/wg-slot-eyrie.dir/all
 	$(MAKE) $(MAKESILENT) -f wg-slot-test/CMakeFiles/wg-slot-package.dir/build.make wg-slot-test/CMakeFiles/wg-slot-package.dir/depend
 	$(MAKE) $(MAKESILENT) -f wg-slot-test/CMakeFiles/wg-slot-package.dir/build.make wg-slot-test/CMakeFiles/wg-slot-package.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=92,93,94,95,96,97,98 "Built target wg-slot-package"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=93,94,95,96,97,98 "Built target wg-slot-package"
 .PHONY : wg-slot-test/CMakeFiles/wg-slot-package.dir/all
 
 # Build rule for subdir invocation for target.
 wg-slot-test/CMakeFiles/wg-slot-package.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 16
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-slot-test/CMakeFiles/wg-slot-package.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : wg-slot-test/CMakeFiles/wg-slot-package.dir/rule
@@ -761,12 +786,12 @@ wg-slot-test/CMakeFiles/wg-slot-package.dir/clean:
 wg-lru-test/CMakeFiles/wg-lru.dir/all:
 	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru.dir/build.make wg-lru-test/CMakeFiles/wg-lru.dir/depend
 	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru.dir/build.make wg-lru-test/CMakeFiles/wg-lru.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=74,75 "Built target wg-lru"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=68 "Built target wg-lru"
 .PHONY : wg-lru-test/CMakeFiles/wg-lru.dir/all
 
 # Build rule for subdir invocation for target.
 wg-lru-test/CMakeFiles/wg-lru.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 1
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-lru-test/CMakeFiles/wg-lru.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : wg-lru-test/CMakeFiles/wg-lru.dir/rule
@@ -787,12 +812,12 @@ wg-lru-test/CMakeFiles/wg-lru.dir/clean:
 wg-lru-test/CMakeFiles/wg-lru-runner.dir/all:
 	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru-runner.dir/build.make wg-lru-test/CMakeFiles/wg-lru-runner.dir/depend
 	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru-runner.dir/build.make wg-lru-test/CMakeFiles/wg-lru-runner.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=86 "Built target wg-lru-runner"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=77,78 "Built target wg-lru-runner"
 .PHONY : wg-lru-test/CMakeFiles/wg-lru-runner.dir/all
 
 # Build rule for subdir invocation for target.
 wg-lru-test/CMakeFiles/wg-lru-runner.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-lru-test/CMakeFiles/wg-lru-runner.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : wg-lru-test/CMakeFiles/wg-lru-runner.dir/rule
@@ -813,12 +838,12 @@ wg-lru-test/CMakeFiles/wg-lru-runner.dir/clean:
 wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/all:
 	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/build.make wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/depend
 	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/build.make wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=35,36,37,38,39,40,41 "Built target eyrie-wg-lru-eyrie"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=30,31,32,33,34 "Built target eyrie-wg-lru-eyrie"
 .PHONY : wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/all
 
 # Build rule for subdir invocation for target.
 wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 7
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/rule
@@ -839,12 +864,12 @@ wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/clean:
 wg-lru-test/CMakeFiles/wg-lru-eyrie.dir/all: wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/all
 	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru-eyrie.dir/build.make wg-lru-test/CMakeFiles/wg-lru-eyrie.dir/depend
 	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru-eyrie.dir/build.make wg-lru-test/CMakeFiles/wg-lru-eyrie.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=76,77,78 "Built target wg-lru-eyrie"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=69,70 "Built target wg-lru-eyrie"
 .PHONY : wg-lru-test/CMakeFiles/wg-lru-eyrie.dir/all
 
 # Build rule for subdir invocation for target.
 wg-lru-test/CMakeFiles/wg-lru-eyrie.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 10
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 7
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-lru-test/CMakeFiles/wg-lru-eyrie.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : wg-lru-test/CMakeFiles/wg-lru-eyrie.dir/rule
@@ -868,12 +893,12 @@ wg-lru-test/CMakeFiles/wg-lru-package.dir/all: wg-lru-test/CMakeFiles/eyrie-wg-l
 wg-lru-test/CMakeFiles/wg-lru-package.dir/all: wg-lru-test/CMakeFiles/wg-lru-eyrie.dir/all
 	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru-package.dir/build.make wg-lru-test/CMakeFiles/wg-lru-package.dir/depend
 	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru-package.dir/build.make wg-lru-test/CMakeFiles/wg-lru-package.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=79,80,81,82,83,84,85 "Built target wg-lru-package"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=71,72,73,74,75,76 "Built target wg-lru-package"
 .PHONY : wg-lru-test/CMakeFiles/wg-lru-package.dir/all
 
 # Build rule for subdir invocation for target.
 wg-lru-test/CMakeFiles/wg-lru-package.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 16
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-lru-test/CMakeFiles/wg-lru-package.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
 .PHONY : wg-lru-test/CMakeFiles/wg-lru-package.dir/rule
@@ -886,6 +911,139 @@ wg-lru-package: wg-lru-test/CMakeFiles/wg-lru-package.dir/rule
 wg-lru-test/CMakeFiles/wg-lru-package.dir/clean:
 	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru-package.dir/build.make wg-lru-test/CMakeFiles/wg-lru-package.dir/clean
 .PHONY : wg-lru-test/CMakeFiles/wg-lru-package.dir/clean
+
+#=============================================================================
+# Target rules for target wg-reuse-test/CMakeFiles/wg-reuse.dir
+
+# All Build rule for target.
+wg-reuse-test/CMakeFiles/wg-reuse.dir/all:
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse.dir/depend
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=79 "Built target wg-reuse"
+.PHONY : wg-reuse-test/CMakeFiles/wg-reuse.dir/all
+
+# Build rule for subdir invocation for target.
+wg-reuse-test/CMakeFiles/wg-reuse.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 1
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-reuse-test/CMakeFiles/wg-reuse.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
+.PHONY : wg-reuse-test/CMakeFiles/wg-reuse.dir/rule
+
+# Convenience name for target.
+wg-reuse: wg-reuse-test/CMakeFiles/wg-reuse.dir/rule
+.PHONY : wg-reuse
+
+# clean rule for target.
+wg-reuse-test/CMakeFiles/wg-reuse.dir/clean:
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse.dir/clean
+.PHONY : wg-reuse-test/CMakeFiles/wg-reuse.dir/clean
+
+#=============================================================================
+# Target rules for target wg-reuse-test/CMakeFiles/wg-reuse-runner.dir
+
+# All Build rule for target.
+wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/all:
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/depend
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=88,89 "Built target wg-reuse-runner"
+.PHONY : wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/all
+
+# Build rule for subdir invocation for target.
+wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
+.PHONY : wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/rule
+
+# Convenience name for target.
+wg-reuse-runner: wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/rule
+.PHONY : wg-reuse-runner
+
+# clean rule for target.
+wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/clean:
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/clean
+.PHONY : wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/clean
+
+#=============================================================================
+# Target rules for target wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir
+
+# All Build rule for target.
+wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/all:
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/build.make wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/depend
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/build.make wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=35,36,37,38,39,40 "Built target eyrie-wg-reuse-eyrie"
+.PHONY : wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/all
+
+# Build rule for subdir invocation for target.
+wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 6
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
+.PHONY : wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/rule
+
+# Convenience name for target.
+eyrie-wg-reuse-eyrie: wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/rule
+.PHONY : eyrie-wg-reuse-eyrie
+
+# clean rule for target.
+wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/clean:
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/build.make wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/clean
+.PHONY : wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/clean
+
+#=============================================================================
+# Target rules for target wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir
+
+# All Build rule for target.
+wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/all: wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/all
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/depend
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=80,81 "Built target wg-reuse-eyrie"
+.PHONY : wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/all
+
+# Build rule for subdir invocation for target.
+wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 8
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
+.PHONY : wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/rule
+
+# Convenience name for target.
+wg-reuse-eyrie: wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/rule
+.PHONY : wg-reuse-eyrie
+
+# clean rule for target.
+wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/clean:
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/clean
+.PHONY : wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/clean
+
+#=============================================================================
+# Target rules for target wg-reuse-test/CMakeFiles/wg-reuse-package.dir
+
+# All Build rule for target.
+wg-reuse-test/CMakeFiles/wg-reuse-package.dir/all: wg-reuse-test/CMakeFiles/wg-reuse.dir/all
+wg-reuse-test/CMakeFiles/wg-reuse-package.dir/all: wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/all
+wg-reuse-test/CMakeFiles/wg-reuse-package.dir/all: wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/all
+wg-reuse-test/CMakeFiles/wg-reuse-package.dir/all: wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/all
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-package.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-package.dir/depend
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-package.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-package.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles --progress-num=82,83,84,85,86,87 "Built target wg-reuse-package"
+.PHONY : wg-reuse-test/CMakeFiles/wg-reuse-package.dir/all
+
+# Build rule for subdir invocation for target.
+wg-reuse-test/CMakeFiles/wg-reuse-package.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 17
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-reuse-test/CMakeFiles/wg-reuse-package.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/CMakeFiles 0
+.PHONY : wg-reuse-test/CMakeFiles/wg-reuse-package.dir/rule
+
+# Convenience name for target.
+wg-reuse-package: wg-reuse-test/CMakeFiles/wg-reuse-package.dir/rule
+.PHONY : wg-reuse-package
+
+# clean rule for target.
+wg-reuse-test/CMakeFiles/wg-reuse-package.dir/clean:
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-package.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-package.dir/clean
+.PHONY : wg-reuse-test/CMakeFiles/wg-reuse-package.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

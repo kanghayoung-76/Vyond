@@ -50,14 +50,12 @@ pub fn assign_wid(eid: usize, region_id: usize) -> usize {
         CLOCK += 1;
         let now = CLOCK;
 
-        // 1. Already assigned?
+        // 1. Already assigned? Update last_used and return (REUSE logged in enter_enclave_context).
         for i in 0..NUM_ENCLAVE_WIDS {
             if let Some(ref mut entry) = WID_SLOTS[i] {
                 if entry.eid == eid {
                     entry.last_used = now;
-                    let wid = i + ENCLAVE_WID_MIN;
-                    hprintln!("[WID] reuse: eid={} WID={} region={}", eid, wid, region_id);
-                    return wid;
+                    return i + ENCLAVE_WID_MIN;
                 }
             }
         }

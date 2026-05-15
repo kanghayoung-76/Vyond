@@ -36,3 +36,10 @@
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-lru-test/CMakeFiles/wg-lru-package.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-lru-test/CMakeFiles/edit_cache.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-lru-test/CMakeFiles/rebuild_cache.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/CMakeFiles/wg-reuse.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/CMakeFiles/wg-reuse-runner.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/CMakeFiles/wg-reuse-package.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/CMakeFiles/edit_cache.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-reuse-test/CMakeFiles/rebuild_cache.dir

@@ -174,8 +174,14 @@ pub fn enter_enclave_context(eid: usize) {
     // which calls load_enclave_slot to assign the proper WID via the LRU table.
     #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
     {
-        let wid = crate::wid::get_assigned_wid(eid).unwrap_or(crate::wid::ENCLAVE_WID_MIN);
-        csr_write_custom!(MLWID_CSR, wid);
+        if let Some(wid) = crate::wid::get_assigned_wid(eid) {
+            // WID already assigned and HW slot still valid — no fault needed.
+            semihosting::hprintln!("[WID] reuse: eid={} WID={} (HW slot valid, skip fault)", eid, wid);
+            csr_write_custom!(MLWID_CSR, wid);
+        } else {
+            // No WID yet — use placeholder so WGC triggers ACCESS FAULT → assign path.
+            csr_write_custom!(MLWID_CSR, crate::wid::ENCLAVE_WID_MIN);
+        }
     }
 }
 

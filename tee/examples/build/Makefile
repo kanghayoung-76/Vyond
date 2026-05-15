@@ -454,6 +454,71 @@ wg-lru-package/fast:
 	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru-package.dir/build.make wg-lru-test/CMakeFiles/wg-lru-package.dir/build
 .PHONY : wg-lru-package/fast
 
+#=============================================================================
+# Target rules for targets named wg-reuse
+
+# Build rule for target.
+wg-reuse: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-reuse
+.PHONY : wg-reuse
+
+# fast build rule for target.
+wg-reuse/fast:
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse.dir/build
+.PHONY : wg-reuse/fast
+
+#=============================================================================
+# Target rules for targets named wg-reuse-runner
+
+# Build rule for target.
+wg-reuse-runner: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-reuse-runner
+.PHONY : wg-reuse-runner
+
+# fast build rule for target.
+wg-reuse-runner/fast:
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/build
+.PHONY : wg-reuse-runner/fast
+
+#=============================================================================
+# Target rules for targets named eyrie-wg-reuse-eyrie
+
+# Build rule for target.
+eyrie-wg-reuse-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-wg-reuse-eyrie
+.PHONY : eyrie-wg-reuse-eyrie
+
+# fast build rule for target.
+eyrie-wg-reuse-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/build.make wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/build
+.PHONY : eyrie-wg-reuse-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named wg-reuse-eyrie
+
+# Build rule for target.
+wg-reuse-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-reuse-eyrie
+.PHONY : wg-reuse-eyrie
+
+# fast build rule for target.
+wg-reuse-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/build
+.PHONY : wg-reuse-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named wg-reuse-package
+
+# Build rule for target.
+wg-reuse-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-reuse-package
+.PHONY : wg-reuse-package
+
+# fast build rule for target.
+wg-reuse-package/fast:
+	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-package.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-package.dir/build
+.PHONY : wg-reuse-package/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -469,6 +534,7 @@ help:
 	@echo "... eyrie-hello-eyrie"
 	@echo "... eyrie-wg-fault-eyrie"
 	@echo "... eyrie-wg-lru-eyrie"
+	@echo "... eyrie-wg-reuse-eyrie"
 	@echo "... eyrie-wg-slot-eyrie"
 	@echo "... hello-eyrie"
 	@echo "... hello-package"
@@ -476,6 +542,8 @@ help:
 	@echo "... wg-fault-package"
 	@echo "... wg-lru-eyrie"
 	@echo "... wg-lru-package"
+	@echo "... wg-reuse-eyrie"
+	@echo "... wg-reuse-package"
 	@echo "... wg-slot-eyrie"
 	@echo "... wg-slot-package"
 	@echo "... attestor"
@@ -486,6 +554,8 @@ help:
 	@echo "... wg-fault-runner"
 	@echo "... wg-lru"
 	@echo "... wg-lru-runner"
+	@echo "... wg-reuse"
+	@echo "... wg-reuse-runner"
 	@echo "... wg-slot"
 	@echo "... wg-slot-runner"
 .PHONY : help
