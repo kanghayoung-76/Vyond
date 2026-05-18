@@ -17,6 +17,7 @@ pub enum State {
     Stopped,
     Running,
     Destroying,
+    WaitingForDevice(u32), // suspended; will be resumed by SM on device IRQ
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -559,7 +560,6 @@ pub fn enter_enclave(tf: &mut TrapFrame, eid: usize) -> Result<(), Error> {
             return Err(Error::NotRunnable);
         }
 
-        // Compute enclave measurement on first entry (pages fully loaded)
         enclave.compute_hash();
         enclave.switch_to_enclave(tf, true);
 
@@ -575,7 +575,9 @@ pub fn resume_enclave(tf: &mut TrapFrame, eid: usize) -> Result<(), Error> {
     }
     if let Some(enclave) = find_enclave(eid) {
         let mut runstate = enclave.state.lock();
-        let resumable = (runstate.state == State::Running || runstate.state == State::Stopped)
+        let resumable = (runstate.state == State::Running
+            || runstate.state == State::Stopped
+            || matches!(runstate.state, State::WaitingForDevice(_)))
             && runstate.count < MAX_ENCLAVE_THREADS;
 
         if resumable {
@@ -626,6 +628,66 @@ pub fn stop_enclave(tf: &mut TrapFrame, request: usize) -> Result<(), Error> {
     }
 
     return Err(Error::Invalid);
+}
+
+/// Enclave suspends itself waiting for a device IRQ.
+/// Behaves like stop_enclave but transitions to WaitingForDevice instead of Stopped.
+/// The SM will resume this enclave directly when irq_num fires (no host involvement).
+pub fn wait_dev_data(tf: &mut TrapFrame, irq_num: u32) -> Result<(), Error> {
+    if let Some(_enclave) = find_enclave(cpu::get_enclave_id()) {
+        // Fast-path A: IRQ fired before we got here (QEMU sync DMA — M-mode IRQ handler
+        // ran while enclave was still Running and saved the pre-fired flag).
+        if crate::dev_irq::take_fired_irq(irq_num) {
+            return Ok(());
+        }
+
+        // Fast-path B: IRQ still pending in PLIC (rare: M-mode interrupts masked briefly).
+        let hartid = csr_read!(mhartid) as usize;
+        let claimed = crate::dev_irq::plic_claim(hartid);
+        if claimed == irq_num {
+            crate::dev_irq::plic_complete(hartid, irq_num);
+            return Ok(());
+        }
+        if claimed != 0 {
+            crate::dev_irq::plic_complete(hartid, claimed);
+        }
+
+        // Slow-path: IRQ not yet pending — suspend enclave, let host run,
+        // IRQ_M_EXT handler will call resume_from_dev_irq when IRQ fires.
+        let enclave = find_enclave(cpu::get_enclave_id()).ok_or(Error::Invalid)?;
+        let mut runstate = enclave.state.lock();
+        if runstate.state != State::Running {
+            return Err(Error::NotRunning);
+        }
+        runstate.count -= 1;
+        runstate.state = State::WaitingForDevice(irq_num);
+        drop(runstate);
+        enclave.switch_to_host(tf);
+        return Err(Error::WaitingForDevice);
+    }
+    Err(Error::Invalid)
+}
+
+/// Called by the M-mode IRQ handler to resume an enclave that called wait_dev_data.
+/// regs currently holds the preempted host context; switch_to_enclave swaps it
+/// so mret lands in the enclave.
+pub fn resume_from_dev_irq(tf: &mut TrapFrame, eid: usize) -> Result<(), Error> {
+    if let Some(enclave) = find_enclave(eid) {
+        let mut runstate = enclave.state.lock();
+        let resumable = matches!(runstate.state, State::WaitingForDevice(_))
+            && runstate.count < MAX_ENCLAVE_THREADS;
+        if resumable {
+            runstate.count += 1;
+            runstate.state = State::Running;
+        }
+        drop(runstate);
+        if !resumable {
+            return Err(Error::NotResumable);
+        }
+        enclave.switch_to_enclave(tf, false);
+        return Ok(());
+    }
+    Err(Error::InvalidId)
 }
 
 pub fn exit_enclave(tf: &mut TrapFrame) -> Result<(), Error> {
@@ -882,7 +944,13 @@ pub fn display() {
             hprintln!("+--------+--------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+--------+");
             let runstate = enclave.state.lock();
             hprint!("|{:>8}", enclave.eid);
-            hprint!("|{:>8}", runstate.state as u8);
+            let state_id: u8 = match runstate.state {
+                State::Stopped => 0,
+                State::Running => 1,
+                State::Destroying => 2,
+                State::WaitingForDevice(_) => 3,
+            };
+            hprint!("|{:>8}", state_id);
             hprint!("|{:>16x}", enclave.pa_params.dram_base);
             hprint!("|{:>16x}", enclave.pa_params.dram_size);
             hprint!("|{:>16x}", enclave.pa_params.user_base);

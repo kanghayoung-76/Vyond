@@ -60,3 +60,10 @@
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/ros/CMakeFiles/ros-package.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/ros/CMakeFiles/edit_cache.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/ros/CMakeFiles/rebuild_cache.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/dev-irq-runner.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/dev_irq_eapp.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/eyrie-dev_irq_eapp-eyrie.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/dev_irq_eapp-eyrie.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/dev-irq-test-package.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/edit_cache.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/rebuild_cache.dir

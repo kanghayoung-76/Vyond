@@ -79,6 +79,21 @@ unsigned long sbi_sm_map_shm_region(struct sbi_trap_regs *regs, unsigned long ri
 unsigned long sbi_sm_unmap_shm_region(unsigned long rid);
 unsigned long sbi_sm_change_shm_region(unsigned long rid, unsigned long dyn_perm);
 unsigned long sbi_sm_share_shm_region(unsigned long rid, unsigned long eid2share, unsigned long st_perm);
+/* Device IRQ path */
+unsigned long sbi_sm_register_dev_irq(uint32_t irq_num);
+unsigned long sbi_sm_wait_dev_data(struct sbi_trap_regs *regs, uint32_t irq_num);
+long         sbi_sm_handle_dev_irq(struct sbi_trap_regs *regs, uint32_t irq_num);
+
+/* PLIC M-mode claim/complete  (QEMU virt: M-mode context = hartid * 2) */
+#define PLIC_BASE_ADDR  0xc000000UL
+#define PLIC_CLAIM_REG(ctx) ((volatile uint32_t *)(PLIC_BASE_ADDR + 0x200004UL + (ulong)(ctx) * 0x1000UL))
+
+static inline uint32_t plic_claim_m(ulong hartid) {
+    return *PLIC_CLAIM_REG(hartid * 2);
+}
+static inline void plic_complete_m(ulong hartid, uint32_t irq) {
+    *PLIC_CLAIM_REG(hartid * 2) = irq;
+}
 
 static int sbi_ecall_vyond_monitor_handler(
     unsigned long extid, unsigned long funcid,
@@ -162,6 +177,15 @@ static int sbi_ecall_vyond_monitor_handler(
 	case SBI_SM_SHARE_SHM_REGION:
 		retval = sbi_sm_share_shm_region(regs->a0, regs->a1, regs->a2);
 		break;
+    case SBI_SM_REGISTER_DEV_IRQ:
+        retval = sbi_sm_register_dev_irq((uint32_t)regs->a0);
+        break;
+    case SBI_SM_WAIT_DEV_DATA:
+        retval = sbi_sm_wait_dev_data((struct sbi_trap_regs*) regs, (uint32_t)regs->a0);
+        ((struct sbi_trap_regs *)regs)->a0 = retval;
+        ((struct sbi_trap_regs *)regs)->mepc += 4;
+        sbi_trap_exit(regs);
+        break;
 	default:
 		retval = SBI_ERR_SM_NOT_IMPLEMENTED;
 		break;
@@ -320,6 +344,19 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
                 ((struct sbi_trap_regs *)regs)->a0 = SBI_ERR_SM_ENCLAVE_INTERRUPTED;
                 ((struct sbi_trap_regs *)regs)->mepc += 4;
 			    break;
+            }
+		    case IRQ_M_EXT: {
+                /* Device IRQ intercepted in M-mode.
+                 * Claim the IRQ from the PLIC M-mode context, check whether
+                 * an enclave is waiting for it, and if so resume it directly
+                 * without involving the host OS. */
+                ulong hartid = current_hartid();
+                uint32_t irq = plic_claim_m(hartid);
+                if (irq != 0) {
+                    sbi_sm_handle_dev_irq((struct sbi_trap_regs*) regs, irq);
+                    plic_complete_m(hartid, irq);
+                }
+                break;
             }
 		    default:
 			    msg = "unhandled external interrupt";

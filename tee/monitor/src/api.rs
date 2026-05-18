@@ -229,6 +229,49 @@ pub extern "C" fn sbi_sm_change_shm_region(rid: usize, dyn_perm: i8) -> isize {
     ret as isize
 }
 
+/// Called by the enclave to register which IRQ it wants the SM to intercept.
+/// The SM enables irq_num in the PLIC M-mode context (disabling it in S-mode)
+/// so host Linux never receives it.
+#[no_mangle]
+pub extern "C" fn sbi_sm_register_dev_irq(irq_num: u32) -> isize {
+    let eid = cpu::get_enclave_id();
+    crate::dev_irq::register_irq(irq_num, eid);
+    Error::Success as isize
+}
+
+/// Called by the enclave to suspend itself until irq_num fires.
+/// SM saves enclave context, restores host context (like stop_enclave), and marks
+/// the enclave WaitingForDevice so the IRQ handler can resume it without host help.
+#[no_mangle]
+pub extern "C" fn sbi_sm_wait_dev_data(regs: &mut TrapFrame, irq_num: u32) -> isize {
+    dbg!("[wait_dev_data] eid {:?} irq {:?}", cpu::get_enclave_id(), irq_num);
+    let ret = match enclave::wait_dev_data(regs, irq_num) {
+        Ok(_) => Error::Success,
+        Err(err) => err,
+    };
+    ret as isize
+}
+
+/// Called from the M-mode IRQ handler in vyond.c when a device IRQ fires.
+/// Finds the enclave waiting for irq_num and switches directly into it.
+/// Returns 1 if an enclave was resumed, 0 otherwise.
+#[no_mangle]
+pub extern "C" fn sbi_sm_handle_dev_irq(regs: &mut TrapFrame, irq_num: u32) -> isize {
+    if let Some(eid) = crate::dev_irq::get_eid_for_irq(irq_num) {
+        match enclave::resume_from_dev_irq(regs, eid) {
+            Ok(_) => 1,
+            Err(_) => {
+                // IRQ arrived before enclave called wait_dev_data (e.g. QEMU sync DMA).
+                // Save the fact so wait_dev_data can detect it and return Ok immediately.
+                crate::dev_irq::mark_irq_fired(irq_num);
+                0
+            }
+        }
+    } else {
+        0
+    }
+}
+
 #[no_mangle]
 pub extern "C" fn sbi_sm_share_shm_region(rid: usize, eid2share: usize, st_perm: i8) -> isize {
     dbg!(

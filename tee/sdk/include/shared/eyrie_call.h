@@ -10,6 +10,9 @@
 #define RUNTIME_SYSCALL_UNMAP_SHM           1006
 #define RUNTIME_SYSCALL_MYDEV_MAP 	    1007
 #define RUNTIME_SYSCALL_MYDEV_UNMAP         1008
+#define RUNTIME_SYSCALL_REGISTER_DEV_IRQ    1009  /* bind enclave to device IRQ  */
+#define RUNTIME_SYSCALL_WAIT_DEV_DATA       1010  /* suspend until IRQ fires     */
+#define RUNTIME_SYSCALL_TRANSLATE_VA        1011  /* VA -> PA for DMA setup      */
 #define RUNTIME_SYSCALL_EXIT                1101
 
 #endif  // __EYRIE_CALL_H__

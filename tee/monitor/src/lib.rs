@@ -13,6 +13,7 @@ pub mod cpu;
 pub mod api;
 pub mod attest;
 pub mod crypto;
+pub mod dev_irq;
 pub mod enclave;
 pub mod encoding;
 pub mod isolator;
@@ -58,6 +59,7 @@ pub enum Error {
     SBIProhibited,
     IllegalPTE,
     NotFresh,
+    WaitingForDevice = 100017,
     RegionSizeInvalid = 10020,
     NotPageGranularity,
     NotAligned,

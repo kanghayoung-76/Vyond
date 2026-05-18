@@ -688,6 +688,71 @@ ros-package/fast:
 	$(MAKE) $(MAKESILENT) -f ros/CMakeFiles/ros-package.dir/build.make ros/CMakeFiles/ros-package.dir/build
 .PHONY : ros-package/fast
 
+#=============================================================================
+# Target rules for targets named dev-irq-runner
+
+# Build rule for target.
+dev-irq-runner: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 dev-irq-runner
+.PHONY : dev-irq-runner
+
+# fast build rule for target.
+dev-irq-runner/fast:
+	$(MAKE) $(MAKESILENT) -f dev-irq-test/CMakeFiles/dev-irq-runner.dir/build.make dev-irq-test/CMakeFiles/dev-irq-runner.dir/build
+.PHONY : dev-irq-runner/fast
+
+#=============================================================================
+# Target rules for targets named dev_irq_eapp
+
+# Build rule for target.
+dev_irq_eapp: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 dev_irq_eapp
+.PHONY : dev_irq_eapp
+
+# fast build rule for target.
+dev_irq_eapp/fast:
+	$(MAKE) $(MAKESILENT) -f dev-irq-test/CMakeFiles/dev_irq_eapp.dir/build.make dev-irq-test/CMakeFiles/dev_irq_eapp.dir/build
+.PHONY : dev_irq_eapp/fast
+
+#=============================================================================
+# Target rules for targets named eyrie-dev_irq_eapp-eyrie
+
+# Build rule for target.
+eyrie-dev_irq_eapp-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-dev_irq_eapp-eyrie
+.PHONY : eyrie-dev_irq_eapp-eyrie
+
+# fast build rule for target.
+eyrie-dev_irq_eapp-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f dev-irq-test/CMakeFiles/eyrie-dev_irq_eapp-eyrie.dir/build.make dev-irq-test/CMakeFiles/eyrie-dev_irq_eapp-eyrie.dir/build
+.PHONY : eyrie-dev_irq_eapp-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named dev_irq_eapp-eyrie
+
+# Build rule for target.
+dev_irq_eapp-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 dev_irq_eapp-eyrie
+.PHONY : dev_irq_eapp-eyrie
+
+# fast build rule for target.
+dev_irq_eapp-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f dev-irq-test/CMakeFiles/dev_irq_eapp-eyrie.dir/build.make dev-irq-test/CMakeFiles/dev_irq_eapp-eyrie.dir/build
+.PHONY : dev_irq_eapp-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named dev-irq-test-package
+
+# Build rule for target.
+dev-irq-test-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 dev-irq-test-package
+.PHONY : dev-irq-test-package
+
+# fast build rule for target.
+dev-irq-test-package/fast:
+	$(MAKE) $(MAKESILENT) -f dev-irq-test/CMakeFiles/dev-irq-test-package.dir/build.make dev-irq-test/CMakeFiles/dev-irq-test-package.dir/build
+.PHONY : dev-irq-test-package/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -698,8 +763,11 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... attestor-eyrie"
 	@echo "... attestor-package"
+	@echo "... dev-irq-test-package"
+	@echo "... dev_irq_eapp-eyrie"
 	@echo "... examples"
 	@echo "... eyrie-attestor-eyrie"
+	@echo "... eyrie-dev_irq_eapp-eyrie"
 	@echo "... eyrie-hello-eyrie"
 	@echo "... eyrie-ros_e1-eyrie"
 	@echo "... eyrie-ros_e2-eyrie"
@@ -725,6 +793,8 @@ help:
 	@echo "... wg-slot-package"
 	@echo "... attestor"
 	@echo "... attestor-runner"
+	@echo "... dev-irq-runner"
+	@echo "... dev_irq_eapp"
 	@echo "... hello"
 	@echo "... hello-runner"
 	@echo "... ros-runner"

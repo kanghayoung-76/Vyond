@@ -244,7 +244,8 @@ Enclave::destroy() {
 Error
 Enclave::run(uintptr_t* retval) {
   Error ret = pDevice->run(retval);
-  while (ret == Error::EdgeCallHost || ret == Error::EnclaveInterrupted) {
+  while (ret == Error::EdgeCallHost || ret == Error::EnclaveInterrupted
+         || ret == Error::EnclaveWaitingForDevice) {
     /* enclave is stopped in the middle. */
     if (ret == Error::EdgeCallHost && oFuncDispatch != NULL) {
       oFuncDispatch(getSharedBuffer(), getSharedBufferSize());
