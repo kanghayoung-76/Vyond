@@ -104,6 +104,10 @@ pub struct Enclave {
 
     // SHA3-512 measurement of enclave memory, computed on first entry
     pub hash: [u8; 64],
+
+    // Last WID successfully used by this enclave (0 = never assigned).
+    // Set on every WGC slot assign; read in switch_to_enclave to skip a fault on reuse.
+    pub last_wid: usize,
 }
 
 impl Enclave {
@@ -133,6 +137,7 @@ impl Enclave {
             threads: [Self::THREAD_INIT; MAX_ENCLAVE_THREADS],
             pa_params,
             hash: [0u8; 64],
+            last_wid: crate::wid::ENCLAVE_WID_MIN,
         }
     }
 
@@ -227,7 +232,7 @@ impl Enclave {
         // SHM regions are fault-based (lazy): no eager programming here.
 
         // Setup any platform specific defenses
-        cpu::enter_enclave_context(self.eid);
+        cpu::enter_enclave_context(self.eid, self.last_wid);
     }
 
     pub fn switch_to_host(&mut self, regs: &mut TrapFrame) {
@@ -408,6 +413,7 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
                                 crate::wid::WIDAction::Evicted { slot, evicted_eid } =>
                                     heprintln!("[WGC:EPM] eid={} fault=0x{:x} | EVICT  slot={} WID={} (was eid={}) -> new eid={}", eid, fault_addr, slot, wid, evicted_eid, eid),
                             }
+                            enclave.last_wid = wid;
                             let _ = isolator::set_isolator_with_wid(region_id, wid);
                             csr_write_custom!(0x390, wid);
                         }
@@ -443,8 +449,8 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
                                 let w = if c.eid == 11 {
                                     crate::wg::OS_WID as usize
                                 } else {
-                                    match crate::wid::get_assigned_wid(c.eid) {
-                                        Some(w) => w,
+                                    match find_enclave(c.eid) {
+                                        Some(e) => e.last_wid,
                                         None    => continue,
                                     }
                                 };

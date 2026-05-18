@@ -162,27 +162,18 @@ pub fn get_enclave_id() -> usize {
     unsafe { CPU_STATE[hartid].eid }
 }
 
-pub fn enter_enclave_context(eid: usize) {
+pub fn enter_enclave_context(eid: usize, wid: usize) {
     let hartid = csr_read!(mhartid) as usize;
     unsafe {
         CPU_STATE[hartid].is_enclave = true;
         CPU_STATE[hartid].eid = eid;
     }
-    // Switch mlwid to the dynamically assigned WID for this enclave.
-    // If no WID has been assigned yet (first entry), use ENCLAVE_WID_MIN (WID 1) as a
-    // placeholder so the WGC will deny access and trigger the ACCESS FAULT handler,
-    // which calls load_enclave_slot to assign the proper WID via the LRU table.
+    // Set mlwid to the enclave's last known WID (Enclave.last_wid):
+    //   first entry  → ENCLAVE_WID_MIN (placeholder) → WGC fault → assign_wid
+    //   reuse        → previously assigned WID, HW slot valid   → no fault
+    //   post-evict   → stale WID, HW slot cleared               → WGC fault → assign_wid again
     #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
-    {
-        if let Some(wid) = crate::wid::get_assigned_wid(eid) {
-            // WID already assigned and HW slot still valid — no fault needed.
-            semihosting::hprintln!("[WGC:EPM] eid={} | REUSE  WID={}", eid, wid);
-            csr_write_custom!(MLWID_CSR, wid);
-        } else {
-            // No WID yet — use placeholder so WGC triggers ACCESS FAULT → assign path.
-            csr_write_custom!(MLWID_CSR, crate::wid::ENCLAVE_WID_MIN);
-        }
-    }
+    csr_write_custom!(MLWID_CSR, wid);
 }
 
 pub fn exit_enclave_context() {

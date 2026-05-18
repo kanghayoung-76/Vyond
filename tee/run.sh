@@ -48,6 +48,8 @@ QEMU_SYSTEM="../qemu/build/qemu-system-riscv64"
 FW_BIN="sbi/opensbi/build/platform/generic/firmware/fw_dynamic.bin"
 LINUX_IMAGE="$ROOT_PATH/../prebuilt/Image"
 export SMP=4;
+    #-netdev tap,id=net1,ifname=tap0,script=no,downscript=no \
+    #-device virtio-net-pci,netdev=net1,romfile="" \
 
 #echo $CMD
 $QEMU_SYSTEM \
@@ -63,7 +65,5 @@ $QEMU_SYSTEM \
     -append "root=/dev/vda3 rw console=ttyS0 earlycon cma=256M" \
     -netdev user,id=net0,host=10.0.2.10,hostfwd=tcp::2211-:22 \
     -device virtio-net-pci,netdev=net0,romfile="" \
-    -netdev tap,id=net1,ifname=tap0,script=no,downscript=no \
-    -device virtio-net-pci,netdev=net1,romfile="" \
     -smp "$SMP" \
     -semihosting-config enable=on,userspace=on
