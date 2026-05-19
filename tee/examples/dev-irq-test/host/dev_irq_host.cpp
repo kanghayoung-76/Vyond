@@ -6,7 +6,7 @@
 
 using namespace Keystone;
 
-#define DEV_WID      6    /* temporary; will change to 5 (dedicated device world) */
+#define DEV_WID      5    /* WID 5: dedicated device world (WID 6=OS, WID 7=SM) */
 #define DEV_SHM_SIZE 64
 
 unsigned long print_buffer(char *str)

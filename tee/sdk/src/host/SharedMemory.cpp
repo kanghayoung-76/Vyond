@@ -39,8 +39,9 @@ SharedMemory::createDevShm(size_t size, uint32_t device_wid) {
     return 0;
   }
 
-  pa  = (void*)create_dev_shm.pa;
-  rid = create_dev_shm.rid;
+  pa         = (void*)create_dev_shm.pa;
+  rid        = create_dev_shm.rid;
+  this->size = create_dev_shm.size;  // driver page-aligns; reflect actual allocation
   return create_dev_shm.rid;
 }
 

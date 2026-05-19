@@ -440,9 +440,11 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
                 {
                     #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
                     {
-                        // Compute perm bitmap from ALL current sharers:
-                        //   eid=11 (host sentinel) → OS_WID=6
-                        //   other eid              → dynamically assigned WID (skip if none yet)
+                        // Compute perm bitmap from current sharers.
+                        // For dev-SHM (device_wid.is_some()):  skip eid=11 (host) to keep OS_WID
+                        //   out of the hardware slot; only device_wid + enclave_wid are granted.
+                        // For host-enclave SHM:  eid=11 → OS_WID is included normally.
+                        let is_dev_shm = region.device_wid.is_some();
                         #[derive(Copy, Clone)]
                         struct PermEntry { wid: usize, eid: usize }
                         let mut entries = [PermEntry { wid: 0, eid: 0 }; 8];
@@ -450,19 +452,22 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
                         let mut perm: u64 = 0;
                         for conf_opt in region.perm_conf.conf_list.iter() {
                             if let Some(c) = conf_opt {
-                                let w = if c.eid == 11 {
-                                    crate::wg::OS_WID as usize
+                                if c.eid == 11 {
+                                    if is_dev_shm { continue; } // host must not access dev-SHM
+                                    let w = crate::wg::OS_WID as usize;
+                                    perm |= 3u64 << (w as u64 * 2);
+                                    if n < 8 { entries[n] = PermEntry { wid: w, eid: c.eid }; n += 1; }
                                 } else {
-                                    match find_enclave(c.eid) {
+                                    let w = match find_enclave(c.eid) {
                                         Some(e) => e.last_wid,
                                         None    => continue,
-                                    }
-                                };
-                                perm |= 3u64 << (w as u64 * 2);
-                                if n < 8 { entries[n] = PermEntry { wid: w, eid: c.eid }; n += 1; }
+                                    };
+                                    perm |= 3u64 << (w as u64 * 2);
+                                    if n < 8 { entries[n] = PermEntry { wid: w, eid: c.eid }; n += 1; }
+                                }
                             }
                         }
-                        // For dev-SHM: add device_wid to perm bitmap instead of OS_WID
+                        // Add device_wid to perm bitmap for dev-SHM
                         if let Some(dwid) = region.device_wid {
                             perm |= 3u64 << (dwid as u64 * 2);
                         }

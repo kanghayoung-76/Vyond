@@ -92,14 +92,17 @@ pub fn osm_init<'a>() -> Result<(), Error> {
 
     #[cfg(feature = "isolator_wg")]
     {
-        // This region will be accessed by both OS and unprotected user processes.
+        // Register the OS region in software for tracking, but do NOT write it to hardware.
+        // Writing a catch-all TOR slot covering all DRAM would inject OS_WID into every
+        // EPM and SHM slot via WGC OR semantics, breaking enclave isolation.
+        // Bounded OS-only hardware slots must be programmed explicitly after this call.
         let region = wg::region_init(
             SMM_BASE + SMM_SIZE,
             usize::MAX,
             (3 << (wg::OS_WID * 2)) | 3,
             false,
         )?;
-        wg::set_wg(region)?;
+        wg::set_wg(region);
         OS_REGION_ID.set(region);
         Ok(())
     }
@@ -126,7 +129,11 @@ pub fn region_init(start: usize, size: usize, eid: usize, shared: bool) -> Resul
     #[cfg(feature = "isolator_wg")]
     {
         // TODO(slot-virt): pWID assignment is temporary (eid+1); replace with dynamic LRU table.
-        // WID 0 is reserved for legacy/untrusted world (has default OS DRAM access via osm_init).
+        // WID 0: legacy/untrusted, WID 1-4: enclaves, WID 5: device, WID 6: OS, WID 7: SM.
+        // Only EPM regions (shared=false) use eid-derived WIDs; SHM regions use OS_WID/custom perms.
+        if !shared {
+            assert!(eid + 1 < wg::DEV_WID as usize, "enclave WID would collide with DEV_WID");
+        }
         let region_idx = wg::region_init(start, size, 3 << ((eid + 1) * 2), true)?;
         // WGC slot virtualization: do NOT write EPM slot to hardware at create time.
         // The ACCESS FAULT handler loads it on-demand when the enclave first accesses EPM.

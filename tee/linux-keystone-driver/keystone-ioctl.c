@@ -310,6 +310,7 @@ int create_dev_shm(unsigned long args)
 
   ioctl_args->pa = pa;
   ioctl_args->rid = ret.value;
+  ioctl_args->size = aligned_size;
   keystone_info("keystone_create_dev_shm: paddr: %#lx, size: %ld, rid: %d, device_wid: %d\n",
                 pa, ioctl_args->size, ioctl_args->rid, ioctl_args->device_wid);
 
