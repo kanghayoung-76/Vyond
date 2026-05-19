@@ -87,15 +87,10 @@ uintptr_t dispatch_edgecall_ocall( unsigned long call_id,
    * dispatch the ocall to host */
 
   edge_call->call_id = call_id;
-  uintptr_t buffer_data_start = edge_call_data_ptr(shared_buffer, shared_buffer_size);
 
-  if(data_len > (shared_buffer_size - (buffer_data_start - shared_buffer))){
-    goto ocall_error;
-  }
-  //TODO safety check on source
-  copy_from_user((void*)buffer_data_start, (void*)data, data_len);
-
-  if(edge_call_setup_call(edge_call, (void*)buffer_data_start, data_len, shared_buffer, shared_buffer_size) != 0){
+  /* UTM is now PTE_U: eapp accesses EYRIE_UNTRUSTED_START directly.
+   * data must already point into the UTM — no copy needed. */
+  if(edge_call_setup_call(edge_call, (void*)data, data_len, shared_buffer, shared_buffer_size) != 0){
     goto ocall_error;
   }
 
@@ -110,7 +105,6 @@ uintptr_t dispatch_edgecall_ocall( unsigned long call_id,
   }
 
   if( return_len == 0 ){
-    /* Done, no return */
     return (uintptr_t)NULL;
   }
 
@@ -120,12 +114,9 @@ uintptr_t dispatch_edgecall_ocall( unsigned long call_id,
     goto ocall_error;
   }
 
-  /* Done, there was a return value to copy out of shared mem */
-  /* TODO This is currently assuming return_len is the length, not the
-     value passed in the edge_call return data. We need to somehow
-     validate these. The size in the edge_call return data is larger
-     almost certainly.*/
-  copy_to_user(return_buffer, (void*)return_ptr, ret_len_untrusted > return_len ? return_len : ret_len_untrusted);
+  /* return_ptr is in UTM (PTE_U) — eapp reads from it directly via return_buffer.
+   * return_buffer must point into the UTM; no copy needed. */
+  (void)return_buffer;
 
   return 0;
 
@@ -135,19 +126,16 @@ uintptr_t dispatch_edgecall_ocall( unsigned long call_id,
 }
 
 uintptr_t handle_copy_from_shared(void* dst, uintptr_t offset, size_t size){
-
-  /* This is where we would handle cache side channels for a given
-     platform */
-
-  /* The only safety check we do is to confirm all data comes from the
-   * shared region. */
+  /* UTM is PTE_U: eapp accesses EYRIE_UNTRUSTED_START directly.
+   * Just validate bounds and return the UTM pointer — no copy needed. */
   uintptr_t src_ptr;
   if(edge_call_get_ptr_from_offset(offset, size,
 				   &src_ptr, shared_buffer, shared_buffer_size) != 0){
     return 1;
   }
-
-  return copy_to_user(dst, (void*)src_ptr, size);
+  /* dst receives the UTM virtual address; eapp dereferences it directly. */
+  *(uintptr_t*)dst = src_ptr;
+  return 0;
 }
 
 void init_edge_internals(){

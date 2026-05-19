@@ -8,6 +8,7 @@
 #include <asm/sbi.h>
 #include <linux/uaccess.h>
 #include <linux/string.h>
+#include <linux/mm.h>
 
 #define read_reg(reg)                                     \
   ({                                                      \
@@ -24,6 +25,7 @@ int keystone_destroy_enclave(struct file *filep, unsigned long arg);
 int __keystone_destroy_enclave(unsigned int ueid);
 int keystone_resume_enclave(unsigned long data);
 int create_shm(unsigned long args);
+int create_dev_shm(unsigned long args);
 int map_shm(unsigned long arg);
 int unmap_shm(unsigned long arg);
 int change_shm(unsigned long arg);
@@ -288,6 +290,34 @@ error:
   return -EINVAL;
 }
 
+int create_dev_shm(unsigned long args)
+{
+  struct sbiret ret;
+  struct keystone_ioctl_create_dev_shm *ioctl_args = (struct keystone_ioctl_create_dev_shm *)args;
+
+  unsigned long pa = allocate_shm(&host_enclave, ioctl_args->size);
+  if (!pa)
+    return -1;
+
+  unsigned long aligned_size = PAGE_ALIGN(ioctl_args->size);
+  ret = sbi_sm_create_dev_shm(pa, aligned_size, ioctl_args->device_wid);
+  if (ret.error)
+  {
+    keystone_err("keystone_create_dev_shm: SBI call failed with error code %ld\n", ret.error);
+    destroy_shm_by_pa(pa);
+    goto error;
+  }
+
+  ioctl_args->pa = pa;
+  ioctl_args->rid = ret.value;
+  keystone_info("keystone_create_dev_shm: paddr: %#lx, size: %ld, rid: %d, device_wid: %d\n",
+                pa, ioctl_args->size, ioctl_args->rid, ioctl_args->device_wid);
+
+  return 0;
+error:
+  return -EINVAL;
+}
+
 int map_shm(unsigned long arg)
 {
   struct sbiret ret;
@@ -447,6 +477,9 @@ long keystone_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
     break;
   case KEYSTONE_IOC_SHARE_SHM:
     ret = share_shm((unsigned long)data);
+    break;
+  case KEYSTONE_IOC_CREATE_DEV_SHM:
+    ret = create_dev_shm((unsigned long)data);
     break;
   default:
     return -ENOSYS;

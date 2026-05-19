@@ -34,6 +34,7 @@ pub struct Region {
     r_type: RegionType,
     paddr: usize,
     size: usize,
+    device_wid: Option<u32>,  // Some(wid) for dev-SHM regions; None otherwise
     perm_conf: shm::RegionPermConfig,
 }
 
@@ -341,6 +342,7 @@ pub fn create_enclave<'a>(create_args: &KeystoneSBICreate) -> Result<&'a Enclave
             r_type: RegionType::RegionEPM,
             paddr: create_args.epm_region.paddr,
             size: create_args.epm_region.size,
+            device_wid: None,
             perm_conf: shm::RegionPermConfig {
                 owner_id: enclave.id(),
                 conf_list: [None; shm::MAX_SHM_SHARERS],
@@ -360,6 +362,7 @@ pub fn create_enclave<'a>(create_args: &KeystoneSBICreate) -> Result<&'a Enclave
             match create_shared_mem(
                 create_args.utm_region.paddr,
                 create_args.utm_region.size,
+                0, // host-SHM (UTM for ocall)
             ) {
                 Ok(rid) => {
                     let _ = share_shm_region(rid, enclave.id(), shm::Perm::FULL);
@@ -459,6 +462,10 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
                                 if n < 8 { entries[n] = PermEntry { wid: w, eid: c.eid }; n += 1; }
                             }
                         }
+                        // For dev-SHM: add device_wid to perm bitmap instead of OS_WID
+                        if let Some(dwid) = region.device_wid {
+                            perm |= 3u64 << (dwid as u64 * 2);
+                        }
                         hprint!("[WGC:SHM] eid={} fault=0x{:x} size=0x{:x} | LOAD",
                             eid, fault_addr, region.size);
                         for i in 0..n {
@@ -466,6 +473,9 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
                             if i == 0 { hprint!(" "); } else { hprint!("+"); }
                             if e.eid == 11 { hprint!("WID={}(OS)", e.wid); }
                             else           { hprint!("WID={}(eid={})", e.wid, e.eid); }
+                        }
+                        if let Some(dwid) = region.device_wid {
+                            hprint!("+WID={}(dev)", dwid);
                         }
                         hprintln!("");
                         let _ = isolator::set_shm_perm(region.id, perm);
@@ -741,12 +751,14 @@ extern "C" {
 ///
 ///
 //pub fn create_shared_mem(eid: usize, paddr: usize, size: usize) -> Result<usize, Error> {
-pub fn create_shared_mem(paddr: usize, size: usize) -> Result<usize, Error> {
-    if let Ok(region_idx) = isolator::region_init(paddr, size, 11 /*untrusted eid */, true) {
-        // Eagerly program the WGC slot so the host (OS_WID) can access the
-        // shared buffer immediately, before any enclave runs.
+// device_wid: 0 = host-SHM (eager OS_WID slot), non-zero = dev-SHM (lazy, device_wid | enclave_wid)
+pub fn create_shared_mem(paddr: usize, size: usize, device_wid: u32) -> Result<usize, Error> {
+    if let Ok(region_idx) = isolator::region_init(paddr, size, 11, true) {
+        // Eagerly load WGC slot for host-SHM only; dev-SHM is lazy (loaded on first enclave fault).
         #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
-        let _ = isolator::set_shm_host_only(region_idx);
+        if device_wid == 0 {
+            let _ = isolator::set_shm_host_only(region_idx);
+        }
 
         for i in 0..MAX_SHARED_REGIONS {
             if unsafe { SHARED_MEM[i].is_none() } {
@@ -754,33 +766,26 @@ pub fn create_shared_mem(paddr: usize, size: usize) -> Result<usize, Error> {
                     let mut region = Region {
                         id: region_idx,
                         r_type: RegionType::RegionShared,
-                        paddr: paddr,
-                        size: size,
+                        paddr,
+                        size,
+                        device_wid: if device_wid != 0 { Some(device_wid) } else { None },
                         perm_conf: shm::RegionPermConfig {
-                            owner_id: 11, /*untrusted eid */
+                            owner_id: 11,
                             conf_list: [None; shm::MAX_SHM_SHARERS],
                         },
                     };
                     region.perm_conf.insert_perm(shm::PermConfig {
-                        eid: 11, /*untrusted eid */
+                        eid: 11,
                         dyn_perm: shm::Perm::FULL,
                         st_perm: shm::Perm::FULL,
                         maps: 0,
                     });
                     SHARED_MEM[i] = Some(region);
                 }
-
-                //display();
                 return Ok(region_idx);
             }
         }
     }
-    // for eid in 0..MAX_ENCLAVES {
-    //         if unsafe { ENCLAVES[eid].is_none() } {
-    //             unsafe { ENCLAVES[eid] = Some(Enclave::new(eid, pa_params)) };
-    //             return Ok(unsafe { ENCLAVES[eid].as_mut().unwrap() });
-    //         }
-    //     }
     Err(Error::Invalid)
 }
 

@@ -19,5 +19,6 @@ struct sbiret sbi_sm_map_shm(unsigned long rid);
 struct sbiret sbi_sm_unmap_shm(unsigned long rid);
 struct sbiret sbi_sm_change_shm(unsigned long rid, unsigned long perm);
 struct sbiret sbi_sm_share_shm(unsigned long rid, unsigned long eid, unsigned long perm);
+struct sbiret sbi_sm_create_dev_shm(unsigned long pa, unsigned long size, unsigned long device_wid);
 
 #endif

@@ -5,6 +5,7 @@
 
 #define OCALL_PRINT_BUFFER 1
 #define OCALL_PRINT_VALUE  2
+#define OCALL_LOAN_SHM     8
 
 void edge_init() {}
 
@@ -19,4 +20,11 @@ void ocall_print_value(unsigned long val)
 {
     unsigned long val_ = val;
     ocall(OCALL_PRINT_VALUE, &val_, sizeof(unsigned long), 0, 0);
+}
+
+shm_t ocall_loan_shm(int id)
+{
+    shm_t shm;
+    ocall(OCALL_LOAN_SHM, &id, sizeof(int), &shm, sizeof(shm_t));
+    return shm;
 }

@@ -39,6 +39,7 @@
 #define SBI_SM_UNMAP_SHM_REGION   4003
 #define SBI_SM_CHANGE_SHM_REGION  4004
 #define SBI_SM_SHARE_SHM_REGION   4005
+#define SBI_SM_CREATE_DEV_SHM     4006  /* host: create device-enclave SHM (device_wid, lazy WGC) */
 #define FID_RANGE_CUSTOM          4999
 
 /* Plugin IDs and Call IDs */

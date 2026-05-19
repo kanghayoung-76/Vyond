@@ -15,6 +15,7 @@ dev-irq-test/CMakeFiles/dev-irq-runner.dir/host/dev_irq_host.cpp.o
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/KeystoneDevice.hpp
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/Memory.hpp
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/Params.hpp
+ /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/SharedMemory.hpp
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/hash_util.hpp
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/keystone.h
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/shared/keystone_user.h
@@ -290,6 +291,7 @@ dev-irq-test/CMakeFiles/dev-irq-runner.dir/host/edge_wrapper.cpp.o
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/KeystoneDevice.hpp
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/Memory.hpp
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/Params.hpp
+ /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/SharedMemory.hpp
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/hash_util.hpp
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/keystone.h
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/shared/keystone_user.h

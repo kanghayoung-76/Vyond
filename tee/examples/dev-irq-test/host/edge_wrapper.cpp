@@ -3,12 +3,18 @@
 
 #define OCALL_PRINT_BUFFER 1
 #define OCALL_PRINT_VALUE  2
+#define OCALL_LOAN_SHM     8
+
+static Keystone::SharedMemory *g_dev_shm = nullptr;
+
+void set_dev_shm(Keystone::SharedMemory *shm) { g_dev_shm = shm; }
 
 void edge_init(Keystone::Enclave *enclave)
 {
     enclave->registerOcallDispatch(incoming_call_dispatch);
     register_call(OCALL_PRINT_BUFFER, print_buffer_wrapper);
     register_call(OCALL_PRINT_VALUE,  print_value_wrapper);
+    register_call(OCALL_LOAN_SHM,     loan_shm_wrapper);
 }
 
 void print_buffer_wrapper(void *buffer, size_t _shared_len)
@@ -51,4 +57,39 @@ void print_value_wrapper(void *buffer, size_t _shared_len)
 
     print_value(*(unsigned long *)call_args);
     edge_call->return_data.call_status = CALL_STATUS_OK;
+}
+
+shm_t loan_shm(int id)
+{
+    shm_t s;
+    s.rid  = g_dev_shm->getRID();
+    s.pa   = (uintptr_t)g_dev_shm->getPA();
+    s.size = g_dev_shm->getSize();
+    printf("[HOST] loan_shm[%d] rid=%u pa=%#lx size=%zu\n", id, s.rid, s.pa, s.size);
+    return s;
+}
+
+void loan_shm_wrapper(void *buffer, size_t _shared_len)
+{
+    uintptr_t _shared_start = (uintptr_t)buffer;
+    struct edge_call *edge_call = (struct edge_call *)buffer;
+
+    uintptr_t call_args;
+    size_t arg_len;
+    if (edge_call_args_ptr(edge_call, &call_args, &arg_len, _shared_start, _shared_len) != 0) {
+        edge_call->return_data.call_status = CALL_STATUS_BAD_OFFSET;
+        return;
+    }
+
+    shm_t shm = loan_shm(*(int *)call_args);
+
+    uintptr_t data_section = edge_call_data_ptr(_shared_start, _shared_len);
+    memcpy((void *)data_section, &shm, sizeof(shm_t));
+
+    if (edge_call_setup_ret(edge_call, (void *)data_section, sizeof(shm_t),
+                            _shared_start, _shared_len)) {
+        edge_call->return_data.call_status = CALL_STATUS_BAD_PTR;
+    } else {
+        edge_call->return_data.call_status = CALL_STATUS_OK;
+    }
 }

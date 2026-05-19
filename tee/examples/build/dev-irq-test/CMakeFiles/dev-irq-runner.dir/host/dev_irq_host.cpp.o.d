@@ -271,4 +271,5 @@ dev-irq-test/CMakeFiles/dev-irq-runner.dir/host/dev_irq_host.cpp.o: \
  /data/hykang/riscv-hy/riscv64-unknown-linux-gnu/include/c++/15.2.0/cstdint \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/Memory.hpp \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/hash_util.hpp \
+ /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/SharedMemory.hpp \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/dev-irq-test/host/edge_wrapper.h

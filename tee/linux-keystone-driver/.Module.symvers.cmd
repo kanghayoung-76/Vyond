@@ -1,1 +1,1 @@
-savedcmd_/home/sk84kim/workspace/vyond-public/tee/linux-keystone-driver/Module.symvers :=  scripts/mod/modpost -M        -o /home/sk84kim/workspace/vyond-public/tee/linux-keystone-driver/Module.symvers -T /home/sk84kim/workspace/vyond-public/tee/linux-keystone-driver/modules.order -i Module.symvers -e 
+savedcmd_Module.symvers :=  /data/hykang/RVSS/q-vela/linux/scripts/mod/modpost -M -m -b  -a      -o Module.symvers -T modules.order -i /data/hykang/RVSS/q-vela/linux/Module.symvers -e 

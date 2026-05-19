@@ -30,7 +30,7 @@ void map_physical_memory(uintptr_t dram_base, uintptr_t dram_size) {
 int map_untrusted_memory(uintptr_t untrusted_ptr, uintptr_t untrusted_size) {
   uintptr_t va        = EYRIE_UNTRUSTED_START;
   while (va < EYRIE_UNTRUSTED_START + untrusted_size) {
-    if (!map_page(vpn(va), ppn(untrusted_ptr), PTE_W | PTE_R | PTE_D)) {
+    if (!map_page(vpn(va), ppn(untrusted_ptr), PTE_W | PTE_R | PTE_D | PTE_U)) {
       return -1;
     }
     va += RISCV_PAGE_SIZE;
@@ -62,10 +62,10 @@ int load_runtime(uintptr_t dummy,
   // initialize freemem
   spa_init(free_base, dram_base + dram_size - free_base);
 
-  // validate runtime elf 
+  // validate runtime elf
   size_t runtime_size = user_base - runtime_base;
   if (((void*) runtime_base == NULL) || (runtime_size <= 0)) {
-    return -1; 
+    return -1;
   }
 
   // create runtime elf struct

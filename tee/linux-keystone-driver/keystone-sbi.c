@@ -58,3 +58,10 @@ struct sbiret sbi_sm_share_shm(unsigned long rid, unsigned long eid, unsigned lo
                    SBI_SM_SHARE_SHM_REGION,
                    rid, eid, perm, 0, 0, 0);
 }
+
+struct sbiret sbi_sm_create_dev_shm(unsigned long pa, unsigned long size, unsigned long device_wid)
+{
+  return sbi_ecall(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE,
+                   SBI_SM_CREATE_DEV_SHM,
+                   pa, size, device_wid, 0, 0, 0);
+}

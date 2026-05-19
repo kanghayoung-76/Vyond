@@ -149,8 +149,8 @@ pub extern "C" fn sbi_sm_attest_enclave(report: usize, data: usize, size: usize)
 }
 
 #[no_mangle]
-pub extern "C" fn sbi_sm_create_shm_region(rid: *mut usize, pa: usize, size: usize) -> isize {
-    let ret = match enclave::create_shared_mem(pa, size) {
+pub extern "C" fn sbi_sm_create_shm_region(rid: *mut usize, pa: usize, size: usize, device_wid: u32) -> isize {
+    let ret = match enclave::create_shared_mem(pa, size, device_wid) {
         Ok(id) => {
             unsafe {
                 *rid = id;
@@ -288,4 +288,11 @@ pub extern "C" fn sbi_sm_share_shm_region(rid: usize, eid2share: usize, st_perm:
         }
     };
     ret as isize
+}
+
+// sbi_sm_create_dev_shm: same as sbi_sm_create_shm_region with device_wid != 0.
+// Kept as a separate symbol so vyond.c can dispatch SBI_SM_CREATE_DEV_SHM.
+#[no_mangle]
+pub extern "C" fn sbi_sm_create_dev_shm(rid: *mut usize, pa: usize, size: usize, device_wid: u32) -> isize {
+    sbi_sm_create_shm_region(rid, pa, size, device_wid)
 }

@@ -1,0 +1,1 @@
+savedcmd_keystone-driver.ko := riscv64-linux-gnu-ld -r -melf64lriscv -z noexecstack --no-warn-rwx-segments --build-id=sha1  -T /data/hykang/RVSS/q-vela/linux/scripts/module.lds -o keystone-driver.ko keystone-driver.o keystone-driver.mod.o .module-common.o

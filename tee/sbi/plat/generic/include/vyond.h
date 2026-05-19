@@ -29,6 +29,7 @@
 #define SBI_SM_UNMAP_SHM_REGION   4003
 #define SBI_SM_CHANGE_SHM_REGION  4004
 #define SBI_SM_SHARE_SHM_REGION   4005
+#define SBI_SM_CREATE_DEV_SHM     4006
 #define FID_RANGE_CUSTOM          4999
 
 /* error codes */
@@ -50,6 +51,7 @@
 #define SBI_ERR_SM_ENCLAVE_SBI_PROHIBITED              100014
 #define SBI_ERR_SM_ENCLAVE_ILLEGAL_PTE                 100015
 #define SBI_ERR_SM_ENCLAVE_NOT_FRESH                   100016
+#define SBI_ERR_SM_ENCLAVE_WAITING_FOR_DEVICE          100017
 #define SBI_ERR_SM_DEPRECATED                          100099
 #define SBI_ERR_SM_NOT_IMPLEMENTED                     100100
 #define SBI_ERR_SM_ENCLAVE_READY_TO_HANDLE             100101

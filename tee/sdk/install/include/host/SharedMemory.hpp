@@ -27,6 +27,7 @@ class SharedMemory {
   SharedMemory();
   ~SharedMemory();
   rid_t createShm(size_t size);
+  rid_t createDevShm(size_t size, uint32_t device_wid);
   void* mapShm(rid_t rid);
   int unmapShm(void* va);
   int changeShm(rid_t rid, unsigned long perm);
