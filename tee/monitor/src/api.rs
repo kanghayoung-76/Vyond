@@ -55,7 +55,6 @@ pub extern "C" fn sbi_sm_enter_enclave(regs: &mut TrapFrame, eid: usize) -> isiz
 
 #[no_mangle]
 pub extern "C" fn sbi_sm_resume_enclave(regs: &mut TrapFrame, eid: usize) -> isize {
-    dbg!("[resume_enclave] eid: {:?}", eid);
     let ret = match enclave::resume_enclave(regs, eid) {
         Ok(_) => Error::Success,
         Err(err) => {
@@ -72,11 +71,6 @@ pub extern "C" fn sbi_sm_resume_enclave(regs: &mut TrapFrame, eid: usize) -> isi
 
 #[no_mangle]
 pub extern "C" fn sbi_sm_stop_enclave(regs: &mut TrapFrame, request: usize) -> isize {
-    dbg!(
-        "[stop_enclave] eid {:?} request: {:?}",
-        cpu::get_enclave_id(),
-        request
-    );
     let ret = match enclave::stop_enclave(regs, request) {
         Ok(_) => Error::Success,
         Err(err) => {
@@ -152,9 +146,8 @@ pub extern "C" fn sbi_sm_attest_enclave(report: usize, data: usize, size: usize)
 pub extern "C" fn sbi_sm_create_shm_region(rid: *mut usize, pa: usize, size: usize, device_wid: u32) -> isize {
     let ret = match enclave::create_shared_mem(pa, size, device_wid) {
         Ok(id) => {
-            unsafe {
-                *rid = id;
-            }
+            unsafe { *rid = id; }
+            dbg!("[create_shm_region] pa={:x} size={:?} rid={:?}", pa, size, id);
             Error::Success
         }
         Err(err) => {
@@ -162,14 +155,6 @@ pub extern "C" fn sbi_sm_create_shm_region(rid: *mut usize, pa: usize, size: usi
             panic!("Failed {:?}", err);
         }
     };
-    unsafe {
-        dbg!(
-            "[create_shm_region paddr {:x} size {:?} returning rid {:?}",
-            pa,
-            size,
-            *rid
-        );
-    }
     ret as isize
 }
 
@@ -178,26 +163,10 @@ pub extern "C" fn sbi_sm_map_shm_region(regs: &mut TrapFrame, rid: usize) -> isi
     let ret = match enclave::map_shm_region(regs, rid) {
         Ok(_) => Error::Success,
         Err(err) => {
-            unsafe {
-                dbg!(
-                    "[map_shm_region] rid {:?} paddr {:x} size {:?} ",
-                    rid,
-                    regs.a2,
-                    regs.a3
-                );
-            }
             dbg!("Failed {:?}", err);
             panic!("Failed {:?}", err);
         }
     };
-    unsafe {
-        dbg!(
-            "[map_shm_region] rid {:?} paddr {:x} size {:?} ",
-            rid,
-            regs.a2,
-            regs.a3
-        );
-    }
     ret as isize
 }
 
@@ -210,15 +179,11 @@ pub extern "C" fn sbi_sm_unmap_shm_region(rid: usize) -> isize {
             panic!("Failed {:?}", err);
         }
     };
-    unsafe {
-        dbg!("[unmap_shm_region] rid {:?}", rid);
-    }
     ret as isize
 }
 
 #[no_mangle]
 pub extern "C" fn sbi_sm_change_shm_region(rid: usize, dyn_perm: i8) -> isize {
-    dbg!("[change_shm_region] rid {:?} perm: {:?}", rid, dyn_perm);
     let ret = match enclave::change_shm_region(rid, dyn_perm.into()) {
         Ok(_) => Error::Success,
         Err(err) => {

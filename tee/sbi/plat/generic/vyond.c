@@ -104,8 +104,6 @@ static int sbi_ecall_vyond_monitor_handler(
 {
     uintptr_t retval;
 
-    //sbi_printf("SBI ECALL funcid: %ld\n", funcid);
-  
     if (funcid <= FID_RANGE_DEPRECATED) {
         return SBI_ERR_SM_DEPRECATED;
     }
@@ -369,6 +367,8 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
 		return;
 	}
 
+	/* debug only for unhandled/unexpected traps — printed below in default: */
+
 	switch (mcause) {
 	    case CAUSE_ILLEGAL_INSTRUCTION:
 		    rc  = sbi_illegal_insn_handler(mtval, regs);
@@ -391,9 +391,6 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
 	    case CAUSE_LOAD_ACCESS:
 	    case CAUSE_STORE_ACCESS: {
 		    uintptr_t eid = sbi_sm_get_enclave_id();
-		    /* When the enclave MMU is active (satp SV39 mode), mtval is a
-		     * virtual address.  Translate it to PA via a software page-table
-		     * walk.  In bare mode satp==0 so mtval is already PA. */
 		    uintptr_t satp = csr_read(CSR_SATP);
 		    uintptr_t phys_addr;
 		    if ((satp >> 60) == 8) {
@@ -406,20 +403,21 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
 		            break;
 		        }
 		    } else {
-		        phys_addr = mtval;  /* bare mode: mtval is PA */
+		        phys_addr = mtval;
 		    }
 		    long ret = sbi_sm_handle_wgc_fault(eid, phys_addr);
 		    if (ret == 0) {
 		        rc = SBI_OK;
 		    } else {
-		        sbi_printf("[SM] ACCESS FAULT: eid=%lu phys=0x%lx va=0x%lx not in region -> exit\n",
-		                   eid, phys_addr, mtval);
+		        sbi_printf("[SM] ACCESS FAULT: eid=%lu pa=0x%lx not in region -> exit\n",
+		                   eid, phys_addr);
 		        sbi_sm_exit_enclave((struct sbi_trap_regs*) regs);
 		        rc = SBI_OK;
 		    }
 		    break;
 		}
 	    default:
+		    sbi_printf("[DBG] UNHANDLED trap: mcause=0x%lx (not access/ecall)\n", mcause);
 		    /* If the trap came from S or U mode, redirect it there */
 		    trap.epc = regs->mepc;
 		    trap.cause = mcause;

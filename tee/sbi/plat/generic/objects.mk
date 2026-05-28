@@ -1,6 +1,6 @@
 # Compiler flags
 platform-cppflags-y =
-platform-cflags-y = -I../src -DED25519_NO_SEED
+platform-cflags-y = -I../src -DED25519_NO_SEED -std=gnu11
 platform-asflags-y =
 platform-ldflags-y = -L../../monitor/target/riscv64gc-unknown-linux-gnu/debug -lvyond build/platform/generic/lib/libplatsbi.a
 
@@ -10,7 +10,7 @@ platform-runcmd = qemu-system-riscv$(PLATFORM_RISCV_XLEN) -M virt -m 256M \
 
 # Blobs to build
 FW_TEXT_START=0x80000000
-FW_ENC_SIZE = 0x340000  # SM binary end ~0x803396A8, so offset 0x340000 clears bss
+FW_ENC_SIZE = 0x80000   # SM binary end ~0x80067000 (412KB), 512KB gives safe margin
 FW_DYNAMIC=y
 FW_JUMP=y
 ifeq ($(PLATFORM_RISCV_XLEN), 32)

@@ -54,15 +54,6 @@ ros/CMakeFiles/ros-runner.dir/host/ros_host.cpp.o: \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/types/__sigset_t.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/types/struct___jmp_buf_tag.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/pthread_stack_min-dynamic.h \
- /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/edge/edge_call.h \
- /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/edge/edge_common.h \
- /data/hykang/riscv-hy/lib/gcc/riscv64-unknown-linux-gnu/15.2.0/include/stdint.h \
- /data/hykang/riscv-hy/sysroot/usr/include/stdint.h \
- /data/hykang/riscv-hy/sysroot/usr/include/bits/libc-header-start.h \
- /data/hykang/riscv-hy/sysroot/usr/include/bits/wchar.h \
- /data/hykang/riscv-hy/sysroot/usr/include/bits/stdint-intn.h \
- /data/hykang/riscv-hy/sysroot/usr/include/bits/stdint-uintn.h \
- /data/hykang/riscv-hy/sysroot/usr/include/bits/stdint-least.h \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/keystone.h \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/Enclave.hpp \
  /data/hykang/riscv-hy/sysroot/usr/include/assert.h \
@@ -75,6 +66,7 @@ ros/CMakeFiles/ros-runner.dir/host/ros_host.cpp.o: \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/struct_stat.h \
  /data/hykang/riscv-hy/lib/gcc/riscv64-unknown-linux-gnu/15.2.0/include/stdarg.h \
  /data/hykang/riscv-hy/sysroot/usr/include/sys/types.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/stdint-intn.h \
  /data/hykang/riscv-hy/sysroot/usr/include/endian.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/byteswap.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/uintn-identity.h \
@@ -104,6 +96,7 @@ ros/CMakeFiles/ros-runner.dir/host/ros_host.cpp.o: \
  /data/hykang/riscv-hy/riscv64-unknown-linux-gnu/include/c++/15.2.0/cstring \
  /data/hykang/riscv-hy/riscv64-unknown-linux-gnu/include/c++/15.2.0/bits/version.h \
  /data/hykang/riscv-hy/sysroot/usr/include/string.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/libc-header-start.h \
  /data/hykang/riscv-hy/sysroot/usr/include/strings.h \
  /data/hykang/riscv-hy/riscv64-unknown-linux-gnu/include/c++/15.2.0/functional \
  /data/hykang/riscv-hy/riscv64-unknown-linux-gnu/include/c++/15.2.0/bits/stl_function.h \
@@ -177,6 +170,7 @@ ros/CMakeFiles/ros-runner.dir/host/ros_host.cpp.o: \
  /data/hykang/riscv-hy/sysroot/usr/include/wchar.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/floatn.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/floatn-common.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/wchar.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/types/wint_t.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/types/mbstate_t.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/types/__mbstate_t.h \
@@ -246,6 +240,10 @@ ros/CMakeFiles/ros-runner.dir/host/ros_host.cpp.o: \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/./common.h \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/shared/sm_err.h \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/common/sha3.h \
+ /data/hykang/riscv-hy/lib/gcc/riscv64-unknown-linux-gnu/15.2.0/include/stdint.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/stdint.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/stdint-uintn.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/stdint-least.h \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/ElfFile.hpp \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/shared/keystone_user.h \
  /data/hykang/riscv-hy/sysroot/usr/include/linux/ioctl.h \
@@ -272,4 +270,6 @@ ros/CMakeFiles/ros-runner.dir/host/ros_host.cpp.o: \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/Memory.hpp \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/hash_util.hpp \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host/SharedMemory.hpp \
- /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/ros/host/edge_wrapper.h
+ /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/ros/host/edge_wrapper.h \
+ /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/edge/edge_call.h \
+ /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/edge/edge_common.h

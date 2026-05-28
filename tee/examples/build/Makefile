@@ -260,71 +260,6 @@ attestor-package/fast:
 .PHONY : attestor-package/fast
 
 #=============================================================================
-# Target rules for targets named wg-fault
-
-# Build rule for target.
-wg-fault: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-fault
-.PHONY : wg-fault
-
-# fast build rule for target.
-wg-fault/fast:
-	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault.dir/build.make wg-fault-test/CMakeFiles/wg-fault.dir/build
-.PHONY : wg-fault/fast
-
-#=============================================================================
-# Target rules for targets named wg-fault-runner
-
-# Build rule for target.
-wg-fault-runner: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-fault-runner
-.PHONY : wg-fault-runner
-
-# fast build rule for target.
-wg-fault-runner/fast:
-	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault-runner.dir/build.make wg-fault-test/CMakeFiles/wg-fault-runner.dir/build
-.PHONY : wg-fault-runner/fast
-
-#=============================================================================
-# Target rules for targets named eyrie-wg-fault-eyrie
-
-# Build rule for target.
-eyrie-wg-fault-eyrie: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-wg-fault-eyrie
-.PHONY : eyrie-wg-fault-eyrie
-
-# fast build rule for target.
-eyrie-wg-fault-eyrie/fast:
-	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie.dir/build.make wg-fault-test/CMakeFiles/eyrie-wg-fault-eyrie.dir/build
-.PHONY : eyrie-wg-fault-eyrie/fast
-
-#=============================================================================
-# Target rules for targets named wg-fault-eyrie
-
-# Build rule for target.
-wg-fault-eyrie: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-fault-eyrie
-.PHONY : wg-fault-eyrie
-
-# fast build rule for target.
-wg-fault-eyrie/fast:
-	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault-eyrie.dir/build.make wg-fault-test/CMakeFiles/wg-fault-eyrie.dir/build
-.PHONY : wg-fault-eyrie/fast
-
-#=============================================================================
-# Target rules for targets named wg-fault-package
-
-# Build rule for target.
-wg-fault-package: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-fault-package
-.PHONY : wg-fault-package
-
-# fast build rule for target.
-wg-fault-package/fast:
-	$(MAKE) $(MAKESILENT) -f wg-fault-test/CMakeFiles/wg-fault-package.dir/build.make wg-fault-test/CMakeFiles/wg-fault-package.dir/build
-.PHONY : wg-fault-package/fast
-
-#=============================================================================
 # Target rules for targets named wg-slot
 
 # Build rule for target.
@@ -388,136 +323,6 @@ wg-slot-package: cmake_check_build_system
 wg-slot-package/fast:
 	$(MAKE) $(MAKESILENT) -f wg-slot-test/CMakeFiles/wg-slot-package.dir/build.make wg-slot-test/CMakeFiles/wg-slot-package.dir/build
 .PHONY : wg-slot-package/fast
-
-#=============================================================================
-# Target rules for targets named wg-lru
-
-# Build rule for target.
-wg-lru: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-lru
-.PHONY : wg-lru
-
-# fast build rule for target.
-wg-lru/fast:
-	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru.dir/build.make wg-lru-test/CMakeFiles/wg-lru.dir/build
-.PHONY : wg-lru/fast
-
-#=============================================================================
-# Target rules for targets named wg-lru-runner
-
-# Build rule for target.
-wg-lru-runner: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-lru-runner
-.PHONY : wg-lru-runner
-
-# fast build rule for target.
-wg-lru-runner/fast:
-	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru-runner.dir/build.make wg-lru-test/CMakeFiles/wg-lru-runner.dir/build
-.PHONY : wg-lru-runner/fast
-
-#=============================================================================
-# Target rules for targets named eyrie-wg-lru-eyrie
-
-# Build rule for target.
-eyrie-wg-lru-eyrie: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-wg-lru-eyrie
-.PHONY : eyrie-wg-lru-eyrie
-
-# fast build rule for target.
-eyrie-wg-lru-eyrie/fast:
-	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/build.make wg-lru-test/CMakeFiles/eyrie-wg-lru-eyrie.dir/build
-.PHONY : eyrie-wg-lru-eyrie/fast
-
-#=============================================================================
-# Target rules for targets named wg-lru-eyrie
-
-# Build rule for target.
-wg-lru-eyrie: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-lru-eyrie
-.PHONY : wg-lru-eyrie
-
-# fast build rule for target.
-wg-lru-eyrie/fast:
-	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru-eyrie.dir/build.make wg-lru-test/CMakeFiles/wg-lru-eyrie.dir/build
-.PHONY : wg-lru-eyrie/fast
-
-#=============================================================================
-# Target rules for targets named wg-lru-package
-
-# Build rule for target.
-wg-lru-package: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-lru-package
-.PHONY : wg-lru-package
-
-# fast build rule for target.
-wg-lru-package/fast:
-	$(MAKE) $(MAKESILENT) -f wg-lru-test/CMakeFiles/wg-lru-package.dir/build.make wg-lru-test/CMakeFiles/wg-lru-package.dir/build
-.PHONY : wg-lru-package/fast
-
-#=============================================================================
-# Target rules for targets named wg-reuse
-
-# Build rule for target.
-wg-reuse: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-reuse
-.PHONY : wg-reuse
-
-# fast build rule for target.
-wg-reuse/fast:
-	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse.dir/build
-.PHONY : wg-reuse/fast
-
-#=============================================================================
-# Target rules for targets named wg-reuse-runner
-
-# Build rule for target.
-wg-reuse-runner: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-reuse-runner
-.PHONY : wg-reuse-runner
-
-# fast build rule for target.
-wg-reuse-runner/fast:
-	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-runner.dir/build
-.PHONY : wg-reuse-runner/fast
-
-#=============================================================================
-# Target rules for targets named eyrie-wg-reuse-eyrie
-
-# Build rule for target.
-eyrie-wg-reuse-eyrie: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-wg-reuse-eyrie
-.PHONY : eyrie-wg-reuse-eyrie
-
-# fast build rule for target.
-eyrie-wg-reuse-eyrie/fast:
-	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/build.make wg-reuse-test/CMakeFiles/eyrie-wg-reuse-eyrie.dir/build
-.PHONY : eyrie-wg-reuse-eyrie/fast
-
-#=============================================================================
-# Target rules for targets named wg-reuse-eyrie
-
-# Build rule for target.
-wg-reuse-eyrie: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-reuse-eyrie
-.PHONY : wg-reuse-eyrie
-
-# fast build rule for target.
-wg-reuse-eyrie/fast:
-	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-eyrie.dir/build
-.PHONY : wg-reuse-eyrie/fast
-
-#=============================================================================
-# Target rules for targets named wg-reuse-package
-
-# Build rule for target.
-wg-reuse-package: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wg-reuse-package
-.PHONY : wg-reuse-package
-
-# fast build rule for target.
-wg-reuse-package/fast:
-	$(MAKE) $(MAKESILENT) -f wg-reuse-test/CMakeFiles/wg-reuse-package.dir/build.make wg-reuse-test/CMakeFiles/wg-reuse-package.dir/build
-.PHONY : wg-reuse-package/fast
 
 #=============================================================================
 # Target rules for targets named shm-ocall
@@ -772,9 +577,6 @@ help:
 	@echo "... eyrie-ros_e1-eyrie"
 	@echo "... eyrie-ros_e2-eyrie"
 	@echo "... eyrie-shm-ocall-eyrie"
-	@echo "... eyrie-wg-fault-eyrie"
-	@echo "... eyrie-wg-lru-eyrie"
-	@echo "... eyrie-wg-reuse-eyrie"
 	@echo "... eyrie-wg-slot-eyrie"
 	@echo "... hello-eyrie"
 	@echo "... hello-package"
@@ -783,12 +585,6 @@ help:
 	@echo "... ros_e2-eyrie"
 	@echo "... shm-ocall-eyrie"
 	@echo "... shm-ocall-package"
-	@echo "... wg-fault-eyrie"
-	@echo "... wg-fault-package"
-	@echo "... wg-lru-eyrie"
-	@echo "... wg-lru-package"
-	@echo "... wg-reuse-eyrie"
-	@echo "... wg-reuse-package"
 	@echo "... wg-slot-eyrie"
 	@echo "... wg-slot-package"
 	@echo "... attestor"
@@ -802,12 +598,6 @@ help:
 	@echo "... ros_e2"
 	@echo "... shm-ocall"
 	@echo "... shm-ocall-runner"
-	@echo "... wg-fault"
-	@echo "... wg-fault-runner"
-	@echo "... wg-lru"
-	@echo "... wg-lru-runner"
-	@echo "... wg-reuse"
-	@echo "... wg-reuse-runner"
 	@echo "... wg-slot"
 	@echo "... wg-slot-runner"
 .PHONY : help

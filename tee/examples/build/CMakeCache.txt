@@ -263,6 +263,9 @@ KEYSTONE_SDK_DIR:UNINITIALIZED=/data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/ins
 MAKESELF:FILEPATH=/usr/bin/makeself
 
 //No help, variable specified on the command line.
+RISCV_TOOLCHAIN_DIR:UNINITIALIZED=/data/hykang/riscv-hy
+
+//No help, variable specified on the command line.
 fw_bin:UNINITIALIZED=/data/hykang/RVSS/WGTEE_project/Vyond/tee/sbi/opensbi/build/platform/generic/firmware/fw_payload.bin
 
 //Value Computed by CMake
@@ -398,7 +401,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=10
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=7
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

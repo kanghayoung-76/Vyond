@@ -82,6 +82,8 @@ pub extern "C" fn sm_init(cold_boot: bool) -> isize {
 
     // initialize SMM
     if cold_boot {
+        crate::wid::wid_init();
+
         if let Err(e) = isolator::smm_init() {
             heprintln!(
                 "Intolerable error - failed to initialize SM memory: {:?}",

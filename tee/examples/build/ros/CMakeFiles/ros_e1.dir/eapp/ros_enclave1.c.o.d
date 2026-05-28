@@ -40,7 +40,6 @@ ros/CMakeFiles/ros_e1.dir/eapp/ros_enclave1.c.o: \
  /data/hykang/riscv-hy/sysroot/usr/include/asm/posix_types.h \
  /data/hykang/riscv-hy/sysroot/usr/include/asm-generic/posix_types.h \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/shared/sm_call.h \
- /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/app/malloc.h \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/ros/eapp/edge_wrapper.h \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/edge/edge_call.h \
  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/edge/edge_common.h

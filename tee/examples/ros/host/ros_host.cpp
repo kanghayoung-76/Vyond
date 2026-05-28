@@ -1,121 +1,74 @@
-//******************************************************************************
-// Copyright (c) 2018, The Regents of the University of California (Regents).
-// All Rights Reserved. See LICENSE for license details.
-//------------------------------------------------------------------------------
 #include <pthread.h>
-
-#include "edge/edge_call.h"
 #include "host/keystone.h"
 #include "host/SharedMemory.hpp"
-
 #include "edge_wrapper.h"
 
 using namespace Keystone;
 
 Enclave enc_publisher, enc_subscriber;
-SharedMemory shm[2];
-void *shm_base;
+SharedMemory shm;
 
-void create_enclaves(char *publisher_path, char *subscriber_path, char *eyrie_path, char *loader_path)
+shm_t loan_shm(int id)
 {
-  Params params;
-
-  params.setFreeMemSize(256 * 1024);
-  params.setUntrustedSize(256 * 1024);
-
-  // PUBLISHER
-  enc_publisher.init(publisher_path, eyrie_path, loader_path, params);
-  printf("[HOST] Initialized publisher with %s, %s, %s shared buffer starts at %#lx\n",
-         publisher_path, eyrie_path, loader_path, (uintptr_t)enc_publisher.getSharedBuffer());
-
-  // SUBSCRIBER
-  enc_subscriber.init(subscriber_path, eyrie_path, loader_path, params);
-  printf("[HOST] Initialized subscriber with %s, %s, %s shared buffer starts at %#lx\n",
-         subscriber_path, eyrie_path, loader_path, (uintptr_t)enc_subscriber.getSharedBuffer());
-}
-
-void init_shm()
-{
-
-  // shared region 0 (w1)
-  // It will be used by enclave 1 (publisher) and camera device
-  rid_t rid0 = shm[0].createShm(0x1000);
-  shm[0].changeShm(rid0, 7);
-  shm[0].shareShm(rid0, enc_publisher.getEID(), 7);
-  shm[0].shareShm(rid0, enc_subscriber.getEID(), 7);
-
-  rid_t rid1 = shm[1].createShm(0x1000);
-  shm[1].changeShm(rid1, 7);
-  shm[1].shareShm(rid1, enc_publisher.getEID(), 7);
-  shm[1].shareShm(rid1, enc_subscriber.getEID(), 7);
-  printf("[HOST] init_shm created rid %d and %d\n", rid0, rid1);
-}
-
-void *publisher_run(void *arg)
-{
-
-  printf("[HOST][PUBLISHER] start running...\n");
-  enc_publisher.run();
-  printf("[HOST][PUBLISHER] done ...\n");
-  return NULL;
-}
-
-void *subscriber_run(void *arg)
-{
-  printf("[HOST][SUBSCRIBER] start running...\n");
-  enc_subscriber.run();
-  printf("[HOST][SUBSCRIBER] start done...\n");
-  return NULL;
-}
-
-unsigned long
-print_buffer(char *str)
-{
-  printf("[HOST] Enclave said: %s", str);
-  return strlen(str);
+    shm_t s;
+    s.rid  = shm.getRID();
+    s.pa   = (uintptr_t)shm.getPA();
+    s.size = shm.getSize();
+    printf("[HOST] loan_shm id=%d rid=%d pa=%#lx size=%zu\n", id, s.rid, s.pa, s.size);
+    return s;
 }
 
 void print_value(unsigned long val)
 {
-  printf("[HOST] Enclave said value: %u (%#x)\n", val, val);
-  return;
+    printf("[HOST] enclave value: %lu (%#lx)\n", val, val);
 }
 
-const char *longstr = "hello_ros";
-const char *
-get_host_string()
+unsigned long print_buffer(char *str)
 {
-  return longstr;
+    printf("[HOST] enclave says: %s", str);
+    return strlen(str);
 }
 
-// id: id from configuration between host and eapp
-shm_t loan_shm(int id)
-{
-  shm_t s;
-  s.rid = shm[id].getRID();
-  s.pa = (uintptr_t)shm[id].getPA();
-  s.size = shm[id].getSize();
-  printf("[HOST] loan_shm rid: %d pa: %#lx size: %d\n", s.rid, s.pa, s.size);
-  return s;
-}
+const char *get_host_string() { return "hello"; }
 
 int main(int argc, char **argv)
 {
-  printf("[HOST] Entering main function of host...\n");
+    if (argc < 5) {
+        fprintf(stderr, "Usage: %s <publisher> <subscriber> <eyrie-rt> <loader>\n", argv[0]);
+        return 1;
+    }
 
-  create_enclaves(argv[1], argv[2], argv[3], argv[4]);
-  init_shm();
-  edge_init(&enc_publisher);
+    printf("[HOST] Entering main...\n");
 
-  pthread_t thr_publisher, thr_subscriber;
-  pthread_create(&thr_publisher, 0, publisher_run, (void *)argv);
-  pthread_join(thr_publisher, NULL);
+    Params params;
+    params.setFreeMemSize(256 * 1024);
+    params.setUntrustedSize(256 * 1024);
 
-  edge_init(&enc_subscriber);
-  pthread_create(&thr_subscriber, 0, subscriber_run, (void *)argv);
-  pthread_join(thr_subscriber, NULL);
+    enc_publisher.init(argv[1], argv[3], argv[4], params);
+    printf("[HOST] Publisher (eid=%d) initialized\n", enc_publisher.getEID());
 
-  printf("[HOST] Terminating host...\n");
+    enc_subscriber.init(argv[2], argv[3], argv[4], params);
+    printf("[HOST] Subscriber (eid=%d) initialized\n", enc_subscriber.getEID());
 
-  return 0;
+    /* Create one SHM shared by both enclaves */
+    rid_t rid = shm.createShm(0x1000);
+    shm.changeShm(rid, 7);
+    shm.shareShm(rid, enc_publisher.getEID(), 7);
+    shm.shareShm(rid, enc_subscriber.getEID(), 7);
+    printf("[HOST] SHM created: rid=%d pa=%p\n", rid, shm.getPA());
+
+    /* Publisher: writes data[0..2] to SHM */
+    edge_init(&enc_publisher);
+    printf("[HOST] Running publisher...\n");
+    enc_publisher.run();
+    printf("[HOST] Publisher done\n");
+
+    /* Subscriber: reads data[0..2] from the same SHM */
+    edge_init(&enc_subscriber);
+    printf("[HOST] Running subscriber...\n");
+    enc_subscriber.run();
+    printf("[HOST] Subscriber done\n");
+
+    printf("[HOST] Done\n");
+    return 0;
 }

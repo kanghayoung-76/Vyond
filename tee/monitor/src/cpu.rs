@@ -135,7 +135,7 @@ macro_rules! csr_clear {
 // mlwid CSR address (WorldGuard Machine-mode Local World ID)
 const MLWID_CSR: usize = 0x390;
 // Must match wg::OS_WID = NWORLDS - 2
-const OS_WID: usize = 6;
+const OS_WID: usize = 30;
 
 /* hart state for regulating SBI */
 struct CpuState {

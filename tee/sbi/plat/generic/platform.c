@@ -317,6 +317,6 @@ struct sbi_platform platform = {
 	.features		= SBI_PLATFORM_DEFAULT_FEATURES,
 	.hart_count		= SBI_HARTMASK_MAX_BITS,
 	.hart_index2id		= generic_hart_index2id,
-	.hart_stack_size	= SBI_PLATFORM_DEFAULT_HART_STACK_SIZE,
+	.hart_stack_size	= 65536,
 	.platform_ops_addr	= (unsigned long)&platform_ops
 };

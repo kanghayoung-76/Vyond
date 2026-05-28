@@ -119,7 +119,16 @@ impl Enclave {
     pub fn allocate<'a>(pa_params: RuntimePAParams) -> Result<&'a mut Enclave, Error> {
         for slot in 0..MAX_ENCLAVES {
             if unsafe { ENCLAVES[slot].is_none() } {
-                // slot index is the EID — freed slots are immediately reusable
+                // GC: release WID entries for every inactive slot.
+                // If a previous test crashed without calling destroy_enclave it leaves
+                // ghost WID entries that block low-numbered slots; sweep them all out
+                // so the new enclave gets the lowest available slot (slot=0 → wid=1).
+                #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+                for dead in 0..MAX_ENCLAVES {
+                    if unsafe { ENCLAVES[dead].is_none() } {
+                        crate::wid::release_wid_for_eid(dead);
+                    }
+                }
                 unsafe { ENCLAVES[slot] = Some(Enclave::new(slot, pa_params)) };
                 return Ok(unsafe { ENCLAVES[slot].as_mut().unwrap() });
             }
@@ -290,7 +299,7 @@ impl Enclave {
     }
 }
 
-pub const MAX_ENCLAVES: usize = 1024;
+pub const MAX_ENCLAVES: usize = 16;
 pub const MAX_SHARED_REGIONS: usize = 8;
 
 const INIT_VALUE: Option<Enclave> = None;

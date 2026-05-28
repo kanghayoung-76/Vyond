@@ -1,1 +1,0 @@
-/data/hykang/riscv-hy/bin/riscv64-unknown-linux-gnu-g++ "CMakeFiles/wg-lru-runner.dir/host/host.cpp.o" -o wg-lru-runner  /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/lib/libkeystone-host.a 
