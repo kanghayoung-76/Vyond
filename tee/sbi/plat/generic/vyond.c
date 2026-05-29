@@ -165,6 +165,8 @@ static int sbi_ecall_vyond_monitor_handler(
 		retval = sbi_sm_create_shm_region(out_val, (uintptr_t)regs->a0, (unsigned long)regs->a1, 0);
 		break;
 	case SBI_SM_CREATE_DEV_SHM:
+		sbi_printf("[DBG] CREATE_DEV_SHM a0=%lx a1=%lx a2=%lx\n",
+		           (unsigned long)regs->a0, (unsigned long)regs->a1, (unsigned long)regs->a2);
 		retval = sbi_sm_create_dev_shm(out_val, (uintptr_t)regs->a0, (unsigned long)regs->a1, (uint32_t)regs->a2);
 		break;
 	case SBI_SM_MAP_SHM_REGION:

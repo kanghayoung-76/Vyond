@@ -300,6 +300,9 @@ int create_dev_shm(unsigned long args)
     return -1;
 
   unsigned long aligned_size = PAGE_ALIGN(ioctl_args->size);
+  printk(KERN_ERR "[DBG-DRV] size=%lu pa=%lx rid=%u device_wid=%u\n",
+         (unsigned long)ioctl_args->size, (unsigned long)ioctl_args->pa,
+         (unsigned)ioctl_args->rid, (unsigned)ioctl_args->device_wid);
   ret = sbi_sm_create_dev_shm(pa, aligned_size, ioctl_args->device_wid);
   if (ret.error)
   {
