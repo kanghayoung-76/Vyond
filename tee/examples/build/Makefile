@@ -558,6 +558,84 @@ dev-irq-test-package/fast:
 	$(MAKE) $(MAKESILENT) -f dev-irq-test/CMakeFiles/dev-irq-test-package.dir/build.make dev-irq-test/CMakeFiles/dev-irq-test-package.dir/build
 .PHONY : dev-irq-test-package/fast
 
+#=============================================================================
+# Target rules for targets named tdds-pub
+
+# Build rule for target.
+tdds-pub: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tdds-pub
+.PHONY : tdds-pub
+
+# fast build rule for target.
+tdds-pub/fast:
+	$(MAKE) $(MAKESILENT) -f tdds-test/CMakeFiles/tdds-pub.dir/build.make tdds-test/CMakeFiles/tdds-pub.dir/build
+.PHONY : tdds-pub/fast
+
+#=============================================================================
+# Target rules for targets named tdds-sub
+
+# Build rule for target.
+tdds-sub: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tdds-sub
+.PHONY : tdds-sub
+
+# fast build rule for target.
+tdds-sub/fast:
+	$(MAKE) $(MAKESILENT) -f tdds-test/CMakeFiles/tdds-sub.dir/build.make tdds-test/CMakeFiles/tdds-sub.dir/build
+.PHONY : tdds-sub/fast
+
+#=============================================================================
+# Target rules for targets named tdds-runner
+
+# Build rule for target.
+tdds-runner: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tdds-runner
+.PHONY : tdds-runner
+
+# fast build rule for target.
+tdds-runner/fast:
+	$(MAKE) $(MAKESILENT) -f tdds-test/CMakeFiles/tdds-runner.dir/build.make tdds-test/CMakeFiles/tdds-runner.dir/build
+.PHONY : tdds-runner/fast
+
+#=============================================================================
+# Target rules for targets named eyrie-tdds-pub-eyrie
+
+# Build rule for target.
+eyrie-tdds-pub-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-tdds-pub-eyrie
+.PHONY : eyrie-tdds-pub-eyrie
+
+# fast build rule for target.
+eyrie-tdds-pub-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f tdds-test/CMakeFiles/eyrie-tdds-pub-eyrie.dir/build.make tdds-test/CMakeFiles/eyrie-tdds-pub-eyrie.dir/build
+.PHONY : eyrie-tdds-pub-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named tdds-pub-eyrie
+
+# Build rule for target.
+tdds-pub-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tdds-pub-eyrie
+.PHONY : tdds-pub-eyrie
+
+# fast build rule for target.
+tdds-pub-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f tdds-test/CMakeFiles/tdds-pub-eyrie.dir/build.make tdds-test/CMakeFiles/tdds-pub-eyrie.dir/build
+.PHONY : tdds-pub-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named tdds-pub-package
+
+# Build rule for target.
+tdds-pub-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tdds-pub-package
+.PHONY : tdds-pub-package
+
+# fast build rule for target.
+tdds-pub-package/fast:
+	$(MAKE) $(MAKESILENT) -f tdds-test/CMakeFiles/tdds-pub-package.dir/build.make tdds-test/CMakeFiles/tdds-pub-package.dir/build
+.PHONY : tdds-pub-package/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -577,6 +655,7 @@ help:
 	@echo "... eyrie-ros_e1-eyrie"
 	@echo "... eyrie-ros_e2-eyrie"
 	@echo "... eyrie-shm-ocall-eyrie"
+	@echo "... eyrie-tdds-pub-eyrie"
 	@echo "... eyrie-wg-slot-eyrie"
 	@echo "... hello-eyrie"
 	@echo "... hello-package"
@@ -585,6 +664,8 @@ help:
 	@echo "... ros_e2-eyrie"
 	@echo "... shm-ocall-eyrie"
 	@echo "... shm-ocall-package"
+	@echo "... tdds-pub-eyrie"
+	@echo "... tdds-pub-package"
 	@echo "... wg-slot-eyrie"
 	@echo "... wg-slot-package"
 	@echo "... attestor"
@@ -598,6 +679,9 @@ help:
 	@echo "... ros_e2"
 	@echo "... shm-ocall"
 	@echo "... shm-ocall-runner"
+	@echo "... tdds-pub"
+	@echo "... tdds-runner"
+	@echo "... tdds-sub"
 	@echo "... wg-slot"
 	@echo "... wg-slot-runner"
 .PHONY : help

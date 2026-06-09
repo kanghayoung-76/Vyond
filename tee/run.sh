@@ -44,7 +44,8 @@ done;
 #    fi
 #done
 
-QEMU_SYSTEM="../qemu/build/qemu-system-riscv64"
+#QEMU_SYSTEM="../qemu/build/qemu-system-riscv64"
+QEMU_SYSTEM="/data/hykang/RVSS/q-vela-new/qemu/build/qemu-system-riscv64"
 FW_BIN="sbi/opensbi/build/platform/generic/firmware/fw_dynamic.bin"
 LINUX_IMAGE="$ROOT_PATH/../prebuilt/Image"
 export SMP=1;

@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/eyrie-tdds-pub-eyrie"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/eyrie-tdds-pub-eyrie.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/eyrie-tdds-pub-eyrie-complete.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-build.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-configure.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-download.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-install.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-mkdir.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-patch.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"eyrie-tdds-pub-eyrie"
+		],
+		"name" : "eyrie-tdds-pub-eyrie"
+	}
+}

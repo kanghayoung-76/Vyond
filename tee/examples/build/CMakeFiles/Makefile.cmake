@@ -19,11 +19,13 @@ set(CMAKE_MAKEFILE_DEPENDS
   "ros/runtime/tmp/eyrie-ros_e1-eyrie-mkdirs.cmake"
   "ros/runtime/tmp/eyrie-ros_e2-eyrie-mkdirs.cmake"
   "shm-ocall-test/runtime/tmp/eyrie-shm-ocall-eyrie-mkdirs.cmake"
+  "tdds-test/runtime/tmp/eyrie-tdds-pub-eyrie-mkdirs.cmake"
   "wg-slot-test/runtime/tmp/eyrie-wg-slot-eyrie-mkdirs.cmake"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/dev-irq-test/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/hello/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/ros/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/shm-ocall-test/CMakeLists.txt"
+  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/tdds-test/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/wg-slot-test/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/cmake/macros.cmake"
   "/usr/share/cmake-3.28/Modules/CMakeASMInformation.cmake"
@@ -113,6 +115,12 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "dev-irq-test/runtime/src/eyrie-dev_irq_eapp-eyrie-stamp/eyrie-dev_irq_eapp-eyrie-patch-info.txt"
   "dev-irq-test/runtime/tmp/eyrie-dev_irq_eapp-eyrie-cfgcmd.txt"
   "dev-irq-test/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "tdds-test/runtime/tmp/eyrie-tdds-pub-eyrie-mkdirs.cmake"
+  "tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-custominfo.txt"
+  "tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-update-info.txt"
+  "tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-patch-info.txt"
+  "tdds-test/runtime/tmp/eyrie-tdds-pub-eyrie-cfgcmd.txt"
+  "tdds-test/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
@@ -151,4 +159,10 @@ set(CMAKE_DEPEND_INFO_FILES
   "dev-irq-test/CMakeFiles/eyrie-dev_irq_eapp-eyrie.dir/DependInfo.cmake"
   "dev-irq-test/CMakeFiles/dev_irq_eapp-eyrie.dir/DependInfo.cmake"
   "dev-irq-test/CMakeFiles/dev-irq-test-package.dir/DependInfo.cmake"
+  "tdds-test/CMakeFiles/tdds-pub.dir/DependInfo.cmake"
+  "tdds-test/CMakeFiles/tdds-sub.dir/DependInfo.cmake"
+  "tdds-test/CMakeFiles/tdds-runner.dir/DependInfo.cmake"
+  "tdds-test/CMakeFiles/eyrie-tdds-pub-eyrie.dir/DependInfo.cmake"
+  "tdds-test/CMakeFiles/tdds-pub-eyrie.dir/DependInfo.cmake"
+  "tdds-test/CMakeFiles/tdds-pub-package.dir/DependInfo.cmake"
   )

@@ -8,6 +8,7 @@ set(SOURCE_FILES
   string.c
   syscall.c
   tiny-malloc.c
+  tdds.c
   )
 
 set(INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include/app)

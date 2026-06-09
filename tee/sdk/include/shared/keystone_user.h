@@ -38,6 +38,8 @@
   _IOR(KEYSTONE_IOC_MAGIC, 0x0c, struct keystone_ioctl_share_shm)
 #define KEYSTONE_IOC_CREATE_DEV_SHM \
   _IOR(KEYSTONE_IOC_MAGIC, 0x0d, struct keystone_ioctl_create_dev_shm)
+#define KEYSTONE_IOC_CREATE_ENCLAVE_SHM \
+  _IOR(KEYSTONE_IOC_MAGIC, 0x0e, struct keystone_ioctl_create_shm)
 
 #define RT_NOEXEC 0
 #define USER_NOEXEC 1

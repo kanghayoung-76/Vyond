@@ -60,9 +60,26 @@ map_shm(rid_t rid);
 int
 unmap_shm(rid_t rid, void* addr, size_t size);
 
+/* get_shm_eids: returns EID list for a shared memory region.
+ * eids_out: caller-provided buffer, max_count: buffer capacity.
+ * Returns number of EIDs written, or -1 on error. */
+int
+get_shm_eids(rid_t rid, uintptr_t* eids_out, size_t max_count);
+
+/* verify_shm_channel: queries SM for EID list of rid and checks
+ * that host EID (11) is absent. Returns 0 if safe, -1 otherwise. */
+int
+verify_shm_channel(rid_t rid);
+
 void*
 mydev_map(uintptr_t base, size_t size);
 
 int
 mydev_unmap(void* addr, size_t size);
+
+/* map_utm: return the pre-mapped UTM (host-enclave shared buffer) VA.
+ * The loader already mapped UTM at EYRIE_UNTRUSTED_START with PTE_U,
+ * so this simply retrieves that address and its size. */
+void*
+map_utm(size_t* size_out);
 #endif /* syscall.h */

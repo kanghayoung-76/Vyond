@@ -89,8 +89,13 @@ uintptr_t dispatch_edgecall_ocall( unsigned long call_id,
   edge_call->call_id = call_id;
 
   /* UTM is now PTE_U: eapp accesses EYRIE_UNTRUSTED_START directly.
-   * data must already point into the UTM — no copy needed. */
-  if(edge_call_setup_call(edge_call, (void*)data, data_len, shared_buffer, shared_buffer_size) != 0){
+   * data must already point into the UTM — no copy needed.
+   * Skip setup_call for the no-data case (data_len==0) because ptr may be
+   * NULL, which fails the UTM range check even with size=0. */
+  if(data_len == 0){
+    edge_call->call_arg_size   = 0;
+    edge_call->call_arg_offset = 0;
+  } else if(edge_call_setup_call(edge_call, (void*)data, data_len, shared_buffer, shared_buffer_size) != 0){
     goto ocall_error;
   }
 
@@ -114,9 +119,11 @@ uintptr_t dispatch_edgecall_ocall( unsigned long call_id,
     goto ocall_error;
   }
 
-  /* return_ptr is in UTM (PTE_U) — eapp reads from it directly via return_buffer.
-   * return_buffer must point into the UTM; no copy needed. */
-  (void)return_buffer;
+  /* ZEROCOPY: store UTM return-data address into return_buffer.
+   * SUM=1 (set in eyrie_boot) allows this S-mode write to the U-mode stack.
+   * Eapp dereferences return_buffer to get the UTM pointer, then reads the
+   * payload directly from UTM (PTE_U — no memcpy involved). */
+  *(uintptr_t*)return_buffer = return_ptr;
 
   return 0;
 
@@ -201,8 +208,36 @@ handle_mydev_unmap(uintptr_t vaddr, size_t size) {
   return 0;
 }
 
+static int handle_map_utm(uintptr_t* ret_vaddr) {
+  uintptr_t pa = translate(shared_buffer);
+  uintptr_t sz = shared_buffer_size;
+
+  uintptr_t va = shm_va_ptr;
+  *ret_vaddr   = va;
+  while (va < shm_va_ptr + sz) {
+    if (!map_page(vpn(va), ppn(pa), PAGE_MODE_USER_DATA)) {
+      return -1;
+    }
+    va += RISCV_PAGE_SIZE;
+    pa += RISCV_PAGE_SIZE;
+  }
+  shm_va_ptr = va;
+
+  /* Update shared_buffer so edge_call_setup_call validates against the
+   * eapp-mapped VA range.  Both VAs alias the same physical memory. */
+  shared_buffer = *ret_vaddr;
+  return 0;
+}
+
 void
 handle_syscall(struct encl_ctx* ctx) {
+  /* Re-set SUM on every syscall entry.  copy_to_user (used in MAP_SHM,
+   * GET_SHM_EIDS, etc.) clears SUM after each call.  Without this, any
+   * handler that writes directly to a PTE_U address (eapp stack or UTM)
+   * would fault.  SM saves/restores sstatus across stop/run, so SUM set
+   * here also persists through sbi_stop_enclave → sbi_run_enclave. */
+  __asm__ __volatile__("csrs sstatus, %0" :: "r"(0x40000UL) : "memory");
+
   uintptr_t n    = ctx->regs.a7;
   uintptr_t arg0 = ctx->regs.a0;
   uintptr_t arg1 = ctx->regs.a1;
@@ -287,6 +322,31 @@ handle_syscall(struct encl_ctx* ctx) {
     case (RUNTIME_SYSCALL_TRANSLATE_VA):
       ret = translate((uintptr_t)arg0);
       break;
+    case (RUNTIME_SYSCALL_MAP_UTM):
+      /* Map UTM pages into enclave VA (like map_shm).  Updates shared_buffer
+       * so edge_call_setup_call validates against the eapp-accessible VA.
+       * Direct writes — SUM=1 is guaranteed by the csrs at handle_syscall entry. */
+      ret = handle_map_utm(&ret_val);
+      *(uintptr_t*)arg0 = ret_val;
+      *(uintptr_t*)arg1 = shared_buffer_size;
+      break;
+    case (RUNTIME_SYSCALL_GET_SHM_EIDS): {
+      /* arg0=rid, arg1=eids_out (user VA), arg2=max_count, arg3=count_out (user VA) */
+      uintptr_t buf_pa = translate((uintptr_t)rt_copy_buffer_1);
+      size_t max = (size_t)arg2;
+      if (max > sizeof(rt_copy_buffer_1) / sizeof(uintptr_t))
+        max = sizeof(rt_copy_buffer_1) / sizeof(uintptr_t);
+      ret = SBI_CALL_3(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE,
+                       SBI_SM_GET_SHM_EIDS,
+                       (uintptr_t)arg0, buf_pa, (uintptr_t)max);
+      if (!ret) {
+        register uintptr_t a1 __asm__("a1");  /* count returned by SM */
+        uintptr_t count = a1;
+        copy_to_user((void*)arg1, rt_copy_buffer_1, count * sizeof(uintptr_t));
+        copy_to_user((void*)arg3, &count, sizeof(uintptr_t));
+      }
+      break;
+    }
 
 #ifdef USE_LINUX_SYSCALL
   case(SYS_clock_gettime):

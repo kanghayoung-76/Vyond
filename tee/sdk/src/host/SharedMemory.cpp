@@ -31,6 +31,19 @@ SharedMemory::createShm(size_t size) {
 }
 
 rid_t
+SharedMemory::createEnclaveShm(size_t size) {
+  struct keystone_ioctl_create_shm create_shm;
+  this->size = create_shm.size = size;
+  if (ioctl(fd, KEYSTONE_IOC_CREATE_ENCLAVE_SHM, &create_shm)) {
+    return 0;
+  }
+
+  pa  = (void*)create_shm.pa;
+  rid = create_shm.rid;
+  return create_shm.rid;
+}
+
+rid_t
 SharedMemory::createDevShm(size_t size, uint32_t device_wid) {
   struct keystone_ioctl_create_dev_shm create_dev_shm;
   this->size = create_dev_shm.size = size;

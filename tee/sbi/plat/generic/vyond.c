@@ -76,6 +76,8 @@ unsigned long copy_enclave_create_args(uintptr_t src, struct keystone_sbi_create
 unsigned long sbi_sm_attest_enclave(unsigned long report, unsigned long data, unsigned long size);
 unsigned long sbi_sm_create_shm_region(unsigned long *rid, uintptr_t pa, unsigned long size, uint32_t device_wid);
 unsigned long sbi_sm_create_dev_shm(unsigned long *rid, uintptr_t pa, unsigned long size, uint32_t device_wid);
+unsigned long sbi_sm_create_enclave_shm(unsigned long *rid, uintptr_t pa, unsigned long size);
+unsigned long sbi_sm_get_shm_eids(unsigned long rid, uintptr_t buf_pa, unsigned long max_count, unsigned long *out_count);
 unsigned long sbi_sm_map_shm_region(struct sbi_trap_regs *regs, unsigned long rid);
 unsigned long sbi_sm_unmap_shm_region(unsigned long rid);
 unsigned long sbi_sm_change_shm_region(unsigned long rid, unsigned long dyn_perm);
@@ -169,6 +171,15 @@ static int sbi_ecall_vyond_monitor_handler(
 		           (unsigned long)regs->a0, (unsigned long)regs->a1, (unsigned long)regs->a2);
 		retval = sbi_sm_create_dev_shm(out_val, (uintptr_t)regs->a0, (unsigned long)regs->a1, (uint32_t)regs->a2);
 		break;
+	case SBI_SM_CREATE_ENCLAVE_SHM:
+		retval = sbi_sm_create_enclave_shm(out_val, (uintptr_t)regs->a0, (unsigned long)regs->a1);
+		break;
+	case SBI_SM_GET_SHM_EIDS: {
+		unsigned long eid_count = 0;
+		retval = sbi_sm_get_shm_eids(regs->a0, (uintptr_t)regs->a1, (unsigned long)regs->a2, &eid_count);
+		*out_val = eid_count;
+		break;
+	}
 	case SBI_SM_MAP_SHM_REGION:
 		retval = sbi_sm_map_shm_region((struct sbi_trap_regs *)regs, (uint32_t)regs->a0);
 		break;

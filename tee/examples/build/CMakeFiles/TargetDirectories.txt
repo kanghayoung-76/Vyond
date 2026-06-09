@@ -46,3 +46,11 @@
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/dev-irq-test-package.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/edit_cache.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/rebuild_cache.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/tdds-pub.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/tdds-sub.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/tdds-runner.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/eyrie-tdds-pub-eyrie.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/tdds-pub-eyrie.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/tdds-pub-package.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/edit_cache.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/rebuild_cache.dir

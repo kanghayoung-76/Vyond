@@ -262,3 +262,47 @@ pub extern "C" fn sbi_sm_create_dev_shm(rid: *mut usize, pa: usize, size: usize,
     crate::dbg!("[create_dev_shm] device_wid={}", device_wid);
     sbi_sm_create_shm_region(rid, pa, size, device_wid)
 }
+
+/// Creates a shared memory region for enclave-to-enclave communication.
+/// Host EID 11 is NOT added to perm_conf, allowing enclaves to verify
+/// that the host cannot read/write channel data.
+/// Called by host (SBI 4007) before running enclaves.
+#[no_mangle]
+pub extern "C" fn sbi_sm_create_enclave_shm(rid: *mut usize, pa: usize, size: usize) -> isize {
+    let ret = match enclave::create_enclave_shm(pa, size) {
+        Ok(id) => {
+            unsafe { *rid = id; }
+            dbg!("[create_enclave_shm] pa={:x} size={:?} rid={:?}", pa, size, id);
+            Error::Success
+        }
+        Err(err) => {
+            dbg!("Failed {:?}", err);
+            err
+        }
+    };
+    ret as isize
+}
+
+/// Returns the EID list for a shared memory region into a caller-provided buffer.
+/// The enclave uses this to verify no unexpected EIDs (especially host EID 11)
+/// have access to the channel before mapping it.
+/// Called by enclave (SBI 4008) after receiving RID from host via OCALL.
+#[no_mangle]
+pub extern "C" fn sbi_sm_get_shm_eids(
+    rid: usize,
+    buf_pa: usize,
+    max_count: usize,
+    out_count: *mut usize,
+) -> isize {
+    let ret = match enclave::get_shm_eids(rid, buf_pa, max_count) {
+        Ok(count) => {
+            unsafe { *out_count = count; }
+            Error::Success
+        }
+        Err(err) => {
+            dbg!("Failed {:?}", err);
+            err
+        }
+    };
+    ret as isize
+}

@@ -527,13 +527,22 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
 
         for i in 0..MAX_SHARED_REGIONS {
             unsafe {
-                if let Some(region) = &SHARED_MEM[i] {
-                    if region.r_type != RegionType::RegionInvalid
-                        && region.perm_conf.owner_id == eid
-                    {
-                        let _ = isolator::set_isolator(region.id, true);
-                        let _ = isolator::region_free(region.id);
-                    }
+                let should_free = if let Some(region) = &SHARED_MEM[i] {
+                    let owner_match = region.r_type != RegionType::RegionInvalid
+                        && region.perm_conf.owner_id == eid;
+                    // UTM SHM: host-owned (11), host+enclave both in conf_list
+                    let utm_match = region.r_type != RegionType::RegionInvalid
+                        && region.perm_conf.owner_id == 11
+                        && region.perm_conf.get_perm(11).is_some()
+                        && region.perm_conf.get_perm(eid).is_some();
+                    if owner_match || utm_match { Some(region.id) } else { None }
+                } else {
+                    None
+                };
+                if let Some(region_id) = should_free {
+                    let _ = isolator::set_isolator(region_id, true);
+                    let _ = isolator::region_free(region_id);
+                    SHARED_MEM[i] = None;
                 }
             }
         }
@@ -804,13 +813,28 @@ pub fn create_shared_mem(paddr: usize, size: usize, device_wid: u32) -> Result<u
 }
 
 pub fn map_shm_region(regs: &mut TrapFrame, rid: usize) -> Result<(), Error> {
+    let caller_eid = if cpu::is_enclave_context() {
+        cpu::get_enclave_id()
+    } else {
+        11
+    };
     unsafe {
         if let Some(region) = get_shm_region_by_rid(rid) {
             regs.a2 = region.paddr;
             regs.a3 = region.size;
-            if let Some(perm) = region.perm_conf.get_perm_mut(11) {
+            if let Some(perm) = region.perm_conf.get_perm_mut(caller_eid) {
                 perm.increment_map();
-                //display();
+                return Ok(());
+            }
+            // TDDS enclave-only channel: host EID (11) absent from conf_list.
+            // Any enclave may map it — auto-grant on first access.
+            if cpu::is_enclave_context() && region.perm_conf.get_perm(11).is_none() {
+                region.perm_conf.insert_perm(shm::PermConfig {
+                    eid: caller_eid,
+                    dyn_perm: shm::Perm::FULL,
+                    st_perm: shm::Perm::FULL,
+                    maps: 1,
+                });
                 return Ok(());
             }
         }
@@ -819,14 +843,18 @@ pub fn map_shm_region(regs: &mut TrapFrame, rid: usize) -> Result<(), Error> {
 }
 
 pub fn unmap_shm_region(rid: usize) -> Result<(), Error> {
+    let caller_eid = if cpu::is_enclave_context() {
+        cpu::get_enclave_id()
+    } else {
+        11
+    };
     unsafe {
         if let Some(region) = get_shm_region_by_rid(rid) {
-            if let Some(perm) = region.perm_conf.get_perm_mut(11) {
+            if let Some(perm) = region.perm_conf.get_perm_mut(caller_eid) {
                 perm.decrement_map();
-                //display();
                 return Ok(());
             }
-            dbg!("Not found perm info for 11 (host id)");
+            dbg!("Not found perm info for eid {:?}", caller_eid);
         }
         dbg!("Not found region for rid {:?}", rid);
     }
@@ -915,6 +943,59 @@ pub fn share_shm_region(rid: usize, eid2share: usize, st_perm: shm::Perm) -> Res
     }
     //display();
     Ok(())
+}
+
+/// Creates a shared memory region for enclave-to-enclave communication.
+/// Unlike create_shared_mem, this does NOT add host EID 11 to perm_conf,
+/// so enclaves can verify that the host has no access to the channel.
+pub fn create_enclave_shm(paddr: usize, size: usize) -> Result<usize, Error> {
+    if let Ok(region_idx) = isolator::region_init(paddr, size, 11, true) {
+        for i in 0..MAX_SHARED_REGIONS {
+            if unsafe { SHARED_MEM[i].is_none() } {
+                unsafe {
+                    SHARED_MEM[i] = Some(Region {
+                        id: region_idx,
+                        r_type: RegionType::RegionShared,
+                        paddr,
+                        size,
+                        device_wid: None,
+                        perm_conf: shm::RegionPermConfig {
+                            owner_id: 11,
+                            conf_list: [None; shm::MAX_SHM_SHARERS],
+                        },
+                    });
+                }
+                dbg!("[create_enclave_shm] pa={:x} size={:?} rid={:?}", paddr, size, region_idx);
+                return Ok(region_idx);
+            }
+        }
+    }
+    Err(Error::Invalid)
+}
+
+/// Returns the list of EIDs that have access to the given SHM region.
+/// Writes up to max_count EIDs to the physical address buf_pa.
+/// Returns the number of EIDs written, or an error.
+/// Called by enclave to verify channel membership before mapping.
+pub fn get_shm_eids(rid: usize, buf_pa: usize, max_count: usize) -> Result<usize, Error> {
+    if let Some(region) = get_shm_region_by_rid(rid) {
+        let mut count = 0usize;
+        let buf = buf_pa as *mut usize;
+        for conf in region.perm_conf.conf_list.iter() {
+            if count >= max_count {
+                break;
+            }
+            if let Some(cfg) = conf {
+                unsafe { *buf.add(count) = cfg.eid; }
+                count += 1;
+            }
+        }
+        dbg!("[get_shm_eids] rid={:?} count={:?}", rid, count);
+        Ok(count)
+    } else {
+        dbg!("[get_shm_eids] region not found for rid {:?}", rid);
+        Err(Error::Invalid)
+    }
 }
 
 pub fn get_shm_region_by_rid(rid: usize) -> Option<&'static mut Region> {

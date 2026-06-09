@@ -29,7 +29,9 @@
 #define SBI_SM_UNMAP_SHM_REGION   4003
 #define SBI_SM_CHANGE_SHM_REGION  4004
 #define SBI_SM_SHARE_SHM_REGION   4005
-#define SBI_SM_CREATE_DEV_SHM     4006
+#define SBI_SM_CREATE_DEV_SHM        4006
+#define SBI_SM_CREATE_ENCLAVE_SHM    4007  /* host: create enclave-channel SHM (no host EID in perm_conf) */
+#define SBI_SM_GET_SHM_EIDS          4008  /* enclave: query EID list of a channel before mapping */
 #define FID_RANGE_CUSTOM          4999
 
 /* error codes */

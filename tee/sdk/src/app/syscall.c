@@ -61,3 +61,35 @@ int
 mydev_unmap(void* addr, size_t size) {
   return SYSCALL_2(RUNTIME_SYSCALL_MYDEV_UNMAP, addr, size);
 }
+
+int
+get_shm_eids(rid_t rid, uintptr_t* eids_out, size_t max_count) {
+  uintptr_t actual_count = 0;
+  int ret = SYSCALL_4(RUNTIME_SYSCALL_GET_SHM_EIDS,
+                      rid, eids_out, max_count, &actual_count);
+  if (ret) return -1;
+  return (int)actual_count;
+}
+
+void*
+map_utm(size_t* size_out) {
+  uintptr_t vaddr = 0;
+  uintptr_t sz    = 0;
+  int ret = SYSCALL_2(RUNTIME_SYSCALL_MAP_UTM, &vaddr, &sz);
+  if (ret) return (void*)0;
+  if (size_out) *size_out = (size_t)sz;
+  return (void*)vaddr;
+}
+
+#define HOST_EID 11
+
+int
+verify_shm_channel(rid_t rid) {
+  uintptr_t eids[8];
+  int count = get_shm_eids(rid, eids, 8);
+  if (count < 0) return -1;
+  for (int i = 0; i < count; i++) {
+    if (eids[i] == HOST_EID) return -1;
+  }
+  return 0;
+}
