@@ -319,6 +319,12 @@ handle_syscall(struct encl_ctx* ctx) {
     case (RUNTIME_SYSCALL_WAIT_DEV_DATA):
       ret = sbi_wait_dev_data((uint32_t)arg0);
       break;
+    case (RUNTIME_SYSCALL_WAIT_SHM):
+      ret = sbi_wait_shm((uint32_t)arg0);
+      break;
+    case (RUNTIME_SYSCALL_NOTIFY_SHM):
+      ret = sbi_notify_shm((uint32_t)arg0);
+      break;
     case (RUNTIME_SYSCALL_TRANSLATE_VA):
       ret = translate((uintptr_t)arg0);
       break;

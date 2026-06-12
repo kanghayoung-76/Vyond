@@ -27,7 +27,6 @@ typedef struct {
 int   tdds_init_channel(tdds_channel_t *ch, rid_t rid);
 int   tdds_publish(tdds_channel_t *ch, const void *msg, size_t size);
 int   tdds_subscribe(tdds_channel_t *ch, void *buf, size_t size);
-void  ocall_tdds_wait(rid_t rid);
 void  tdds_destroy_channel(tdds_channel_t *ch);
 
 /* Returns pointer into UTM data area (after edge_call header) for OCALL args.

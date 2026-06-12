@@ -85,6 +85,8 @@ unsigned long sbi_sm_share_shm_region(unsigned long rid, unsigned long eid2share
 /* Device IRQ path */
 unsigned long sbi_sm_register_dev_irq(uint32_t irq_num);
 unsigned long sbi_sm_wait_dev_data(struct sbi_trap_regs *regs, uint32_t irq_num);
+unsigned long sbi_sm_wait_shm(struct sbi_trap_regs *regs, uint32_t rid);
+unsigned long sbi_sm_notify_shm(uint32_t rid);
 long         sbi_sm_handle_dev_irq(struct sbi_trap_regs *regs, uint32_t irq_num);
 
 /* PLIC M-mode claim/complete  (QEMU virt: M-mode context = hartid * 2) */
@@ -200,6 +202,15 @@ static int sbi_ecall_vyond_monitor_handler(
         ((struct sbi_trap_regs *)regs)->a0 = retval;
         ((struct sbi_trap_regs *)regs)->mepc += 4;
         sbi_trap_exit(regs);
+        break;
+    case SBI_SM_WAIT_SHM:
+        retval = sbi_sm_wait_shm((struct sbi_trap_regs*) regs, (uint32_t)regs->a0);
+        ((struct sbi_trap_regs *)regs)->a0 = retval;
+        ((struct sbi_trap_regs *)regs)->mepc += 4;
+        sbi_trap_exit(regs);
+        break;
+    case SBI_SM_NOTIFY_SHM:
+        retval = sbi_sm_notify_shm((uint32_t)regs->a0);
         break;
 	default:
 		retval = SBI_ERR_SM_NOT_IMPLEMENTED;

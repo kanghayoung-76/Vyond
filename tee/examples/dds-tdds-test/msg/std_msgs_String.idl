@@ -1,0 +1,12 @@
+/* DDS type representation of std_msgs/msg/String used by rmw_cyclonedds.
+ * Topic name convention: "rt/<ros_topic>" (e.g. "rt/tdds_input").
+ * Matching this IDL enables plain CycloneDDS to interop with ROS2 nodes. */
+module std_msgs {
+    module msg {
+        module dds_ {
+            struct String_ {
+                string data;
+            };
+        };
+    };
+};

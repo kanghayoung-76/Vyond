@@ -30,6 +30,8 @@
 #define SBI_SM_EXIT_ENCLAVE      3006
 #define SBI_SM_REGISTER_DEV_IRQ  3007  /* bind current enclave to a device IRQ */
 #define SBI_SM_WAIT_DEV_DATA     3008  /* suspend enclave until that IRQ fires  */
+#define SBI_SM_WAIT_SHM          3009  /* suspend enclave until notify_shm(rid) */
+#define SBI_SM_NOTIFY_SHM        3010  /* resume enclave waiting on rid         */
 #define FID_RANGE_ENCLAVE        3999
 
 /* 4000-4999 are experimental */
@@ -54,6 +56,7 @@
 #define STOP_EDGE_CALL_HOST   1
 #define STOP_EXIT_ENCLAVE     2
 #define STOP_WAITING_DEV_DATA 3  /* enclave is waiting for a device IRQ */
+#define STOP_WAITING_SHM      4  /* enclave is waiting for notify_shm   */
 
 /* Structs for interfacing into the SM */
 struct runtime_params_t {

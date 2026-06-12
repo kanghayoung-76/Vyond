@@ -55,6 +55,7 @@ pub extern "C" fn sbi_sm_enter_enclave(regs: &mut TrapFrame, eid: usize) -> isiz
 
 #[no_mangle]
 pub extern "C" fn sbi_sm_resume_enclave(regs: &mut TrapFrame, eid: usize) -> isize {
+    dbg!("[resume_enclave] eid: {:?}", eid);
     let ret = match enclave::resume_enclave(regs, eid) {
         Ok(_) => Error::Success,
         Err(err) => {
@@ -237,14 +238,29 @@ pub extern "C" fn sbi_sm_handle_dev_irq(regs: &mut TrapFrame, irq_num: u32) -> i
     }
 }
 
+/// Called by enc2 to suspend itself until enc1 calls notify_shm(rid).
+#[no_mangle]
+pub extern "C" fn sbi_sm_wait_shm(regs: &mut TrapFrame, rid: u32) -> isize {
+    let ret = match enclave::wait_shm(regs, rid) {
+        Ok(_) => Error::Success,
+        Err(err) => err,
+    };
+    ret as isize
+}
+
+/// Called by enc1 after publishing; transitions enc2 from WaitingForShm to Stopped.
+/// enc1 continues running; the host resumes enc2 via resume_enclave after enc1 exits.
+#[no_mangle]
+pub extern "C" fn sbi_sm_notify_shm(rid: u32) -> isize {
+    let ret = match enclave::notify_shm(rid) {
+        Ok(_) => Error::Success,
+        Err(err) => err,
+    };
+    ret as isize
+}
+
 #[no_mangle]
 pub extern "C" fn sbi_sm_share_shm_region(rid: usize, eid2share: usize, st_perm: i8) -> isize {
-    dbg!(
-        "[share_shm_region] rid {:?} eid {:?} perm {:?}",
-        rid,
-        eid2share,
-        st_perm
-    );
     let ret = match enclave::share_shm_region(rid, eid2share, st_perm.into()) {
         Ok(_) => Error::Success,
         Err(err) => {

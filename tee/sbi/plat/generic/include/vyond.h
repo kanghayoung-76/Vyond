@@ -21,6 +21,8 @@
 #define SBI_SM_EXIT_ENCLAVE       3006
 #define SBI_SM_REGISTER_DEV_IRQ   3007
 #define SBI_SM_WAIT_DEV_DATA      3008
+#define SBI_SM_WAIT_SHM           3009
+#define SBI_SM_NOTIFY_SHM         3010
 #define FID_RANGE_ENCLAVE         3999
 /* 4000-4999 are experimental */
 #define SBI_SM_CALL_PLUGIN        4000

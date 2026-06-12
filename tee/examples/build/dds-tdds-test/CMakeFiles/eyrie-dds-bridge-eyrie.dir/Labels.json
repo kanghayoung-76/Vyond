@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/eyrie-dds-bridge-eyrie"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/eyrie-dds-bridge-eyrie.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/eyrie-dds-bridge-eyrie-complete.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/runtime/src/eyrie-dds-bridge-eyrie-stamp/eyrie-dds-bridge-eyrie-build.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/runtime/src/eyrie-dds-bridge-eyrie-stamp/eyrie-dds-bridge-eyrie-configure.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/runtime/src/eyrie-dds-bridge-eyrie-stamp/eyrie-dds-bridge-eyrie-download.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/runtime/src/eyrie-dds-bridge-eyrie-stamp/eyrie-dds-bridge-eyrie-install.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/runtime/src/eyrie-dds-bridge-eyrie-stamp/eyrie-dds-bridge-eyrie-mkdir.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/runtime/src/eyrie-dds-bridge-eyrie-stamp/eyrie-dds-bridge-eyrie-patch.rule"
+		},
+		{
+			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/runtime/src/eyrie-dds-bridge-eyrie-stamp/eyrie-dds-bridge-eyrie-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"eyrie-dds-bridge-eyrie"
+		],
+		"name" : "eyrie-dds-bridge-eyrie"
+	}
+}

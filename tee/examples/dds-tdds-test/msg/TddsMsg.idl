@@ -1,0 +1,4 @@
+struct TddsMsg {
+    unsigned long size;
+    octet         data[4096];
+};

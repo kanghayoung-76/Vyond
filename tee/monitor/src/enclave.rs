@@ -18,6 +18,7 @@ pub enum State {
     Running,
     Destroying,
     WaitingForDevice(u32), // suspended; will be resumed by SM on device IRQ
+    WaitingForShm(u32),    // suspended; will be resumed by notify_shm(rid)
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -610,7 +611,8 @@ pub fn resume_enclave(tf: &mut TrapFrame, eid: usize) -> Result<(), Error> {
         let mut runstate = enclave.state.lock();
         let resumable = (runstate.state == State::Running
             || runstate.state == State::Stopped
-            || matches!(runstate.state, State::WaitingForDevice(_)))
+            || matches!(runstate.state, State::WaitingForDevice(_))
+            || matches!(runstate.state, State::WaitingForShm(_)))
             && runstate.count < MAX_ENCLAVE_THREADS;
 
         if resumable {
@@ -721,6 +723,42 @@ pub fn resume_from_dev_irq(tf: &mut TrapFrame, eid: usize) -> Result<(), Error> 
         return Ok(());
     }
     Err(Error::InvalidId)
+}
+
+/// Called by an enclave to suspend itself until another enclave calls notify_shm(rid).
+/// Mirrors wait_dev_data but uses WaitingForShm(rid) state instead of WaitingForDevice.
+pub fn wait_shm(tf: &mut TrapFrame, rid: u32) -> Result<(), Error> {
+    if let Some(enclave) = find_enclave(cpu::get_enclave_id()) {
+        let mut runstate = enclave.state.lock();
+        if runstate.state != State::Running {
+            return Err(Error::NotRunning);
+        }
+        runstate.count -= 1;
+        runstate.state = State::WaitingForShm(rid);
+        drop(runstate);
+        enclave.switch_to_host(tf);
+        return Err(Error::WaitingForShm);
+    }
+    Err(Error::Invalid)
+}
+
+/// Called by an enclave (publisher) to mark the subscriber enclave as ready to resume.
+/// Transitions the WaitingForShm(rid) enclave to Stopped so the host can resume it.
+/// The calling enclave (enc1) continues running; the host resumes enc2 after enc1 exits.
+pub fn notify_shm(rid: u32) -> Result<(), Error> {
+    unsafe {
+        for slot in 0..MAX_ENCLAVES {
+            if let Some(ref enc2) = ENCLAVES[slot] {
+                let mut rs2 = enc2.state.lock();
+                if matches!(rs2.state, State::WaitingForShm(r) if r == rid) {
+                    // Mark enc2 as Stopped (count stays 0); host will call resume_enclave.
+                    rs2.state = State::Stopped;
+                    return Ok(());
+                }
+            }
+        }
+    }
+    Err(Error::Invalid)
 }
 
 pub fn exit_enclave(tf: &mut TrapFrame) -> Result<(), Error> {
@@ -837,6 +875,9 @@ pub fn map_shm_region(regs: &mut TrapFrame, rid: usize) -> Result<(), Error> {
                 });
                 return Ok(());
             }
+            dbg!("[map_shm_region] DENIED rid={} caller_eid={} (no perm entry)", rid, caller_eid);
+        } else {
+            dbg!("[map_shm_region] rid={} NOT FOUND in SHARED_MEM", rid);
         }
     }
     Err(Error::Invalid)
@@ -990,10 +1031,8 @@ pub fn get_shm_eids(rid: usize, buf_pa: usize, max_count: usize) -> Result<usize
                 count += 1;
             }
         }
-        dbg!("[get_shm_eids] rid={:?} count={:?}", rid, count);
         Ok(count)
     } else {
-        dbg!("[get_shm_eids] region not found for rid {:?}", rid);
         Err(Error::Invalid)
     }
 }
@@ -1049,6 +1088,7 @@ pub fn display() {
                 State::Running => 1,
                 State::Destroying => 2,
                 State::WaitingForDevice(_) => 3,
+                State::WaitingForShm(_) => 4,
             };
             hprint!("|{:>8}", state_id);
             hprint!("|{:>16x}", enclave.pa_params.dram_base);

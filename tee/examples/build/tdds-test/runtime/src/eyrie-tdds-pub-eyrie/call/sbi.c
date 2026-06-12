@@ -64,3 +64,13 @@ uintptr_t
 sbi_wait_dev_data(uint32_t irq_num) {
   return SBI_CALL_1(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE, SBI_SM_WAIT_DEV_DATA, irq_num);
 }
+
+uintptr_t
+sbi_wait_shm(uint32_t rid) {
+  return SBI_CALL_1(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE, SBI_SM_WAIT_SHM, rid);
+}
+
+uintptr_t
+sbi_notify_shm(uint32_t rid) {
+  return SBI_CALL_1(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE, SBI_SM_NOTIFY_SHM, rid);
+}

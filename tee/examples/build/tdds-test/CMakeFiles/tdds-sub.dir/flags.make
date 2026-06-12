@@ -6,5 +6,5 @@ C_DEFINES =
 
 C_INCLUDES = -I/data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include -I/data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/app -I/data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/edge
 
-C_FLAGS = -Wall
+C_FLAGS = -Wall -O3 -DNDEBUG
 

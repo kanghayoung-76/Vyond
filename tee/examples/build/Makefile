@@ -636,6 +636,71 @@ tdds-pub-package/fast:
 	$(MAKE) $(MAKESILENT) -f tdds-test/CMakeFiles/tdds-pub-package.dir/build.make tdds-test/CMakeFiles/tdds-pub-package.dir/build
 .PHONY : tdds-pub-package/fast
 
+#=============================================================================
+# Target rules for targets named dds-bridge
+
+# Build rule for target.
+dds-bridge: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 dds-bridge
+.PHONY : dds-bridge
+
+# fast build rule for target.
+dds-bridge/fast:
+	$(MAKE) $(MAKESILENT) -f dds-tdds-test/CMakeFiles/dds-bridge.dir/build.make dds-tdds-test/CMakeFiles/dds-bridge.dir/build
+.PHONY : dds-bridge/fast
+
+#=============================================================================
+# Target rules for targets named dds-sub
+
+# Build rule for target.
+dds-sub: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 dds-sub
+.PHONY : dds-sub
+
+# fast build rule for target.
+dds-sub/fast:
+	$(MAKE) $(MAKESILENT) -f dds-tdds-test/CMakeFiles/dds-sub.dir/build.make dds-tdds-test/CMakeFiles/dds-sub.dir/build
+.PHONY : dds-sub/fast
+
+#=============================================================================
+# Target rules for targets named dds-runner
+
+# Build rule for target.
+dds-runner: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 dds-runner
+.PHONY : dds-runner
+
+# fast build rule for target.
+dds-runner/fast:
+	$(MAKE) $(MAKESILENT) -f dds-tdds-test/CMakeFiles/dds-runner.dir/build.make dds-tdds-test/CMakeFiles/dds-runner.dir/build
+.PHONY : dds-runner/fast
+
+#=============================================================================
+# Target rules for targets named dds-bridge-eyrie
+
+# Build rule for target.
+dds-bridge-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 dds-bridge-eyrie
+.PHONY : dds-bridge-eyrie
+
+# fast build rule for target.
+dds-bridge-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f dds-tdds-test/CMakeFiles/dds-bridge-eyrie.dir/build.make dds-tdds-test/CMakeFiles/dds-bridge-eyrie.dir/build
+.PHONY : dds-bridge-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named dds-bridge-package
+
+# Build rule for target.
+dds-bridge-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 dds-bridge-package
+.PHONY : dds-bridge-package
+
+# fast build rule for target.
+dds-bridge-package/fast:
+	$(MAKE) $(MAKESILENT) -f dds-tdds-test/CMakeFiles/dds-bridge-package.dir/build.make dds-tdds-test/CMakeFiles/dds-bridge-package.dir/build
+.PHONY : dds-bridge-package/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -646,6 +711,8 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... attestor-eyrie"
 	@echo "... attestor-package"
+	@echo "... dds-bridge-eyrie"
+	@echo "... dds-bridge-package"
 	@echo "... dev-irq-test-package"
 	@echo "... dev_irq_eapp-eyrie"
 	@echo "... examples"
@@ -670,6 +737,9 @@ help:
 	@echo "... wg-slot-package"
 	@echo "... attestor"
 	@echo "... attestor-runner"
+	@echo "... dds-bridge"
+	@echo "... dds-runner"
+	@echo "... dds-sub"
 	@echo "... dev-irq-runner"
 	@echo "... dev_irq_eapp"
 	@echo "... hello"

@@ -60,6 +60,7 @@ pub enum Error {
     IllegalPTE,
     NotFresh,
     WaitingForDevice = 100017,
+    WaitingForShm    = 100018,
     RegionSizeInvalid = 10020,
     NotPageGranularity,
     NotAligned,

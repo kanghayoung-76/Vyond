@@ -1,0 +1,31 @@
+dds-tdds-test/CMakeFiles/dds-runner.dir/idl/TddsMsg.c.o: \
+ /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/idl/TddsMsg.c \
+ /data/hykang/riscv-hy/sysroot/usr/include/stdc-predef.h \
+ /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/idl/TddsMsg.h \
+ /opt/ros/jazzy/include/CycloneDDS/dds/ddsc/dds_public_impl.h \
+ /data/hykang/riscv-hy/lib/gcc/riscv64-unknown-linux-gnu/15.2.0/include/stdint.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/stdint.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/libc-header-start.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/features.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/features-time64.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/wordsize.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/timesize.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/sys/cdefs.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/long-double.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/gnu/stubs.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/gnu/stubs-lp64d.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/types.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/typesizes.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/time64.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/wchar.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/stdint-intn.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/stdint-uintn.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/stdint-least.h \
+ /data/hykang/riscv-hy/lib/gcc/riscv64-unknown-linux-gnu/15.2.0/include/stdbool.h \
+ /opt/ros/jazzy/include/CycloneDDS/dds/export.h \
+ /opt/ros/jazzy/include/CycloneDDS/dds/features.h \
+ /opt/ros/jazzy/include/CycloneDDS/dds/ddsrt/align.h \
+ /opt/ros/jazzy/include/CycloneDDS/dds/ddsc/dds_public_alloc.h \
+ /data/hykang/riscv-hy/lib/gcc/riscv64-unknown-linux-gnu/15.2.0/include/stddef.h \
+ /opt/ros/jazzy/include/CycloneDDS/dds/ddsc/dds_opcodes.h \
+ /opt/ros/jazzy/include/CycloneDDS/dds/ddsrt/static_assert.h

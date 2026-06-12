@@ -78,11 +78,6 @@ uintptr_t dispatch_edgecall_ocall( unsigned long call_id,
 				   void* return_buffer, size_t return_len){
 
   uintptr_t ret;
-  /* UTM is mapped PTE_U.  copy_to_user (used by prior syscall handlers)
-   * clears sstatus.SUM after each call.  Re-set it here so the runtime
-   * can read/write UTM and eapp-stack addresses without faulting. */
-  __asm__ __volatile__("csrs sstatus, %0" :: "r"(0x40000UL) : "memory");
-
   /* For now we assume by convention that the start of the buffer is
    * the right place to put calls */
   struct edge_call* edge_call = (struct edge_call*)shared_buffer;
@@ -190,29 +185,6 @@ handle_unmap_shm(rid_t rid, uintptr_t vaddr, size_t size) {
   return 0;
 }
 
-static int handle_map_utm(uintptr_t* ret_vaddr) {
-  /* Map UTM physical pages into the enclave VA space (like handle_map_shm).
-   * translate(shared_buffer) gives the PA of the pre-mapped UTM. */
-  uintptr_t pa = translate(shared_buffer);
-  uintptr_t sz = shared_buffer_size;
-
-  uintptr_t va = shm_va_ptr;
-  *ret_vaddr   = va;
-  while (va < shm_va_ptr + sz) {
-    if (!map_page(vpn(va), ppn(pa), PAGE_MODE_USER_DATA)) {
-      return -1;
-    }
-    va += RISCV_PAGE_SIZE;
-    pa += RISCV_PAGE_SIZE;
-  }
-  shm_va_ptr = va;
-
-  /* Update shared_buffer so edge_call_setup_call validates against the
-   * eapp-mapped VA range.  Both VAs alias the same physical memory. */
-  shared_buffer = *ret_vaddr;
-  return 0;
-}
-
 static int
 handle_mydev_map(uintptr_t paddr, size_t size, uintptr_t* ret_vaddr) {
   uintptr_t va = shm_va_ptr;
@@ -236,13 +208,34 @@ handle_mydev_unmap(uintptr_t vaddr, size_t size) {
   return 0;
 }
 
+static int handle_map_utm(uintptr_t* ret_vaddr) {
+  uintptr_t pa = translate(shared_buffer);
+  uintptr_t sz = shared_buffer_size;
+
+  uintptr_t va = shm_va_ptr;
+  *ret_vaddr   = va;
+  while (va < shm_va_ptr + sz) {
+    if (!map_page(vpn(va), ppn(pa), PAGE_MODE_USER_DATA)) {
+      return -1;
+    }
+    va += RISCV_PAGE_SIZE;
+    pa += RISCV_PAGE_SIZE;
+  }
+  shm_va_ptr = va;
+
+  /* Update shared_buffer so edge_call_setup_call validates against the
+   * eapp-mapped VA range.  Both VAs alias the same physical memory. */
+  shared_buffer = *ret_vaddr;
+  return 0;
+}
+
 void
 handle_syscall(struct encl_ctx* ctx) {
   /* Re-set SUM on every syscall entry.  copy_to_user (used in MAP_SHM,
    * GET_SHM_EIDS, etc.) clears SUM after each call.  Without this, any
    * handler that writes directly to a PTE_U address (eapp stack or UTM)
-   * would fault.  The SM saves/restores sstatus across stop/run, so SUM
-   * set here also persists through sbi_stop_enclave → sbi_run_enclave. */
+   * would fault.  SM saves/restores sstatus across stop/run, so SUM set
+   * here also persists through sbi_stop_enclave → sbi_run_enclave. */
   __asm__ __volatile__("csrs sstatus, %0" :: "r"(0x40000UL) : "memory");
 
   uintptr_t n    = ctx->regs.a7;
@@ -325,6 +318,12 @@ handle_syscall(struct encl_ctx* ctx) {
       break;
     case (RUNTIME_SYSCALL_WAIT_DEV_DATA):
       ret = sbi_wait_dev_data((uint32_t)arg0);
+      break;
+    case (RUNTIME_SYSCALL_WAIT_SHM):
+      ret = sbi_wait_shm((uint32_t)arg0);
+      break;
+    case (RUNTIME_SYSCALL_NOTIFY_SHM):
+      ret = sbi_notify_shm((uint32_t)arg0);
       break;
     case (RUNTIME_SYSCALL_TRANSLATE_VA):
       ret = translate((uintptr_t)arg0);

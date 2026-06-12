@@ -54,5 +54,9 @@ uintptr_t
 sbi_register_dev_irq(uint32_t irq_num);
 uintptr_t
 sbi_wait_dev_data(uint32_t irq_num);
+uintptr_t
+sbi_wait_shm(uint32_t rid);
+uintptr_t
+sbi_notify_shm(uint32_t rid);
 
 #endif

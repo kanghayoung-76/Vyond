@@ -54,3 +54,10 @@
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/tdds-pub-package.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/edit_cache.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/rebuild_cache.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/dds-bridge.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/dds-sub.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/dds-runner.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/dds-bridge-eyrie.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/dds-bridge-package.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/edit_cache.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/rebuild_cache.dir

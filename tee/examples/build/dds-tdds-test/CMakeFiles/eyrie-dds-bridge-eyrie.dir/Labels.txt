@@ -1,0 +1,13 @@
+# Target labels
+ eyrie-dds-bridge-eyrie
+# Source files and their labels
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/eyrie-dds-bridge-eyrie
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/eyrie-dds-bridge-eyrie.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/eyrie-dds-bridge-eyrie-complete.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/runtime/src/eyrie-dds-bridge-eyrie-stamp/eyrie-dds-bridge-eyrie-build.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/runtime/src/eyrie-dds-bridge-eyrie-stamp/eyrie-dds-bridge-eyrie-configure.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/runtime/src/eyrie-dds-bridge-eyrie-stamp/eyrie-dds-bridge-eyrie-download.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/runtime/src/eyrie-dds-bridge-eyrie-stamp/eyrie-dds-bridge-eyrie-install.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/runtime/src/eyrie-dds-bridge-eyrie-stamp/eyrie-dds-bridge-eyrie-mkdir.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/runtime/src/eyrie-dds-bridge-eyrie-stamp/eyrie-dds-bridge-eyrie-patch.rule
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/runtime/src/eyrie-dds-bridge-eyrie-stamp/eyrie-dds-bridge-eyrie-update.rule

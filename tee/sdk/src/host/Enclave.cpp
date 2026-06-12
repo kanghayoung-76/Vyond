@@ -246,7 +246,32 @@ Enclave::run(uintptr_t* retval) {
   Error ret = pDevice->run(retval);
   while (ret == Error::EdgeCallHost || ret == Error::EnclaveInterrupted
          || ret == Error::EnclaveWaitingForDevice) {
-    /* enclave is stopped in the middle. */
+    if (ret == Error::EdgeCallHost && oFuncDispatch != NULL) {
+      oFuncDispatch(getSharedBuffer(), getSharedBufferSize());
+    }
+    ret = pDevice->resume(retval);
+  }
+
+  /* enc2 suspended itself via WAIT_SHM; host will call resume() after enc1 notifies */
+  if (ret == Error::EnclaveWaitingForShm) {
+    return Error::Success;
+  }
+
+  if (ret != Error::Success) {
+    ERROR("failed to run enclave - ioctl() failed");
+    destroy();
+    return Error::DeviceError;
+  }
+
+  return Error::Success;
+}
+
+/* Resume an enclave that was suspended by WAIT_SHM (now in Stopped state after notify). */
+Error
+Enclave::resume(uintptr_t* retval) {
+  Error ret = pDevice->resume(retval);
+  while (ret == Error::EdgeCallHost || ret == Error::EnclaveInterrupted
+         || ret == Error::EnclaveWaitingForDevice) {
     if (ret == Error::EdgeCallHost && oFuncDispatch != NULL) {
       oFuncDispatch(getSharedBuffer(), getSharedBufferSize());
     }
@@ -254,7 +279,7 @@ Enclave::run(uintptr_t* retval) {
   }
 
   if (ret != Error::Success) {
-    ERROR("failed to run enclave - ioctl() failed");
+    ERROR("failed to resume enclave - ioctl() failed");
     destroy();
     return Error::DeviceError;
   }

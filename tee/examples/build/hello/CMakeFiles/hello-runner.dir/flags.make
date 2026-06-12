@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include
 
-CXX_FLAGS = 
+CXX_FLAGS = -O3 -DNDEBUG
 

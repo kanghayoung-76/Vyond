@@ -21,6 +21,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "shm-ocall-test/runtime/tmp/eyrie-shm-ocall-eyrie-mkdirs.cmake"
   "tdds-test/runtime/tmp/eyrie-tdds-pub-eyrie-mkdirs.cmake"
   "wg-slot-test/runtime/tmp/eyrie-wg-slot-eyrie-mkdirs.cmake"
+  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/dds-tdds-test/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/dev-irq-test/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/hello/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/ros/CMakeLists.txt"
@@ -121,6 +122,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-patch-info.txt"
   "tdds-test/runtime/tmp/eyrie-tdds-pub-eyrie-cfgcmd.txt"
   "tdds-test/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "dds-tdds-test/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
@@ -165,4 +167,9 @@ set(CMAKE_DEPEND_INFO_FILES
   "tdds-test/CMakeFiles/eyrie-tdds-pub-eyrie.dir/DependInfo.cmake"
   "tdds-test/CMakeFiles/tdds-pub-eyrie.dir/DependInfo.cmake"
   "tdds-test/CMakeFiles/tdds-pub-package.dir/DependInfo.cmake"
+  "dds-tdds-test/CMakeFiles/dds-bridge.dir/DependInfo.cmake"
+  "dds-tdds-test/CMakeFiles/dds-sub.dir/DependInfo.cmake"
+  "dds-tdds-test/CMakeFiles/dds-runner.dir/DependInfo.cmake"
+  "dds-tdds-test/CMakeFiles/dds-bridge-eyrie.dir/DependInfo.cmake"
+  "dds-tdds-test/CMakeFiles/dds-bridge-package.dir/DependInfo.cmake"
   )

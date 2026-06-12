@@ -103,6 +103,8 @@ KeystoneDevice::__run(bool resume, uintptr_t* ret) {
       return Error::EnclaveInterrupted;
     case SBI_ERR_SM_ENCLAVE_WAITING_FOR_DEVICE:
       return Error::EnclaveWaitingForDevice;
+    case SBI_ERR_SM_ENCLAVE_WAITING_FOR_SHM:
+      return Error::EnclaveWaitingForShm;
     case SBI_ERR_SM_ENCLAVE_SUCCESS:
       if (ret) {
         *ret = encl.value;

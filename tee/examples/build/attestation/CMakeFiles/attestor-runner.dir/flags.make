@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include -I/data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/common -I/data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/host -I/data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/edge -I/data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/verifier
 
-CXX_FLAGS = -std=c++17
+CXX_FLAGS = -O3 -DNDEBUG -std=c++17
 

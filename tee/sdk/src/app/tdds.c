@@ -11,7 +11,7 @@ typedef struct {
     uint8_t           data[TDDS_MAX_MSG_SIZE];
 } tdds_shm_t;
 
-/* UTM mapping shared by ocall_tdds_wait and tdds_utm_data — mapped once */
+/* UTM mapping used by tdds_utm_data — mapped once on first use */
 static void*  s_utm_base = (void*)0;
 static size_t s_utm_size = 0;
 
@@ -37,6 +37,8 @@ tdds_publish(tdds_channel_t *ch, const void *msg, size_t size) {
     memcpy(shm->data, msg, size);
     __sync_synchronize();
     shm->flag = (uint32_t)size;
+    /* Wake any enclave suspended on this SHM channel via WAIT_SHM */
+    SYSCALL_1(RUNTIME_SYSCALL_NOTIFY_SHM, ch->rid);
     return 0;
 }
 
@@ -51,15 +53,6 @@ tdds_subscribe(tdds_channel_t *ch, void *buf, size_t size) {
     memcpy(buf, shm->data, n);
     shm->flag = 0;
     return (int)n;
-}
-
-void
-ocall_tdds_wait(rid_t rid) {
-    utm_ensure();
-    struct tdds_ocall_wait_args *args =
-        (struct tdds_ocall_wait_args *)((uintptr_t)s_utm_base + sizeof(struct edge_call));
-    args->rid = (uint32_t)rid;
-    ocall(OCALL_TDDS_WAIT, args, sizeof(*args), NULL, 0);
 }
 
 void*
