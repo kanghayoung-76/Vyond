@@ -86,8 +86,11 @@ unsigned long sbi_sm_share_shm_region(unsigned long rid, unsigned long eid2share
 unsigned long sbi_sm_register_dev_irq(uint32_t irq_num);
 unsigned long sbi_sm_wait_dev_data(struct sbi_trap_regs *regs, uint32_t irq_num);
 unsigned long sbi_sm_wait_shm(struct sbi_trap_regs *regs, uint32_t rid);
-unsigned long sbi_sm_notify_shm(uint32_t rid);
+unsigned long sbi_sm_notify_shm(struct sbi_trap_regs *regs, uint32_t rid);
 long         sbi_sm_handle_dev_irq(struct sbi_trap_regs *regs, uint32_t irq_num);
+/* SHM IPI: direct M-mode resume of enc_subscriber without host involvement */
+int          sbi_sm_is_enclave_context(void);
+long         sbi_sm_handle_shm_ipi(struct sbi_trap_regs *regs);
 
 /* PLIC M-mode claim/complete  (QEMU virt: M-mode context = hartid * 2) */
 #define PLIC_BASE_ADDR  0xc000000UL
@@ -205,12 +208,30 @@ static int sbi_ecall_vyond_monitor_handler(
         break;
     case SBI_SM_WAIT_SHM:
         retval = sbi_sm_wait_shm((struct sbi_trap_regs*) regs, (uint32_t)regs->a0);
+        if ((long)retval == SBI_ERR_SM_ENCLAVE_INTERRUPTED) {
+            /* Race fast-path: IPI arrived before switch_to_host completed.
+             * switch_to_enclave was already called inside wait_shm; regs now holds
+             * enc_subscriber's saved context. Return wait_shm = 0 (success). */
+            ((struct sbi_trap_regs *)regs)->a0 = 0;
+            ((struct sbi_trap_regs *)regs)->mepc += 4;
+            sbi_trap_exit(regs);
+        }
+        /* WaitingForShm or error: regs holds host context (switch_to_host happened).
+         * Return the error code so the host process knows enc_subscriber is parked. */
         ((struct sbi_trap_regs *)regs)->a0 = retval;
         ((struct sbi_trap_regs *)regs)->mepc += 4;
         sbi_trap_exit(regs);
         break;
     case SBI_SM_NOTIFY_SHM:
-        retval = sbi_sm_notify_shm((uint32_t)regs->a0);
+        sbi_printf("[VYOND] NOTIFY_SHM called, rid=%lu\n", (unsigned long)regs->a0);
+        retval = sbi_sm_notify_shm((struct sbi_trap_regs *)regs, (uint32_t)regs->a0);
+        if ((long)retval == SBI_ERR_SM_ENCLAVE_INTERRUPTED) {
+            /* Direct enc1→enc2 switch: *regs = enc2's context at its wait_shm call */
+            ((struct sbi_trap_regs *)regs)->a0 = 0;   /* enc2: wait_shm returns success */
+            ((struct sbi_trap_regs *)regs)->mepc += 4; /* enc2 advances past wait_shm ecall */
+            sbi_trap_exit(regs);
+        }
+        /* retval == 0: enc2 not found; OpenSBI returns enc1 normally (a0=0, mepc+4) */
         break;
 	default:
 		retval = SBI_ERR_SM_NOT_IMPLEMENTED;
@@ -358,17 +379,45 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
 		mcause &= ~(1UL << (__riscv_xlen - 1));
 		switch (mcause) {
 		    case IRQ_M_TIMER: {
-                regs->mepc -= 4;
-                sbi_sm_stop_enclave(regs, 0/*STOP_TIMER_INTERRUPT*/);
-                ((struct sbi_trap_regs *)regs)->a0 = SBI_ERR_SM_ENCLAVE_INTERRUPTED;
-                ((struct sbi_trap_regs *)regs)->mepc += 4;
+                if (sbi_sm_is_enclave_context()) {
+                    /* Enclave preempted by timer: stop enclave, return to host. */
+                    regs->mepc -= 4;
+                    sbi_sm_stop_enclave(regs, 0/*STOP_TIMER_INTERRUPT*/);
+                    ((struct sbi_trap_regs *)regs)->a0 = SBI_ERR_SM_ENCLAVE_INTERRUPTED;
+                    ((struct sbi_trap_regs *)regs)->mepc += 4;
+                } else {
+                    /* Host context (enc_subscriber parked in wait_shm):
+                     * Delegate timer to S-mode so Linux timer ticks work normally. */
+                    csr_clear(CSR_MIP, MIP_MTIP);
+                    csr_set(CSR_MIP, MIP_STIP);
+                }
 			    break;
             }
 		    case IRQ_M_SOFT: {
-                regs->mepc -= 4;
-                sbi_sm_stop_enclave((struct sbi_trap_regs*) regs, 0/*STOP_TIMER_INTERRUPT*/);
-                ((struct sbi_trap_regs *)regs)->a0 = SBI_ERR_SM_ENCLAVE_INTERRUPTED;
-                ((struct sbi_trap_regs *)regs)->mepc += 4;
+                if (sbi_sm_is_enclave_context()) {
+                    /* Enclave preempted by IPI: stop enclave, return to host. */
+                    regs->mepc -= 4;
+                    sbi_sm_stop_enclave((struct sbi_trap_regs*) regs, 0/*STOP_TIMER_INTERRUPT*/);
+                    ((struct sbi_trap_regs *)regs)->a0 = SBI_ERR_SM_ENCLAVE_INTERRUPTED;
+                    ((struct sbi_trap_regs *)regs)->mepc += 4;
+                } else {
+                    /* Host context (enc_subscriber parked after wait_shm,
+                     * mtvec = trap_vector_enclave kept so we can catch this IPI).
+                     * Check for a pending SHM resume; if found, switch directly into
+                     * enc_subscriber without any host process involvement. */
+                    long resumed = sbi_sm_handle_shm_ipi((struct sbi_trap_regs*) regs);
+                    if (resumed > 0) {
+                        /* switch_to_enclave swapped Linux ctx into enc.thread;
+                         * regs now holds enc_subscriber's saved state.
+                         * Advance past wait_shm ecall and return success. */
+                        ((struct sbi_trap_regs *)regs)->a0 = 0;
+                        ((struct sbi_trap_regs *)regs)->mepc += 4;
+                        sbi_trap_exit(regs);
+                    }
+                    /* Not our IPI (spurious or Linux IPI): forward as SSIP. */
+                    csr_clear(CSR_MIP, MIP_MSIP);
+                    csr_set(CSR_MIP, MIP_SSIP);
+                }
 			    break;
             }
 		    case IRQ_M_EXT: {
@@ -379,8 +428,14 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
                 ulong hartid = current_hartid();
                 uint32_t irq = plic_claim_m(hartid);
                 if (irq != 0) {
-                    sbi_sm_handle_dev_irq((struct sbi_trap_regs*) regs, irq);
+                    long resumed = sbi_sm_handle_dev_irq((struct sbi_trap_regs*) regs, irq);
                     plic_complete_m(hartid, irq);
+                    if (resumed > 0 && !sbi_sm_is_enclave_context()) {
+                        /* Enclave resumed from host-waiting context (same pattern as SHM IPI). */
+                        ((struct sbi_trap_regs *)regs)->a0 = 0;
+                        ((struct sbi_trap_regs *)regs)->mepc += 4;
+                        sbi_trap_exit(regs);
+                    }
                 }
                 break;
             }
@@ -414,29 +469,40 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
 	    case CAUSE_FETCH_ACCESS:
 	    case CAUSE_LOAD_ACCESS:
 	    case CAUSE_STORE_ACCESS: {
-		    uintptr_t eid = sbi_sm_get_enclave_id();
-		    uintptr_t satp = csr_read(CSR_SATP);
-		    uintptr_t phys_addr;
-		    if ((satp >> 60) == 8) {
-		        phys_addr = sv39_translate(satp, mtval);
-		        if (phys_addr == 0) {
-		            sbi_printf("[SM] ACCESS FAULT: eid=%lu va=0x%lx translation failed -> exit\n",
-		                       eid, mtval);
+	        if (sbi_sm_is_enclave_context()) {
+		        uintptr_t eid = sbi_sm_get_enclave_id();
+		        uintptr_t satp = csr_read(CSR_SATP);
+		        uintptr_t phys_addr;
+		        if ((satp >> 60) == 8) {
+		            phys_addr = sv39_translate(satp, mtval);
+		            if (phys_addr == 0) {
+		                sbi_printf("[SM] ACCESS FAULT: eid=%lu va=0x%lx translation failed -> exit\n",
+		                           eid, mtval);
+		                sbi_sm_exit_enclave((struct sbi_trap_regs*) regs);
+		                rc = SBI_OK;
+		                break;
+		            }
+		        } else {
+		            phys_addr = mtval;
+		        }
+		        long ret = sbi_sm_handle_wgc_fault(eid, phys_addr);
+		        if (ret == 0) {
+		            rc = SBI_OK;
+		        } else {
+		            sbi_printf("[SM] ACCESS FAULT: eid=%lu pa=0x%lx not in region -> exit\n",
+		                       eid, phys_addr);
 		            sbi_sm_exit_enclave((struct sbi_trap_regs*) regs);
 		            rc = SBI_OK;
-		            break;
 		        }
 		    } else {
-		        phys_addr = mtval;
-		    }
-		    long ret = sbi_sm_handle_wgc_fault(eid, phys_addr);
-		    if (ret == 0) {
-		        rc = SBI_OK;
-		    } else {
-		        sbi_printf("[SM] ACCESS FAULT: eid=%lu pa=0x%lx not in region -> exit\n",
-		                   eid, phys_addr);
-		        sbi_sm_exit_enclave((struct sbi_trap_regs*) regs);
-		        rc = SBI_OK;
+		        /* Host context (enc_subscriber waiting after wait_shm):
+		         * Redirect fault to Linux — not a WGC virtualization event. */
+		        trap.epc   = regs->mepc;
+		        trap.cause = mcause;
+		        trap.tval  = mtval;
+		        trap.tval2 = mtval2;
+		        trap.tinst = mtinst;
+		        rc = sbi_trap_redirect(regs, &trap);
 		    }
 		    break;
 		}

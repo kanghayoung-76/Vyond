@@ -18,7 +18,7 @@ pub enum State {
     Running,
     Destroying,
     WaitingForDevice(u32), // suspended; will be resumed by SM on device IRQ
-    WaitingForShm(u32),    // suspended; will be resumed by notify_shm(rid)
+    WaitingForShm(u32),    // suspended; will be resumed by notify_shm
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -46,6 +46,8 @@ pub const MAX_ENCLAVE_REGIONS: usize = 8;
 pub struct RunState {
     count: usize,
     state: State,
+    notified_by: Option<usize>,      // eid that switched to us via notify_shm; cleared on next wait_shm
+    pending_ocall_enc2: Option<usize>, // enc2's eid when enc2 made OCALL while running under our HOST context
 }
 
 #[repr(C)]
@@ -111,6 +113,10 @@ pub struct Enclave {
     // Last WID successfully used by this enclave (0 = never assigned).
     // Set on every WGC slot assign; read in switch_to_enclave to skip a fault on reuse.
     pub last_wid: usize,
+
+    // Hart on which enc_subscriber most recently called wait_shm.
+    // IPI targeting uses this to wake the correct hart without host involvement.
+    pub last_hart: usize,
 }
 
 impl Enclave {
@@ -145,11 +151,14 @@ impl Enclave {
             state: SpinLock::new(RunState {
                 count: 0,
                 state: State::Stopped,
+                notified_by: None,
+                pending_ocall_enc2: None,
             }),
             threads: [Self::THREAD_INIT; MAX_ENCLAVE_THREADS],
             pa_params,
             hash: [0u8; 64],
             last_wid: crate::wid::ENCLAVE_WID_MIN,
+            last_hart: 0,
         }
     }
 
@@ -247,7 +256,12 @@ impl Enclave {
         cpu::enter_enclave_context(self.eid, self.last_wid);
     }
 
-    pub fn switch_to_host(&mut self, regs: &mut TrapFrame) {
+    /// Switch from enclave to host context.
+    ///
+    /// `keep_vec`: if true, mtvec is left pointing at `trap_vector_enclave` so that
+    /// M-mode SHM IPIs can be caught directly without a host round-trip (wait_shm path).
+    /// All other callers pass false to restore the standard OpenSBI `_trap_handler`.
+    pub fn switch_to_host(&mut self, regs: &mut TrapFrame, keep_vec: bool) {
         (0..MAX_SHARED_REGIONS).for_each(|memid| {
             unsafe {
                 if let Some(region) = &SHARED_MEM[memid] {
@@ -279,7 +293,9 @@ impl Enclave {
         thread.swap_prev_mepc(regs, regs.mepc);
         thread.swap_prev_mstatus(regs, regs.mstatus);
 
-        switch_vector_host();
+        if !keep_vec {
+            switch_vector_host();
+        }
 
         let pending = csr_read!(mip);
 
@@ -288,8 +304,15 @@ impl Enclave {
             csr_set!(mip, MIP_STIP);
         }
         if (pending & MIP_MSIP) != 0 {
+            // MSIP pending: clear before returning to host.
+            // In keep_vec mode (wait_shm) we do NOT convert to SSIP here — the pending
+            // IPI will be handled by the M-mode handler (trap_vector_enclave) on the
+            // next trap.  If we converted to SSIP, Linux would handle it and the
+            // notification would be lost.
             csr_clear!(mip, MIP_MSIP);
-            csr_set!(mip, MIP_SSIP);
+            if !keep_vec {
+                csr_set!(mip, MIP_SSIP);
+            }
         }
         if (pending & MIP_MEIP) != 0 {
             csr_clear!(mip, MIP_MEIP);
@@ -309,15 +332,6 @@ static mut ENCLAVES: [Option<Enclave>; MAX_ENCLAVES] = [INIT_VALUE; MAX_ENCLAVES
 const INIT_SHM: Option<Region> = None;
 static mut SHARED_MEM: [Option<Region>; MAX_SHARED_REGIONS] = [INIT_SHM; MAX_SHARED_REGIONS];
 
-pub fn enclave_exists(enclaves: &[Option<Enclave>], eid: usize) -> bool {
-    enclaves.iter().any(|slot| {
-        if let Some(ref e) = slot {
-            e.eid == eid
-        } else {
-            false
-        }
-    })
-}
 
 /* This handles creation of a new enclave, based on arguments provided
  * by the untrusted host.
@@ -609,6 +623,39 @@ pub fn resume_enclave(tf: &mut TrapFrame, eid: usize) -> Result<(), Error> {
     }
     if let Some(enclave) = find_enclave(eid) {
         let mut runstate = enclave.state.lock();
+
+        // Coroutine OCALL redirect: enc2 made an OCALL while running under enc1's HOST context.
+        // Copy enc1's UTM return data back to enc2's UTM, then resume enc2 directly.
+        let pending_enc2_eid = runstate.pending_ocall_enc2.take();
+        if let Some(enc2_eid) = pending_enc2_eid {
+            drop(runstate);
+            let enc1_utm = enclave.pa_params.untrusted_base;
+            let enc1_utm_size = enclave.pa_params.untrusted_size;
+            let enc2_eid_val = enc2_eid;
+            if let Some(enc2) = find_enclave(enc2_eid_val) {
+                let copy_size = enc1_utm_size.min(enc2.pa_params.untrusted_size);
+                unsafe {
+                    core::ptr::copy_nonoverlapping(
+                        enc1_utm as *const u8,
+                        enc2.pa_params.untrusted_base as *mut u8,
+                        copy_size,
+                    );
+                }
+                let mut rs2 = enc2.state.lock();
+                let resumable = rs2.state == State::Stopped && rs2.count < MAX_ENCLAVE_THREADS;
+                if resumable {
+                    rs2.count += 1;
+                    rs2.state = State::Running;
+                }
+                drop(rs2);
+                if resumable {
+                    enc2.switch_to_enclave(tf, false);
+                    return Ok(());
+                }
+            }
+            return Err(Error::NotResumable);
+        }
+
         let resumable = (runstate.state == State::Running
             || runstate.state == State::Stopped
             || matches!(runstate.state, State::WaitingForDevice(_))
@@ -638,6 +685,12 @@ pub fn stop_enclave(tf: &mut TrapFrame, request: usize) -> Result<(), Error> {
     if let Some(enclave) = find_enclave(cpu::get_enclave_id()) {
         let mut runstate = enclave.state.lock();
         let runnable = runstate.state == State::Running;
+        // Peek at notified_by without clearing — wait_shm still needs it after the OCALL returns.
+        let enc1_eid_if_ocall = if request == 1 /*EdgeCallHost*/ {
+            runstate.notified_by
+        } else {
+            None
+        };
 
         if runnable {
             runstate.count -= 1;
@@ -645,14 +698,35 @@ pub fn stop_enclave(tf: &mut TrapFrame, request: usize) -> Result<(), Error> {
                 runstate.state = State::Stopped;
             }
         }
-
         drop(runstate);
 
         if !runnable {
             return Err(Error::NotRunning);
         }
 
-        enclave.switch_to_host(tf);
+        // Coroutine OCALL: enc2 is running under enc1's HOST context.
+        // Copy enc2's entire UTM to enc1's UTM so the host dispatcher reads the correct data,
+        // then record the pending OCALL so resume_enclave(enc1) redirects back to enc2.
+        if let Some(enc1_eid) = enc1_eid_if_ocall {
+            let enc2_utm = enclave.pa_params.untrusted_base;
+            let enc2_utm_size = enclave.pa_params.untrusted_size;
+            let enc2_eid = enclave.eid;
+            if let Some(enc1) = find_enclave(enc1_eid) {
+                let copy_size = enc2_utm_size.min(enc1.pa_params.untrusted_size);
+                unsafe {
+                    core::ptr::copy_nonoverlapping(
+                        enc2_utm as *const u8,
+                        enc1.pa_params.untrusted_base as *mut u8,
+                        copy_size,
+                    );
+                }
+                let mut rs1 = enc1.state.lock();
+                rs1.pending_ocall_enc2 = Some(enc2_eid);
+                drop(rs1);
+            }
+        }
+
+        enclave.switch_to_host(tf, false);
 
         let ret = match request {
             0/*StopReason::TimerInterrupt*/ => Err(Error::Interrupted),
@@ -697,7 +771,7 @@ pub fn wait_dev_data(tf: &mut TrapFrame, irq_num: u32) -> Result<(), Error> {
         runstate.count -= 1;
         runstate.state = State::WaitingForDevice(irq_num);
         drop(runstate);
-        enclave.switch_to_host(tf);
+        enclave.switch_to_host(tf, false);
         return Err(Error::WaitingForDevice);
     }
     Err(Error::Invalid)
@@ -725,40 +799,180 @@ pub fn resume_from_dev_irq(tf: &mut TrapFrame, eid: usize) -> Result<(), Error> 
     Err(Error::InvalidId)
 }
 
-/// Called by an enclave to suspend itself until another enclave calls notify_shm(rid).
-/// Mirrors wait_dev_data but uses WaitingForShm(rid) state instead of WaitingForDevice.
+/// Called by enc_subscriber to suspend itself until enc_publisher calls notify_shm(rid).
+///
+/// Key design points:
+/// - Saves `last_hart` so notify_shm knows where to send the IPI.
+/// - Calls switch_to_host with keep_vec=true so that mtvec remains at
+///   trap_vector_enclave while Linux runs.  This lets M-mode catch the SHM MSIP
+///   directly without any host process involvement.
+/// - After switch_to_host, checks for a race (IPI already posted before handler set up).
+/// - If notified_by is set (single-core round-trip), resumes enc_publisher directly.
+/// - Returns Err(WaitingForShm) for the normal slow path (wait for IPI).
+/// - Returns Err(Interrupted) for the race fast path (already resumed).
+/// - Returns Ok(0) for the single-core loop path (enc_publisher resumed → C a0=0).
 pub fn wait_shm(tf: &mut TrapFrame, rid: u32) -> Result<(), Error> {
     if let Some(enclave) = find_enclave(cpu::get_enclave_id()) {
         let mut runstate = enclave.state.lock();
         if runstate.state != State::Running {
             return Err(Error::NotRunning);
         }
+        // Consume enc_publisher eid if this is a single-core loop (resume it after suspend).
+        let notified_by_eid = runstate.notified_by.take();
         runstate.count -= 1;
         runstate.state = State::WaitingForShm(rid);
         drop(runstate);
-        enclave.switch_to_host(tf);
+
+        // Record which hart we're parking on so notify_shm can target the IPI.
+        enclave.last_hart = csr_read!(mhartid) as usize;
+        heprintln!("[SM:wait_shm] eid={} rid={} last_hart={} → WaitingForShm",
+                   enclave.eid, rid, enclave.last_hart);
+
+        // Switch to host context while keeping mtvec = trap_vector_enclave.
+        // Linux will run on this hart; any M-mode interrupt goes to our handler,
+        // allowing sbi_sm_handle_shm_ipi to resume us without host involvement.
+        enclave.switch_to_host(tf, true);
+
+        // --- Fast-path race check ------------------------------------------
+        // notify_shm may have stored our eid in PENDING_RESUME and sent MSIP
+        // before we got here.  switch_to_host clears any pending MSIP (without
+        // forwarding it as SSIP in keep_vec mode), so the IPI would be lost.
+        // Detect and handle the race immediately.
+        let this_hart = enclave.last_hart;
+        if crate::ipi::peek_pending_resume_for(this_hart, enclave.eid) {
+            crate::ipi::take_pending_resume(this_hart);
+            // State is already Running (notify_shm set it), count already incremented.
+            enclave.switch_to_enclave(tf, false);
+            // C WAIT_SHM handler detects Interrupted → a0=0, mepc+=4 → enc_subscriber resumes.
+            return Err(Error::Interrupted);
+        }
+        // --- End race check -----------------------------------------------
+
+        // Single-core loop: enc_publisher was suspended inside notify_shm waiting
+        // for us to call wait_shm.  Resume it now.
+        if let Some(enc1_eid) = notified_by_eid {
+            if let Some(enc1) = find_enclave(enc1_eid) {
+                let mut rs1 = enc1.state.lock();
+                let resumable = rs1.state == State::Stopped && rs1.count == 0;
+                if resumable {
+                    rs1.count += 1;
+                    rs1.state = State::Running;
+                }
+                drop(rs1);
+                if resumable {
+                    enc1.switch_to_enclave(tf, false);
+                    return Ok(()); // C: a0=0, mepc+=4 → enc_publisher at notify_shm+4 ✓
+                }
+            }
+        }
+
+        // Normal slow path: wait for IPI (mtvec = trap_vector_enclave, Linux runs).
         return Err(Error::WaitingForShm);
     }
     Err(Error::Invalid)
 }
 
-/// Called by an enclave (publisher) to mark the subscriber enclave as ready to resume.
-/// Transitions the WaitingForShm(rid) enclave to Stopped so the host can resume it.
-/// The calling enclave (enc1) continues running; the host resumes enc2 after enc1 exits.
-pub fn notify_shm(rid: u32) -> Result<(), Error> {
-    unsafe {
+/// Called by enc_publisher after writing to SHM to wake enc_subscriber.
+///
+/// Same-hart (single-core):
+///   Suspends enc_publisher, directly switches to enc_subscriber.
+///   enc_subscriber resumes at wait_shm+4.  When enc_subscriber later calls
+///   wait_shm again, the SM resumes enc_publisher (via notified_by).
+///   Returns Err(Interrupted) → C: a0=0, mepc+=4, sbi_trap_exit → enc_subscriber.
+///
+/// Different-hart (multi-core):
+///   enc_publisher is NOT suspended (non-blocking notify).
+///   Stores enc_subscriber eid in PENDING_RESUME, fires CLINT MSIP on target hart.
+///   M-mode IPI handler on that hart (trap_vector_enclave / sbi_trap_handler_keystone_enclave
+///   IRQ_M_SOFT host-context path) calls sbi_sm_handle_shm_ipi which directly
+///   resumes enc_subscriber without any host process involvement.
+///   Returns Ok(()) → enc_publisher's notify_shm SBI call returns 0.
+pub fn notify_shm(tf: &mut TrapFrame, rid: u32) -> Result<(), Error> {
+    let enc1_eid = cpu::get_enclave_id();
+    let current_hart = csr_read!(mhartid) as usize;
+    heprintln!("[SM:notify_shm] eid={} rid={} hart={}", enc1_eid, rid, current_hart);
+
+    // Find enc_subscriber waiting on this rid, update its state.
+    let found: Option<(usize, usize)> = unsafe {
+        let mut res = None;
         for slot in 0..MAX_ENCLAVES {
-            if let Some(ref enc2) = ENCLAVES[slot] {
+            if let Some(ref mut enc2) = ENCLAVES[slot] {
                 let mut rs2 = enc2.state.lock();
                 if matches!(rs2.state, State::WaitingForShm(r) if r == rid) {
-                    // Mark enc2 as Stopped (count stays 0); host will call resume_enclave.
-                    rs2.state = State::Stopped;
-                    return Ok(());
+                    let enc2_eid    = enc2.eid;
+                    let target_hart = enc2.last_hart;
+                    rs2.count += 1;
+                    rs2.state = State::Running;
+                    // Single-core: enc_publisher will be suspended; enc_subscriber must
+                    // resume it when it calls wait_shm again (via notified_by).
+                    rs2.notified_by = if target_hart == current_hart {
+                        Some(enc1_eid)
+                    } else {
+                        None
+                    };
+                    drop(rs2);
+                    res = Some((enc2_eid, target_hart));
+                    break;
                 }
+                drop(rs2);
             }
         }
+        res
+    };
+
+    let (enc2_eid, target_hart) = match found {
+        Some(t) => t,
+        None => {
+            heprintln!("[SM:notify_shm] rid={} → no WaitingForShm match", rid);
+            return Ok(()); // enc_publisher continues normally
+        }
+    };
+
+    if target_hart == current_hart {
+        // ---- Single-core: suspend enc_publisher, directly wake enc_subscriber ----
+        if let Some(enc1) = find_enclave(enc1_eid) {
+            let mut rs1 = enc1.state.lock();
+            rs1.count -= 1;
+            rs1.state = State::Stopped;
+            drop(rs1);
+            enc1.switch_to_host(tf, false); // tf = Process A kernel context
+        }
+        if let Some(enc2) = find_enclave(enc2_eid) {
+            enc2.switch_to_enclave(tf, false); // tf = enc_subscriber saved state
+        }
+        // C detects Interrupted → a0=0, mepc+=4, sbi_trap_exit → enc_subscriber resumes
+        return Err(Error::Interrupted);
+    } else {
+        // ---- Multi-core: fire MSIP on target hart, enc_publisher keeps running ----
+        heprintln!("[SM:notify_shm] multicore: IPI to hart={} for eid={}", target_hart, enc2_eid);
+        crate::ipi::post_resume(target_hart, enc2_eid); // Release fence + store
+        crate::ipi::send_msip(target_hart);             // Assert CLINT MSIP
+        return Ok(()); // enc_publisher's notify_shm returns 0 (non-blocking)
     }
-    Err(Error::Invalid)
+}
+
+/// Called by sbi_sm_handle_shm_ipi from the M-mode IRQ handler when MSIP fires
+/// on a hart where enc_subscriber is parked (mtvec = trap_vector_enclave, host context).
+///
+/// Clears the CLINT MSIP, swaps the interrupted Linux context with enc_subscriber's
+/// saved state, and sets CPU state to enclave.  C handler then does:
+///   regs->a0 = 0; regs->mepc += 4; sbi_trap_exit(regs)
+/// so enc_subscriber resumes at wait_shm+4 with a0=0 (success).
+/// Returns true if an enclave was resumed, false otherwise.
+pub fn resume_from_shm_ipi(tf: &mut TrapFrame) -> bool {
+    let this_hart = csr_read!(mhartid) as usize;
+    crate::ipi::clear_msip(this_hart); // Deassert CLINT MSIP
+
+    if let Some(eid) = crate::ipi::take_pending_resume(this_hart) {
+        heprintln!("[SM:shm_ipi] hart={} resuming eid={}", this_hart, eid);
+        if let Some(enc) = find_enclave(eid) {
+            // Swap interrupted Linux context ↔ enc_subscriber's saved state.
+            // After mret: enc_subscriber resumes; Linux context saved in enc.thread.
+            enc.switch_to_enclave(tf, false);
+            return true;
+        }
+    }
+    false
 }
 
 pub fn exit_enclave(tf: &mut TrapFrame) -> Result<(), Error> {
@@ -776,7 +990,7 @@ pub fn exit_enclave(tf: &mut TrapFrame) -> Result<(), Error> {
 
         drop(runstate);
 
-        enclave.switch_to_host(tf);
+        enclave.switch_to_host(tf, false);
 
         return Ok(());
     }
@@ -1070,6 +1284,7 @@ pub fn remove_region_by_idx(idx: usize) -> bool {
     false
 }
 
+#[cfg(feature = "dbg")]
 pub fn display() {
     hprintln!("Display Enclaves");
     for slot in 0..MAX_ENCLAVES {

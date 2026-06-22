@@ -28,15 +28,21 @@ int main() {
     Subscription sub;
     if (create_subscription(&sub, rid) != 0) { eprint("[SUB] init fail"); EAPP_RETURN(1); }
 
-    wait(&sub);  /* suspend until enc1 publishes (notify_shm from inside tdds_publish) */
+    /* Phase 2: suspend here until enc1 publishes for the first time */
+    wait(&sub);
 
+    /* Loop: take + print, then wait again for next publish.
+     * On each wait_shm call, SM resumes enc1 directly (no HOST involvement). */
     char buf[TDDS_MAX_MSG_SIZE + 1];
-    int n = take(&sub, buf, TDDS_MAX_MSG_SIZE);
-
-    if (n > 0) {
-        buf[n] = '\0';
-        eprint("[SUB] received: ");
-        eprint(buf);
+    for (int i = 0; i < 3; i++) {
+        int n = take(&sub, buf, TDDS_MAX_MSG_SIZE);
+        if (n > 0) {
+            buf[n] = '\0';
+            eprint("[SUB] received: ");
+            eprint(buf);
+        }
+        if (i < 2) wait(&sub); /* suspend; SM switches back to enc1 */
     }
+    /* After 3rd take, enc2 exits — restoring enc1's HOST context → bridgeEnc.run() returns */
     EAPP_RETURN(0);
 }

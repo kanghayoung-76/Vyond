@@ -1,0 +1,1 @@
+/data/hykang/riscv-hy/bin/riscv64-unknown-linux-gnu-gcc -Wall -O3 -DNDEBUG "CMakeFiles/split-sub.dir/sub/sub.c.o" -o split-sub  -nostdlib -static -e main /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/lib/libkeystone-eapp.a /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/lib/libkeystone-edge.a 

@@ -452,36 +452,28 @@ pub fn tor_region_init<'a>(
     Ok(region_idx)
 }
 
-/// Sets a WGC slot for an enclave region, computing the perm from the given WID.
-/// The perm is `3 << (wid * 2)` which grants R+W access for that specific WID only.
-pub fn set_wg_for_enclave(region_idx: usize, wid: usize) -> Result<(), Error> {
+/// Programs the WGC DRAM slot for `region_idx` with the given raw `perm` bitmap.
+fn set_wg_slot(region_idx: usize, perm: u64) -> Result<(), Error> {
     if !is_wg_region_valid(region_idx) {
         return Err(Error::Invalid);
     }
-
     let region = unsafe { REGIONS[region_idx].as_ref().unwrap() };
-    let reg_idx = if region.is_tor() {
-        region.index() + 1
-    } else {
-        region.index()
-    };
-
-    let perm = (3u64 << (wid * 2)) as u64;
-
+    let reg_idx = if region.is_tor() { region.index() + 1 } else { region.index() };
     let dram = WGChecker::new(WGC_DRAM_BASE);
     if region.is_tor() {
         dram.set_slot_cfg(reg_idx - 1, 0x0);
         dram.set_slot_addr(reg_idx - 1, (region.addr() >> 2) as u64);
         dram.set_slot_perm(reg_idx - 1, 0);
     }
-    dram.set_slot_cfg(
-        reg_idx,
-        WGC_CFG_ER | WGC_CFG_EW | WGC_CFG_IR | WGC_CFG_IW | region.mode,
-    );
+    dram.set_slot_cfg(reg_idx, WGC_CFG_ER | WGC_CFG_EW | WGC_CFG_IR | WGC_CFG_IW | region.mode);
     dram.set_slot_addr(reg_idx, region.wgaddr_val());
     dram.set_slot_perm(reg_idx, perm);
-
     Ok(())
+}
+
+/// Sets a WGC slot for an enclave EPM — grants R+W to `wid` only.
+pub fn set_wg_for_enclave(region_idx: usize, wid: usize) -> Result<(), Error> {
+    set_wg_slot(region_idx, 3u64 << (wid * 2))
 }
 
 /// Clears all WGC DRAM hardware slots that carry permission bits for `wid`.
@@ -500,88 +492,20 @@ pub fn invalidate_wid_in_all_slots(wid: usize) {
     }
 }
 
-/// Programs a WGC slot for a host-enclave shared memory region.
-/// perm = OS_WID(6) R+W | enclave_wid R+W, so both sides can access simultaneously.
+/// Programs a WGC slot for a host-enclave SHM — grants R+W to both OS_WID and enclave_wid.
 pub fn set_wg_for_host_enclave_shm(region_idx: usize, enclave_wid: usize) -> Result<(), Error> {
-    if !is_wg_region_valid(region_idx) {
-        return Err(Error::Invalid);
-    }
-
-    let region = unsafe { REGIONS[region_idx].as_ref().unwrap() };
-    let reg_idx = if region.is_tor() {
-        region.index() + 1
-    } else {
-        region.index()
-    };
-
-    let perm = (3u64 << (OS_WID * 2)) | (3u64 << (enclave_wid as u64 * 2));
-
-    let dram = WGChecker::new(WGC_DRAM_BASE);
-    if region.is_tor() {
-        dram.set_slot_cfg(reg_idx - 1, 0x0);
-        dram.set_slot_addr(reg_idx - 1, (region.addr() >> 2) as u64);
-        dram.set_slot_perm(reg_idx - 1, 0);
-    }
-    dram.set_slot_cfg(
-        reg_idx,
-        WGC_CFG_ER | WGC_CFG_EW | WGC_CFG_IR | WGC_CFG_IW | region.mode,
-    );
-    dram.set_slot_addr(reg_idx, region.wgaddr_val());
-    dram.set_slot_perm(reg_idx, perm);
-
-    Ok(())
+    set_wg_slot(region_idx, (3u64 << (OS_WID * 2)) | (3u64 << (enclave_wid as u64 * 2)))
 }
 
-/// Programs a WGC slot for a shared memory region with host (OS_WID) access only.
-/// Called once at create_shared_mem time so the host can read/write before enclave runs.
+/// Programs a WGC slot for a host-only SHM — grants R+W to OS_WID only.
 pub fn set_wg_for_host_shm(region_idx: usize) -> Result<(), Error> {
-    if !is_wg_region_valid(region_idx) {
-        return Err(Error::Invalid);
-    }
-
-    let region = unsafe { REGIONS[region_idx].as_ref().unwrap() };
-    let reg_idx = if region.is_tor() {
-        region.index() + 1
-    } else {
-        region.index()
-    };
-
-    let perm = 3u64 << (OS_WID * 2);
-
-    let dram = WGChecker::new(WGC_DRAM_BASE);
-    if region.is_tor() {
-        dram.set_slot_cfg(reg_idx - 1, 0x0);
-        dram.set_slot_addr(reg_idx - 1, (region.addr() >> 2) as u64);
-        dram.set_slot_perm(reg_idx - 1, 0);
-    }
-    dram.set_slot_cfg(
-        reg_idx,
-        WGC_CFG_ER | WGC_CFG_EW | WGC_CFG_IR | WGC_CFG_IW | region.mode,
-    );
-    dram.set_slot_addr(reg_idx, region.wgaddr_val());
-    dram.set_slot_perm(reg_idx, perm);
-
-    Ok(())
+    set_wg_slot(region_idx, 3u64 << (OS_WID * 2))
 }
 
 /// Programs a WGC slot with a caller-supplied raw perm bitmap.
 /// Used for enclave-enclave SHM where callers compute perm from all sharers' WIDs.
 pub fn set_wg_for_shm_perm(region_idx: usize, perm: u64) -> Result<(), Error> {
-    if !is_wg_region_valid(region_idx) {
-        return Err(Error::Invalid);
-    }
-    let region = unsafe { REGIONS[region_idx].as_ref().unwrap() };
-    let reg_idx = if region.is_tor() { region.index() + 1 } else { region.index() };
-    let dram = WGChecker::new(WGC_DRAM_BASE);
-    if region.is_tor() {
-        dram.set_slot_cfg(reg_idx - 1, 0x0);
-        dram.set_slot_addr(reg_idx - 1, (region.addr() >> 2) as u64);
-        dram.set_slot_perm(reg_idx - 1, 0);
-    }
-    dram.set_slot_cfg(reg_idx, WGC_CFG_ER | WGC_CFG_EW | WGC_CFG_IR | WGC_CFG_IW | region.mode);
-    dram.set_slot_addr(reg_idx, region.wgaddr_val());
-    dram.set_slot_perm(reg_idx, perm);
-    Ok(())
+    set_wg_slot(region_idx, perm)
 }
 
 pub fn set_wg(region_idx: usize) -> Result<(), Error> {

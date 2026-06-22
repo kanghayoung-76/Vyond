@@ -18,10 +18,11 @@
 #define DEV_WID       29
 #define DEV_SHM_SIZE  4096   /* matches MYDEV host_buf_size exactly */
 
-#define OCALL_GET_RID       2
-#define OCALL_PRINT         3
+#define OCALL_GET_RID          2
+#define OCALL_PRINT            3
 /* OCALL_LOAN_DEV_SHM=4 from shared/tdds_common.h */
-#define OCALL_GET_RID_OUT   5
+#define OCALL_GET_RID_OUT      5
+#define OCALL_GET_RID_FOR_TOPIC 6  /* libddsc_tdds: topic name → TDDS rid */
 
 static uint32_t                  g_rid_tdds = 0;
 static uint32_t                  g_dev_rid  = 0;
@@ -60,6 +61,16 @@ static void handle_get_rid_out(struct edge_call *ec, uintptr_t base, size_t sz)
 /* Sub OCALLs */
 static void handle_get_rid(struct edge_call *ec, uintptr_t base, size_t sz)
 {
+    set_ret(ec, &g_rid_tdds, sizeof(g_rid_tdds), base, sz);
+}
+
+/* libddsc_tdds OCALL: map a topic name to a TDDS channel rid.
+ * Currently all topics share the single g_rid_tdds channel.
+ * Future: parse topic name from call args and look up per-topic rid. */
+static void handle_get_rid_for_topic(struct edge_call *ec, uintptr_t base, size_t sz)
+{
+    /* The topic name is available in the call arg area, but we currently
+     * ignore it and return the global channel rid for all topics. */
     set_ret(ec, &g_rid_tdds, sizeof(g_rid_tdds), base, sz);
 }
 
@@ -127,6 +138,14 @@ int main(int argc, char **argv)
             case OCALL_GET_RID_OUT:
                 handle_get_rid_out(ec, g_bridge_shm_base, g_bridge_shm_size);
                 break;
+            case OCALL_GET_RID_FOR_TOPIC:
+                handle_get_rid_for_topic(ec, g_bridge_shm_base, g_bridge_shm_size);
+                break;
+            case OCALL_PRINT:
+                /* enc2's eprint is routed here during coroutine loop:
+                 * SM copies enc2's UTM to enc1's UTM before returning to host. */
+                handle_print(ec, g_bridge_shm_base, g_bridge_shm_size);
+                break;
             default:
                 ec->return_data.call_status = CALL_STATUS_BAD_CALL_ID;
         }
@@ -151,6 +170,9 @@ int main(int argc, char **argv)
             case OCALL_GET_RID:
                 handle_get_rid(ec, g_sub_shm_base, g_sub_shm_size);
                 break;
+            case OCALL_GET_RID_FOR_TOPIC:
+                handle_get_rid_for_topic(ec, g_sub_shm_base, g_sub_shm_size);
+                break;
             case OCALL_PRINT:
                 handle_print(ec, g_sub_shm_base, g_sub_shm_size);
                 break;
@@ -166,17 +188,10 @@ int main(int argc, char **argv)
     printf("[HOST] enc2 suspended at WAIT_SHM\n");
     fflush(stdout);
 
-    printf("\n----- [Phase 3] enc1 (bridge): DMA → IRQ → publish → NOTIFY_SHM -----\n");
+    printf("\n----- [Phase 3+4] enc1/enc2 loop: DMA→publish→switch→take (×3) -----\n");
     fflush(stdout);
     bridgeEnc.run();
-    printf("[HOST] enc1 done\n");
-    fflush(stdout);
+    printf("[HOST] enc1 + enc2 done\n\n");
 
-    printf("\n----- [Phase 4] enc2 (sub): resume → take → print -----\n");
-    fflush(stdout);
-    uintptr_t retval = 0;
-    Keystone::Error err = subEnc.resume(&retval);
-    printf("[HOST] enc2 done (retval=%lu)\n\n", retval);
-
-    return (err == Keystone::Error::Success) ? 0 : 1;
+    return 0;
 }

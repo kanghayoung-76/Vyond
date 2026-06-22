@@ -38,6 +38,20 @@ pub fn sm_wait_for_completion() {
     }
 }
 
+/// Opens all peripheral WGC checker last slots to all WIDs and sets mlwid = OS_WID.
+/// Required before any WG-based enclave isolation can be configured.
+#[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+fn init_peripheral_wgc() {
+    csr_write_custom!(0x390, wg::OS_WID); // Set mlwid
+    let flash = wg::WGChecker::new(wg::WGC_FLASH_BASE);
+    flash.set_slot_perm(flash.get_nslots() as usize, u64::MAX);
+    let uart = wg::WGChecker::new(wg::WGC_UART_BASE);
+    uart.set_slot_perm(uart.get_nslots() as usize, u64::MAX);
+    // TODO: allow for only enclave 1 to access mydev
+    let mydev = wg::WGChecker::new(wg::WGC_MYDEV_BASE);
+    mydev.set_slot_perm(mydev.get_nslots() as usize, u64::MAX);
+}
+
 pub fn smm_init<'a>() -> Result<(), Error> {
     #[cfg(feature = "isolator_pmp")]
     {
@@ -47,37 +61,17 @@ pub fn smm_init<'a>() -> Result<(), Error> {
     }
     #[cfg(feature = "isolator_wg")]
     {
-        csr_write_custom!(0x390, wg::OS_WID); // Set mlwid
-
-        let flash = wg::WGChecker::new(wg::WGC_FLASH_BASE);
-        flash.set_slot_perm(flash.get_nslots() as usize, u64::MAX);
-        let uart = wg::WGChecker::new(wg::WGC_UART_BASE);
-        uart.set_slot_perm(uart.get_nslots() as usize, u64::MAX);
-        // TODO: allow for only enclave 1 to access mydev
-        let mydev = wg::WGChecker::new(wg::WGC_MYDEV_BASE);
-        mydev.set_slot_perm(mydev.get_nslots() as usize, u64::MAX);
-
+        init_peripheral_wgc();
         let region = wg::region_init(SMM_BASE, SMM_SIZE, 3 << (wg::TRUSTED_WID * 2), false)?;
         wg::set_wg(region)?;
         SM_REGION_ID.set(region);
-
         Ok(())
     }
     #[cfg(feature = "isolator_hybrid")]
     {
-        csr_write_custom!(0x390, wg::OS_WID); // Set mlwid
-
-        let flash = wg::WGChecker::new(wg::WGC_FLASH_BASE);
-        flash.set_slot_perm(flash.get_nslots() as usize, u64::MAX);
-        let uart = wg::WGChecker::new(wg::WGC_UART_BASE);
-        uart.set_slot_perm(uart.get_nslots() as usize, u64::MAX);
-        // TODO: allow for only enclave 1 to access mydev
-        let mydev = wg::WGChecker::new(wg::WGC_MYDEV_BASE);
-        mydev.set_slot_perm(mydev.get_nslots() as usize, u64::MAX);
-
+        init_peripheral_wgc();
         let region = wg::region_init(SMM_BASE, SMM_SIZE, 3 << (wg::TRUSTED_WID * 2), false)?;
         wg::set_wg(region)?;
-
         Ok(())
     }
 }

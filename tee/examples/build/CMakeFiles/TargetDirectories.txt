@@ -54,6 +54,7 @@
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/tdds-pub-package.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/edit_cache.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/rebuild_cache.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/ddsc_tdds.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/dds-bridge.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/dds-sub.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/dds-runner.dir
@@ -61,3 +62,12 @@
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/dds-bridge-package.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/edit_cache.dir
 /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/CMakeFiles/rebuild_cache.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/split-host-test/CMakeFiles/split-bridge.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/split-host-test/CMakeFiles/split-sub.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/split-host-test/CMakeFiles/split-bridge-host.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/split-host-test/CMakeFiles/split-sub-host.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/split-host-test/CMakeFiles/split-eyrie.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/split-host-test/CMakeFiles/split-sub-host-package.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/split-host-test/CMakeFiles/split-bridge-host-package.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/split-host-test/CMakeFiles/edit_cache.dir
+/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/split-host-test/CMakeFiles/rebuild_cache.dir

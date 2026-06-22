@@ -10,6 +10,13 @@ set(package_name   "dds-tdds-test.ke")
 set(package_script "./dds-runner dds-bridge dds-sub eyrie-rt loader.bin")
 set(eyrie_plugins  "none")
 
+# --- libddsc_tdds: CycloneDDS-compatible static library backed by TDDS SHM ---
+add_library(ddsc_tdds STATIC libddsc_tdds/ddsc_tdds.c)
+target_include_directories(ddsc_tdds PUBLIC
+    ${KEYSTONE_SDK_DIR}/include/app
+    ${KEYSTONE_SDK_DIR}/include/edge
+    ${KEYSTONE_SDK_DIR}/include)
+
 # --- bridge enclave ---
 add_executable(${bridge_bin} ${bridge_src})
 target_link_libraries(${bridge_bin}
@@ -21,10 +28,11 @@ target_include_directories(${bridge_bin} PUBLIC
     ${KEYSTONE_SDK_DIR}/include/edge
     ${KEYSTONE_SDK_DIR}/include)
 
-# --- sub enclave ---
+# --- sub enclave (links against ddsc_tdds for CycloneDDS API) ---
 add_executable(${sub_bin} ${sub_src})
 target_link_libraries(${sub_bin}
     "-nostdlib -static -e main"
+    ddsc_tdds
     ${KEYSTONE_LIB_EAPP}
     ${KEYSTONE_LIB_EDGE})
 target_include_directories(${sub_bin} PUBLIC

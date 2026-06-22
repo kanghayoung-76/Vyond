@@ -26,6 +26,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/hello/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/ros/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/shm-ocall-test/CMakeLists.txt"
+  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/split-host-test/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/tdds-test/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/wg-slot-test/CMakeLists.txt"
   "/data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/cmake/macros.cmake"
@@ -123,6 +124,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "tdds-test/runtime/tmp/eyrie-tdds-pub-eyrie-cfgcmd.txt"
   "tdds-test/CMakeFiles/CMakeDirectoryInformation.cmake"
   "dds-tdds-test/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "split-host-test/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
@@ -167,9 +169,17 @@ set(CMAKE_DEPEND_INFO_FILES
   "tdds-test/CMakeFiles/eyrie-tdds-pub-eyrie.dir/DependInfo.cmake"
   "tdds-test/CMakeFiles/tdds-pub-eyrie.dir/DependInfo.cmake"
   "tdds-test/CMakeFiles/tdds-pub-package.dir/DependInfo.cmake"
+  "dds-tdds-test/CMakeFiles/ddsc_tdds.dir/DependInfo.cmake"
   "dds-tdds-test/CMakeFiles/dds-bridge.dir/DependInfo.cmake"
   "dds-tdds-test/CMakeFiles/dds-sub.dir/DependInfo.cmake"
   "dds-tdds-test/CMakeFiles/dds-runner.dir/DependInfo.cmake"
   "dds-tdds-test/CMakeFiles/dds-bridge-eyrie.dir/DependInfo.cmake"
   "dds-tdds-test/CMakeFiles/dds-bridge-package.dir/DependInfo.cmake"
+  "split-host-test/CMakeFiles/split-bridge.dir/DependInfo.cmake"
+  "split-host-test/CMakeFiles/split-sub.dir/DependInfo.cmake"
+  "split-host-test/CMakeFiles/split-bridge-host.dir/DependInfo.cmake"
+  "split-host-test/CMakeFiles/split-sub-host.dir/DependInfo.cmake"
+  "split-host-test/CMakeFiles/split-eyrie.dir/DependInfo.cmake"
+  "split-host-test/CMakeFiles/split-sub-host-package.dir/DependInfo.cmake"
+  "split-host-test/CMakeFiles/split-bridge-host-package.dir/DependInfo.cmake"
   )

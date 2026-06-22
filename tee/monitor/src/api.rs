@@ -238,6 +238,25 @@ pub extern "C" fn sbi_sm_handle_dev_irq(regs: &mut TrapFrame, irq_num: u32) -> i
     }
 }
 
+/// Returns true (1) if the calling hart is currently in enclave context.
+/// Exported for use by the C trap handler (sbi_trap_handler_keystone_enclave)
+/// to distinguish enclave-context vs host-waiting-SHM-context interrupts.
+#[no_mangle]
+pub extern "C" fn sbi_sm_is_enclave_context() -> bool {
+    cpu::is_enclave_context()
+}
+
+/// Called from the M-mode IRQ_M_SOFT handler when the hart is in host-context
+/// (mtvec = trap_vector_enclave, enc_subscriber parked in wait_shm).
+/// Clears CLINT MSIP, finds the pending enc_subscriber, and directly switches
+/// into it by swapping the interrupted Linux context with enc_subscriber's state.
+/// Returns 1 if an enclave was resumed (caller should do a0=0,mepc+=4,sbi_trap_exit),
+/// returns 0 if no pending resume (caller should forward as SSIP to Linux).
+#[no_mangle]
+pub extern "C" fn sbi_sm_handle_shm_ipi(regs: &mut TrapFrame) -> isize {
+    if enclave::resume_from_shm_ipi(regs) { 1 } else { 0 }
+}
+
 /// Called by enc2 to suspend itself until enc1 calls notify_shm(rid).
 #[no_mangle]
 pub extern "C" fn sbi_sm_wait_shm(regs: &mut TrapFrame, rid: u32) -> isize {
@@ -248,11 +267,12 @@ pub extern "C" fn sbi_sm_wait_shm(regs: &mut TrapFrame, rid: u32) -> isize {
     ret as isize
 }
 
-/// Called by enc1 after publishing; transitions enc2 from WaitingForShm to Stopped.
-/// enc1 continues running; the host resumes enc2 via resume_enclave after enc1 exits.
+/// Called by enc1 after publishing: immediately suspends enc1 and switches to enc2.
+/// Returns Interrupted when switch happened (C handler calls sbi_trap_exit for enc2).
+/// Returns Success when enc2 not found (OpenSBI returns enc1 normally).
 #[no_mangle]
-pub extern "C" fn sbi_sm_notify_shm(rid: u32) -> isize {
-    let ret = match enclave::notify_shm(rid) {
+pub extern "C" fn sbi_sm_notify_shm(regs: &mut TrapFrame, rid: u32) -> isize {
+    let ret = match enclave::notify_shm(regs, rid) {
         Ok(_) => Error::Success,
         Err(err) => err,
     };

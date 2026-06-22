@@ -72,10 +72,19 @@ int main(void)
     ocall(OCALL_GET_RID_OUT, NULL, 0, &ret_ptr, sizeof(ret_ptr));
     rid_t rid_tdds = *(rid_t *)ret_ptr;
 
-    /* Step 9: publish directly from dev-SHM → TDDS SHM (zero intermediate copy) */
+    /* Step 9: publish from dev-SHM → TDDS SHM; loop 3 times.
+     * notify_shm in publish() triggers an immediate SM context-switch to enc2.
+     * enc1 is suspended until enc2 calls wait_shm again, then SM resumes enc1 here. */
     Publisher pub;
     if (create_publisher(&pub, rid_tdds) != 0) EAPP_RETURN(1);
-    publish(&pub, dma_buf, n);
+
+    for (int i = 0; i < 3; i++) {
+        /* Re-trigger DMA each iteration (same PA, same len) */
+        mmio_write(mydev + MYDEV_OFF_CMD, 1);
+        SYSCALL_1(RUNTIME_SYSCALL_WAIT_DEV_DATA, MYDEV_IRQ);
+        publish(&pub, dma_buf, n); /* → notify_shm → SM switches to enc2 */
+        /* enc1 resumes here after enc2 calls wait_shm (next iteration or exit) */
+    }
 
     EAPP_RETURN(0);
 }

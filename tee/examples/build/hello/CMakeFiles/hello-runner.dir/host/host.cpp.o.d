@@ -213,6 +213,7 @@ hello/CMakeFiles/hello-runner.dir/host/host.cpp.o: \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/waitflags.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/waitstatus.h \
  /data/hykang/riscv-hy/sysroot/usr/include/alloca.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/stdlib-bsearch.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/stdlib-float.h \
  /data/hykang/riscv-hy/riscv64-unknown-linux-gnu/include/c++/15.2.0/bits/std_abs.h \
  /data/hykang/riscv-hy/riscv64-unknown-linux-gnu/include/c++/15.2.0/cstdio \
@@ -222,6 +223,7 @@ hello/CMakeFiles/hello-runner.dir/host/host.cpp.o: \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/types/struct_FILE.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/types/cookie_io_functions_t.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/stdio_lim.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/stdio.h \
  /data/hykang/riscv-hy/riscv64-unknown-linux-gnu/include/c++/15.2.0/bits/charconv.h \
  /data/hykang/riscv-hy/riscv64-unknown-linux-gnu/include/c++/15.2.0/bits/basic_string.tcc \
  /data/hykang/riscv-hy/riscv64-unknown-linux-gnu/include/c++/15.2.0/bits/locale_classes.tcc \

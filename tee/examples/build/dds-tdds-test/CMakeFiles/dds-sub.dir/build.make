@@ -92,6 +92,7 @@ dds__sub_EXTERNAL_OBJECTS =
 
 dds-tdds-test/dds-sub: dds-tdds-test/CMakeFiles/dds-sub.dir/sub/sub.c.o
 dds-tdds-test/dds-sub: dds-tdds-test/CMakeFiles/dds-sub.dir/build.make
+dds-tdds-test/dds-sub: dds-tdds-test/libddsc_tdds.a
 dds-tdds-test/dds-sub: /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/lib/libkeystone-eapp.a
 dds-tdds-test/dds-sub: /data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/lib/libkeystone-edge.a
 dds-tdds-test/dds-sub: dds-tdds-test/CMakeFiles/dds-sub.dir/link.txt

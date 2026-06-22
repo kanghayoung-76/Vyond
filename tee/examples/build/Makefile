@@ -637,6 +637,19 @@ tdds-pub-package/fast:
 .PHONY : tdds-pub-package/fast
 
 #=============================================================================
+# Target rules for targets named ddsc_tdds
+
+# Build rule for target.
+ddsc_tdds: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ddsc_tdds
+.PHONY : ddsc_tdds
+
+# fast build rule for target.
+ddsc_tdds/fast:
+	$(MAKE) $(MAKESILENT) -f dds-tdds-test/CMakeFiles/ddsc_tdds.dir/build.make dds-tdds-test/CMakeFiles/ddsc_tdds.dir/build
+.PHONY : ddsc_tdds/fast
+
+#=============================================================================
 # Target rules for targets named dds-bridge
 
 # Build rule for target.
@@ -701,6 +714,97 @@ dds-bridge-package/fast:
 	$(MAKE) $(MAKESILENT) -f dds-tdds-test/CMakeFiles/dds-bridge-package.dir/build.make dds-tdds-test/CMakeFiles/dds-bridge-package.dir/build
 .PHONY : dds-bridge-package/fast
 
+#=============================================================================
+# Target rules for targets named split-bridge
+
+# Build rule for target.
+split-bridge: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 split-bridge
+.PHONY : split-bridge
+
+# fast build rule for target.
+split-bridge/fast:
+	$(MAKE) $(MAKESILENT) -f split-host-test/CMakeFiles/split-bridge.dir/build.make split-host-test/CMakeFiles/split-bridge.dir/build
+.PHONY : split-bridge/fast
+
+#=============================================================================
+# Target rules for targets named split-sub
+
+# Build rule for target.
+split-sub: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 split-sub
+.PHONY : split-sub
+
+# fast build rule for target.
+split-sub/fast:
+	$(MAKE) $(MAKESILENT) -f split-host-test/CMakeFiles/split-sub.dir/build.make split-host-test/CMakeFiles/split-sub.dir/build
+.PHONY : split-sub/fast
+
+#=============================================================================
+# Target rules for targets named split-bridge-host
+
+# Build rule for target.
+split-bridge-host: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 split-bridge-host
+.PHONY : split-bridge-host
+
+# fast build rule for target.
+split-bridge-host/fast:
+	$(MAKE) $(MAKESILENT) -f split-host-test/CMakeFiles/split-bridge-host.dir/build.make split-host-test/CMakeFiles/split-bridge-host.dir/build
+.PHONY : split-bridge-host/fast
+
+#=============================================================================
+# Target rules for targets named split-sub-host
+
+# Build rule for target.
+split-sub-host: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 split-sub-host
+.PHONY : split-sub-host
+
+# fast build rule for target.
+split-sub-host/fast:
+	$(MAKE) $(MAKESILENT) -f split-host-test/CMakeFiles/split-sub-host.dir/build.make split-host-test/CMakeFiles/split-sub-host.dir/build
+.PHONY : split-sub-host/fast
+
+#=============================================================================
+# Target rules for targets named split-eyrie
+
+# Build rule for target.
+split-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 split-eyrie
+.PHONY : split-eyrie
+
+# fast build rule for target.
+split-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f split-host-test/CMakeFiles/split-eyrie.dir/build.make split-host-test/CMakeFiles/split-eyrie.dir/build
+.PHONY : split-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named split-sub-host-package
+
+# Build rule for target.
+split-sub-host-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 split-sub-host-package
+.PHONY : split-sub-host-package
+
+# fast build rule for target.
+split-sub-host-package/fast:
+	$(MAKE) $(MAKESILENT) -f split-host-test/CMakeFiles/split-sub-host-package.dir/build.make split-host-test/CMakeFiles/split-sub-host-package.dir/build
+.PHONY : split-sub-host-package/fast
+
+#=============================================================================
+# Target rules for targets named split-bridge-host-package
+
+# Build rule for target.
+split-bridge-host-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 split-bridge-host-package
+.PHONY : split-bridge-host-package
+
+# fast build rule for target.
+split-bridge-host-package/fast:
+	$(MAKE) $(MAKESILENT) -f split-host-test/CMakeFiles/split-bridge-host-package.dir/build.make split-host-test/CMakeFiles/split-bridge-host-package.dir/build
+.PHONY : split-bridge-host-package/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -731,6 +835,9 @@ help:
 	@echo "... ros_e2-eyrie"
 	@echo "... shm-ocall-eyrie"
 	@echo "... shm-ocall-package"
+	@echo "... split-bridge-host-package"
+	@echo "... split-eyrie"
+	@echo "... split-sub-host-package"
 	@echo "... tdds-pub-eyrie"
 	@echo "... tdds-pub-package"
 	@echo "... wg-slot-eyrie"
@@ -740,6 +847,7 @@ help:
 	@echo "... dds-bridge"
 	@echo "... dds-runner"
 	@echo "... dds-sub"
+	@echo "... ddsc_tdds"
 	@echo "... dev-irq-runner"
 	@echo "... dev_irq_eapp"
 	@echo "... hello"
@@ -749,6 +857,10 @@ help:
 	@echo "... ros_e2"
 	@echo "... shm-ocall"
 	@echo "... shm-ocall-runner"
+	@echo "... split-bridge"
+	@echo "... split-bridge-host"
+	@echo "... split-sub"
+	@echo "... split-sub-host"
 	@echo "... tdds-pub"
 	@echo "... tdds-runner"
 	@echo "... tdds-sub"

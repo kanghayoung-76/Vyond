@@ -117,11 +117,6 @@ impl State {
             swap(&mut state.t2, &mut regs.t2);
             swap(&mut state.s0, &mut regs.s0);
             swap(&mut state.s1, &mut regs.s1);
-            //let a0 = state.a0;
-            //let a1 = state.a1;
-            //let a2 = state.a2;
-            //let a3 = state.a3;
-            //let a4 = state.a4;
             swap(&mut state.a5, &mut regs.a5);
             swap(&mut state.a6, &mut regs.a6);
             swap(&mut state.a7, &mut regs.a7);
@@ -145,41 +140,32 @@ impl State {
 
     pub fn swap_prev_smode_csrs(&mut self) {
         let sstatus = self.sstatus;
-        //let sedeleg = self.sedeleg;
-        //let sideleg = self.sideleg;
         let sie = self.sie;
         let stvec = self.stvec;
         let scounteren = self.scounteren;
         let sscratch = self.sscratch;
         let sepc = self.sepc;
         let scause = self.scause;
-        //let sbadaddr = self.sbadaddr;
         let sip = self.sip;
         let satp = self.satp;
 
         self.sstatus = csr_read!(sstatus);
-        //self.sedeleg = csr_read!(sedeleg); //sedeleg
-        //self.sideleg = csr_read!(sideleg); //sideleg
-        self.sie = csr_read!(sie); //sie
+        self.sie = csr_read!(sie);
         self.stvec = csr_read!(stvec);
         self.scounteren = csr_read!(scounteren);
         self.sscratch = csr_read!(sscratch);
         self.sepc = csr_read!(sepc);
         self.scause = csr_read!(scause);
-        //self.sbadaddr = csr_read!(sbadaddr);
         self.sip = csr_read!(sip);
         self.satp = csr_read!(satp);
 
         csr_write!(sstatus, sstatus);
-        //csr_write!(sedeleg, sedeleg);
-        //csr_write!(sideleg, sideleg);
         csr_write!(sie, sie);
         csr_write!(stvec, stvec);
         csr_write!(scounteren, scounteren);
         csr_write!(sscratch, sscratch);
         csr_write!(sepc, sepc);
         csr_write!(scause, scause);
-        //csr_write!(sbadddr, sbadaddr);
         csr_write!(sip, sip);
         csr_write!(satp, satp);
     }

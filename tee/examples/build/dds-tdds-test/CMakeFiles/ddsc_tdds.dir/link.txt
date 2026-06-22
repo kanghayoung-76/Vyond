@@ -1,0 +1,2 @@
+/data/hykang/riscv-hy/bin/riscv64-unknown-linux-gnu-ar qc libddsc_tdds.a CMakeFiles/ddsc_tdds.dir/libddsc_tdds/ddsc_tdds.c.o
+/data/hykang/riscv-hy/bin/riscv64-unknown-linux-gnu-ranlib libddsc_tdds.a

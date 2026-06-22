@@ -15,6 +15,7 @@ pub mod attest;
 pub mod crypto;
 pub mod dev_irq;
 pub mod enclave;
+pub mod ipi;
 pub mod encoding;
 pub mod isolator;
 pub mod log;

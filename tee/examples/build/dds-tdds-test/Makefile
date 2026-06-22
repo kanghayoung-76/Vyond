@@ -117,6 +117,20 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+dds-tdds-test/CMakeFiles/ddsc_tdds.dir/rule:
+	cd /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 dds-tdds-test/CMakeFiles/ddsc_tdds.dir/rule
+.PHONY : dds-tdds-test/CMakeFiles/ddsc_tdds.dir/rule
+
+# Convenience name for target.
+ddsc_tdds: dds-tdds-test/CMakeFiles/ddsc_tdds.dir/rule
+.PHONY : ddsc_tdds
+
+# fast build rule for target.
+ddsc_tdds/fast:
+	cd /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build && $(MAKE) $(MAKESILENT) -f dds-tdds-test/CMakeFiles/ddsc_tdds.dir/build.make dds-tdds-test/CMakeFiles/ddsc_tdds.dir/build
+.PHONY : ddsc_tdds/fast
+
+# Convenience name for target.
 dds-tdds-test/CMakeFiles/dds-bridge.dir/rule:
 	cd /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 dds-tdds-test/CMakeFiles/dds-bridge.dir/rule
 .PHONY : dds-tdds-test/CMakeFiles/dds-bridge.dir/rule
@@ -234,6 +248,30 @@ host/host.cpp.s:
 	cd /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build && $(MAKE) $(MAKESILENT) -f dds-tdds-test/CMakeFiles/dds-runner.dir/build.make dds-tdds-test/CMakeFiles/dds-runner.dir/host/host.cpp.s
 .PHONY : host/host.cpp.s
 
+libddsc_tdds/ddsc_tdds.o: libddsc_tdds/ddsc_tdds.c.o
+.PHONY : libddsc_tdds/ddsc_tdds.o
+
+# target to build an object file
+libddsc_tdds/ddsc_tdds.c.o:
+	cd /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build && $(MAKE) $(MAKESILENT) -f dds-tdds-test/CMakeFiles/ddsc_tdds.dir/build.make dds-tdds-test/CMakeFiles/ddsc_tdds.dir/libddsc_tdds/ddsc_tdds.c.o
+.PHONY : libddsc_tdds/ddsc_tdds.c.o
+
+libddsc_tdds/ddsc_tdds.i: libddsc_tdds/ddsc_tdds.c.i
+.PHONY : libddsc_tdds/ddsc_tdds.i
+
+# target to preprocess a source file
+libddsc_tdds/ddsc_tdds.c.i:
+	cd /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build && $(MAKE) $(MAKESILENT) -f dds-tdds-test/CMakeFiles/ddsc_tdds.dir/build.make dds-tdds-test/CMakeFiles/ddsc_tdds.dir/libddsc_tdds/ddsc_tdds.c.i
+.PHONY : libddsc_tdds/ddsc_tdds.c.i
+
+libddsc_tdds/ddsc_tdds.s: libddsc_tdds/ddsc_tdds.c.s
+.PHONY : libddsc_tdds/ddsc_tdds.s
+
+# target to generate assembly for a file
+libddsc_tdds/ddsc_tdds.c.s:
+	cd /data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build && $(MAKE) $(MAKESILENT) -f dds-tdds-test/CMakeFiles/ddsc_tdds.dir/build.make dds-tdds-test/CMakeFiles/ddsc_tdds.dir/libddsc_tdds/ddsc_tdds.c.s
+.PHONY : libddsc_tdds/ddsc_tdds.c.s
+
 sub/sub.o: sub/sub.c.o
 .PHONY : sub/sub.o
 
@@ -271,12 +309,16 @@ help:
 	@echo "... dds-bridge"
 	@echo "... dds-runner"
 	@echo "... dds-sub"
+	@echo "... ddsc_tdds"
 	@echo "... bridge/bridge.o"
 	@echo "... bridge/bridge.i"
 	@echo "... bridge/bridge.s"
 	@echo "... host/host.o"
 	@echo "... host/host.i"
 	@echo "... host/host.s"
+	@echo "... libddsc_tdds/ddsc_tdds.o"
+	@echo "... libddsc_tdds/ddsc_tdds.i"
+	@echo "... libddsc_tdds/ddsc_tdds.s"
 	@echo "... sub/sub.o"
 	@echo "... sub/sub.i"
 	@echo "... sub/sub.s"

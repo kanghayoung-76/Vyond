@@ -55,6 +55,7 @@ attestation/CMakeFiles/attestor-runner.dir/host/verifier.cpp.o: \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/struct_mutex.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/struct_rwlock.h \
  /data/hykang/riscv-hy/sysroot/usr/include/alloca.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/stdlib-bsearch.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/stdlib-float.h \
  /data/hykang/riscv-hy/riscv64-unknown-linux-gnu/include/c++/15.2.0/bits/std_abs.h \
  /data/hykang/riscv-hy/riscv64-unknown-linux-gnu/include/c++/15.2.0/cerrno \
@@ -76,6 +77,7 @@ attestation/CMakeFiles/attestor-runner.dir/host/verifier.cpp.o: \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/types/struct_FILE.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/types/cookie_io_functions_t.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/stdio_lim.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/stdio.h \
  /data/hykang/riscv-hy/riscv64-unknown-linux-gnu/include/c++/15.2.0/functional \
  /data/hykang/riscv-hy/riscv64-unknown-linux-gnu/include/c++/15.2.0/bits/stl_function.h \
  /data/hykang/riscv-hy/riscv64-unknown-linux-gnu/include/c++/15.2.0/bits/move.h \

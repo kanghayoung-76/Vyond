@@ -52,6 +52,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/cmake_install.cmake")
   include("/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/cmake_install.cmake")
   include("/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dds-tdds-test/cmake_install.cmake")
+  include("/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/split-host-test/cmake_install.cmake")
 
 endif()
 

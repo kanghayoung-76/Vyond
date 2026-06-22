@@ -25,4 +25,5 @@ hello/CMakeFiles/hello.dir/eapp/hello.c.o: \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/types/cookie_io_functions_t.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/stdio_lim.h \
  /data/hykang/riscv-hy/sysroot/usr/include/bits/floatn.h \
- /data/hykang/riscv-hy/sysroot/usr/include/bits/floatn-common.h
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/floatn-common.h \
+ /data/hykang/riscv-hy/sysroot/usr/include/bits/stdio.h

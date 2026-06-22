@@ -190,9 +190,6 @@ pub fn detect_region_overlap(addr: usize, size: usize) -> bool {
     region_overlap
 }
 
-pub fn pmp_detect_region_overlap_atomic(addr: usize, size: usize) -> bool {
-    detect_region_overlap(addr, size)
-}
 
 pub fn reset(count: usize) {
     (0..count).for_each(|index| match index {

@@ -48,7 +48,7 @@ done;
 QEMU_SYSTEM="/data/hykang/RVSS/q-vela-new/qemu/build/qemu-system-riscv64"
 FW_BIN="sbi/opensbi/build/platform/generic/firmware/fw_dynamic.bin"
 LINUX_IMAGE="$ROOT_PATH/../prebuilt/Image"
-export SMP=1;
+export SMP=2;
     #-netdev tap,id=net1,ifname=tap0,script=no,downscript=no \
     #-device virtio-net-pci,netdev=net1,romfile="" \
 

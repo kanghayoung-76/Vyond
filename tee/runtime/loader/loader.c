@@ -66,29 +66,3 @@ int loadElf(elf_t* elf, bool user) {
 
    return 0;
 }
-
-// assumes beginning and next file are page-aligned
-static inline void freeUnusedElf(elf_t* elf) {
-  assert(false); // TODO: needs free to be implemented properly
-  for (unsigned int i = 0; i < elf_getNumProgramHeaders(elf); i++) {
-    uintptr_t start      = elf_getProgramHeaderVaddr(elf, i);
-    uintptr_t file_end   = start + elf_getProgramHeaderFileSize(elf, i);
-    uintptr_t src        = (uintptr_t) elf_getProgramSegment(elf, i);
-
-    if (elf_getProgramHeaderType(elf, i) != PT_LOAD) {
-      uintptr_t src_end = file_end - start + src;
-      for (; src < src_end; src += RISCV_PAGE_SIZE) {
-        // free_page(vpn(src));
-      }
-      continue;
-    }
-
-    if (RISCV_PAGE_OFFSET(start)) {
-      // free_page(vpn(start));
-    }
-
-    if (RISCV_PAGE_OFFSET(file_end)) {
-      // free_page(vpn(file_end));
-    }
-  }
-}
