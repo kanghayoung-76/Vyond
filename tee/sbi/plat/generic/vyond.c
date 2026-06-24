@@ -96,6 +96,22 @@ long         sbi_sm_handle_shm_ipi(struct sbi_trap_regs *regs);
 #define PLIC_BASE_ADDR  0xc000000UL
 #define PLIC_CLAIM_REG(ctx) ((volatile uint32_t *)(PLIC_BASE_ADDR + 0x200004UL + (ulong)(ctx) * 0x1000UL))
 
+/* CLINT base layout (QEMU virt):
+ *   0x02000000 + hartid*4  : MSIP register (W: 0=clear, 1=assert)
+ *   0x02004000 + hartid*8  : mtimecmp[hartid]
+ *
+ * MIP.MSIP and MIP.MTIP are read-only in the CSR — driven by CLINT MMIO.
+ * CSR writes to MIP.MSIP / MIP.MTIP are no-ops; must use CLINT MMIO writes. */
+#define CLINT_MSIP_BASE      0x02000000UL
+#define CLINT_MTIMECMP_BASE  0x02004000UL
+
+static inline void clint_clear_msip(ulong hartid) {
+    *((volatile uint32_t *)(CLINT_MSIP_BASE + hartid * 4)) = 0;
+}
+static inline void clint_clear_timer(ulong hartid) {
+    *((volatile uint64_t *)(CLINT_MTIMECMP_BASE + hartid * 8)) = (uint64_t)-1ULL;
+}
+
 static inline uint32_t plic_claim_m(ulong hartid) {
     return *PLIC_CLAIM_REG(hartid * 2);
 }
@@ -379,16 +395,27 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
 		mcause &= ~(1UL << (__riscv_xlen - 1));
 		switch (mcause) {
 		    case IRQ_M_TIMER: {
+                ulong hartid = current_hartid();
+                /* Deassert MTIP via CLINT (csr_clear(MTIP) is a no-op: MTIP is
+                 * read-only, controlled by hardware comparing mtime vs mtimecmp).
+                 * Without this, the handler would be re-entered in a tight loop
+                 * → CPU hard lockup (watchdog). */
+                clint_clear_timer(hartid);
                 if (sbi_sm_is_enclave_context()) {
-                    /* Enclave preempted by timer: stop enclave, return to host. */
+                    /* Enclave preempted by timer: stop enclave, return to host.
+                     * Set STIP AFTER stop_enclave so Linux's timer ISR fires after
+                     * MRET and calls sbi_set_timer to restore a valid mtimecmp.
+                     * MUST be after stop_enclave: switch_to_host->swap_prev_smode_csrs
+                     * writes host's saved sip (STIP=0) which would clear any STIP set
+                     * before stop_enclave. */
                     regs->mepc -= 4;
                     sbi_sm_stop_enclave(regs, 0/*STOP_TIMER_INTERRUPT*/);
+                    csr_set(CSR_MIP, MIP_STIP);
                     ((struct sbi_trap_regs *)regs)->a0 = SBI_ERR_SM_ENCLAVE_INTERRUPTED;
                     ((struct sbi_trap_regs *)regs)->mepc += 4;
                 } else {
-                    /* Host context (enc_subscriber parked in wait_shm):
+                    /* Host context (enc_subscriber parked in wait_shm, keep_vec=true):
                      * Delegate timer to S-mode so Linux timer ticks work normally. */
-                    csr_clear(CSR_MIP, MIP_MTIP);
                     csr_set(CSR_MIP, MIP_STIP);
                 }
 			    break;
@@ -414,9 +441,12 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
                         ((struct sbi_trap_regs *)regs)->mepc += 4;
                         sbi_trap_exit(regs);
                     }
-                    /* Not our IPI (spurious or Linux IPI): forward as SSIP. */
-                    csr_clear(CSR_MIP, MIP_MSIP);
-                    csr_set(CSR_MIP, MIP_SSIP);
+                    /* Not enc1's IPI: sbi_sm_handle_shm_ipi already cleared CLINT MSIP.
+                     * Call sbi_ipi_process so OpenSBI processes any pending M-mode IPI
+                     * work in its software queue (RFENCE, SBI_IPI→SSIP, etc.).
+                     * Without this, Linux RFENCE on CPU1 waits forever for CPU0 to
+                     * execute the fence → CPU1 soft lockup. */
+                    sbi_ipi_process();
                 }
 			    break;
             }

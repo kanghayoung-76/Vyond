@@ -1,9 +1,12 @@
 export VYOND_ENV_SETUP=YES
 
+# Local riscv-gnu-toolchain (installed in ~/riscv/riscv)
+export PATH=$HOME/riscv/riscv/bin:$PATH
+
 # Source environmental variables for chipyard
-cd chipyard-1.11.0
-source env.sh
-cd ..
+#cd chipyard-1.11.0
+#source env.sh
+#cd ..
 
 # Unpack prebuild images
 cd prebuilt
@@ -14,5 +17,3 @@ cd ..
 # Set cross compiler for building fw_payload
 path_to_gcc=`which riscv64-unknown-elf-gcc`
 export CROSS_COMPILE=$(echo "$path_to_gcc" | sed 's/\(.*\)gcc/\1/')
-
-#export PATH=$PATH:~/riscv-hy/bin

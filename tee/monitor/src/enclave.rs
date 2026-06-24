@@ -48,6 +48,7 @@ pub struct RunState {
     state: State,
     notified_by: Option<usize>,      // eid that switched to us via notify_shm; cleared on next wait_shm
     pending_ocall_enc2: Option<usize>, // enc2's eid when enc2 made OCALL while running under our HOST context
+    pending_shm_notify: Option<u32>, // rid queued by notify_shm while enc2 was Running (multicore race fix)
 }
 
 #[repr(C)]
@@ -153,6 +154,7 @@ impl Enclave {
                 state: State::Stopped,
                 notified_by: None,
                 pending_ocall_enc2: None,
+                pending_shm_notify: None,
             }),
             threads: [Self::THREAD_INIT; MAX_ENCLAVE_THREADS],
             pa_params,
@@ -203,7 +205,9 @@ impl Enclave {
         if load_parameters {
             //csr_write!(sepc, self.params.user_entry);
             regs.mepc = self.pa_params.dram_base - 4; // regs->mepc will be +4 before sbi_ecall_handler return
-            regs.mstatus = 1 << crate::encoding::MSTATUS_MPP_SHIFT;
+            // MPIE=1 → after MRET, MIE=1 so M-mode timer can preempt loading.
+            // a0-a4 are saved by swap_prev_state, so PA params survive preemption.
+            regs.mstatus = (1 << crate::encoding::MSTATUS_MPP_SHIFT) | crate::encoding::MSTATUS_MPIE;
             regs.a1 = self.pa_params.dram_base; // $a1: (PA) DRAM base,
             regs.a2 = self.pa_params.dram_size; // $a2: (PA) DRAM size,
             regs.a3 = self.pa_params.runtime_base; // $a3: (PA) kernel location,
@@ -817,6 +821,20 @@ pub fn wait_shm(tf: &mut TrapFrame, rid: u32) -> Result<(), Error> {
         if runstate.state != State::Running {
             return Err(Error::NotRunning);
         }
+        // Multicore race fast-path: enc_publisher called notify_shm while we were Running
+        // (between IPI wake-up and this wait_shm call). It stored the rid in
+        // pending_shm_notify instead of printing "no WaitingForShm match". Consume it
+        // and return immediately so enc2 continues without parking.
+        if let Some(pending_rid) = runstate.pending_shm_notify.take() {
+            if pending_rid == rid {
+                drop(runstate);
+                heprintln!("[SM:wait_shm] eid={} rid={} → pending notify consumed, skip park",
+                           enclave.eid, rid);
+                return Err(Error::Interrupted); // C: a0=0, mepc+=4 → enc resumes immediately
+            }
+            runstate.pending_shm_notify = Some(pending_rid); // put back on rid mismatch
+        }
+
         // Consume enc_publisher eid if this is a single-core loop (resume it after suspend).
         let notified_by_eid = runstate.notified_by.take();
         runstate.count -= 1;
@@ -923,8 +941,59 @@ pub fn notify_shm(tf: &mut TrapFrame, rid: u32) -> Result<(), Error> {
     let (enc2_eid, target_hart) = match found {
         Some(t) => t,
         None => {
-            heprintln!("[SM:notify_shm] rid={} → no WaitingForShm match", rid);
-            return Ok(()); // enc_publisher continues normally
+            // Second-chance scan: close the race where enc2 transitions
+            // Running→WaitingForShm between the first scan and now.
+            // We check WaitingForShm AND Running in a SINGLE per-slot lock so
+            // the two checks are atomic — no gap where enc2 can slip through.
+            let retry: Option<(usize, usize)> = unsafe {
+                let shm_rgn_opt = get_shm_region_by_rid(rid as usize);
+                let mut found2 = None;
+                for slot in 0..MAX_ENCLAVES {
+                    if let Some(ref mut enc2) = ENCLAVES[slot] {
+                        if enc2.eid == enc1_eid { continue; }
+                        let mut rs2 = enc2.state.lock();
+                        if matches!(rs2.state, State::WaitingForShm(r) if r == rid) {
+                            // enc2 transitioned Running→WaitingForShm after the first scan.
+                            let enc2_eid    = enc2.eid;
+                            let target_hart = enc2.last_hart;
+                            rs2.count += 1;
+                            rs2.state = State::Running;
+                            rs2.notified_by = if target_hart == current_hart {
+                                Some(enc1_eid)
+                            } else {
+                                None
+                            };
+                            drop(rs2);
+                            found2 = Some((enc2_eid, target_hart));
+                            break;
+                        }
+                        if let Some(ref shm_rgn) = shm_rgn_opt {
+                            if shm_rgn.perm_conf.get_perm(enc2.eid).is_some()
+                                && rs2.state == State::Running
+                                && enc2.last_hart != current_hart
+                                && rs2.pending_shm_notify.is_none()
+                            {
+                                heprintln!(
+                                    "[SM:notify_shm] rid={} eid={} Running on hart={}, queuing pending notify",
+                                    rid, enc2.eid, enc2.last_hart
+                                );
+                                rs2.pending_shm_notify = Some(rid);
+                                drop(rs2);
+                                return Ok(());
+                            }
+                        }
+                        drop(rs2);
+                    }
+                }
+                found2
+            };
+            match retry {
+                Some(t) => t,
+                None => {
+                    heprintln!("[SM:notify_shm] rid={} → no WaitingForShm match", rid);
+                    return Ok(());
+                }
+            }
         }
     };
 

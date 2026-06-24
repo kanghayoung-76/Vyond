@@ -117,6 +117,15 @@ impl State {
             swap(&mut state.t2, &mut regs.t2);
             swap(&mut state.s0, &mut regs.s0);
             swap(&mut state.s1, &mut regs.s1);
+            // a0-a4 must be swapped so timer-preemption preserves PA params (and all other
+            // mid-computation register values).  The SBI handler always overwrites a0 with
+            // the ecall return value after switch_to_host/switch_to_enclave, so adding a0
+            // here does not break the ecall convention.
+            swap(&mut state.a0, &mut regs.a0);
+            swap(&mut state.a1, &mut regs.a1);
+            swap(&mut state.a2, &mut regs.a2);
+            swap(&mut state.a3, &mut regs.a3);
+            swap(&mut state.a4, &mut regs.a4);
             swap(&mut state.a5, &mut regs.a5);
             swap(&mut state.a6, &mut regs.a6);
             swap(&mut state.a7, &mut regs.a7);
