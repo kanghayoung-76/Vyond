@@ -8,6 +8,7 @@
 #include <asm/sbi.h>
 #include <linux/uaccess.h>
 #include <linux/string.h>
+#include "sm_err.h"
 #include <linux/mm.h>
 
 #define read_reg(reg)                                     \
@@ -265,6 +266,43 @@ int keystone_resume_enclave(unsigned long data)
   return 0;
 }
 
+int keystone_wait_and_resume(unsigned long data)
+{
+  struct sbiret ret;
+  struct keystone_ioctl_run_enclave *arg = (struct keystone_ioctl_run_enclave*) data;
+  unsigned long ueid = arg->eid;
+  struct enclave* enclave;
+  enclave = get_enclave_by_id(ueid);
+
+  if (!enclave)
+  {
+    keystone_err("invalid enclave id\n");
+    return -EINVAL;
+  }
+
+  if (enclave->eid < 0) {
+    keystone_err("real enclave does not exist\n");
+    return -EINVAL;
+  }
+
+  /* Poll SM until enc2 is woken by IPI. SM returns WAITING_FOR_SHM immediately
+   * when no IPI is pending (no WFI, no hart monopolization). Sleep 1 jiffie
+   * (~1-4 ms) between polls so Linux can schedule other tasks freely. */
+  do {
+    ret = sbi_sm_wait_and_resume(enclave->eid);
+    if (ret.error == SBI_ERR_SM_ENCLAVE_WAITING_FOR_SHM) {
+      if (signal_pending(current))
+        return -EINTR;
+      schedule_timeout_interruptible(1);
+    }
+  } while (ret.error == SBI_ERR_SM_ENCLAVE_WAITING_FOR_SHM);
+
+  arg->error = ret.error;
+  arg->value = ret.value;
+
+  return 0;
+}
+
 int create_shm(unsigned long args)
 {
   struct sbiret ret;
@@ -484,6 +522,9 @@ long keystone_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
       break;
     case KEYSTONE_IOC_RESUME_ENCLAVE:
       ret = keystone_resume_enclave((unsigned long) data);
+      break;
+    case KEYSTONE_IOC_WAIT_AND_RESUME:
+      ret = keystone_wait_and_resume((unsigned long) data);
       break;
     /* Note that following commands could have been implemented as a part of ADD_PAGE ioctl.
      * However, there was a weird bug in compiler that generates a wrong control flow

@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/split-sub-host.dir/link.d"
   "CMakeFiles/split-sub-host.dir/sub-host/sub-host.cpp.o"
   "CMakeFiles/split-sub-host.dir/sub-host/sub-host.cpp.o.d"
   "split-sub-host"

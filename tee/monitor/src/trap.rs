@@ -1,3 +1,4 @@
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct TrapFrame {
     pub zero: usize,     // zero register state

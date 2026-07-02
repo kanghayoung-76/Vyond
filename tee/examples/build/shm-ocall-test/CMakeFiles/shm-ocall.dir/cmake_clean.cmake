@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/shm-ocall.dir/link.d"
   "CMakeFiles/shm-ocall.dir/eapp/shm_ocall.c.o"
   "CMakeFiles/shm-ocall.dir/eapp/shm_ocall.c.o.d"
   "shm-ocall"

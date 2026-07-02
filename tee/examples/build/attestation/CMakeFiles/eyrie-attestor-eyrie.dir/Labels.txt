@@ -1,13 +1,13 @@
 # Target labels
  eyrie-attestor-eyrie
 # Source files and their labels
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/CMakeFiles/eyrie-attestor-eyrie
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/CMakeFiles/eyrie-attestor-eyrie.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/CMakeFiles/eyrie-attestor-eyrie-complete.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie-stamp/eyrie-attestor-eyrie-build.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie-stamp/eyrie-attestor-eyrie-configure.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie-stamp/eyrie-attestor-eyrie-download.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie-stamp/eyrie-attestor-eyrie-install.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie-stamp/eyrie-attestor-eyrie-mkdir.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie-stamp/eyrie-attestor-eyrie-patch.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie-stamp/eyrie-attestor-eyrie-update.rule
+/home/hykang/Vyond/tee/examples/build/attestation/CMakeFiles/eyrie-attestor-eyrie
+/home/hykang/Vyond/tee/examples/build/attestation/CMakeFiles/eyrie-attestor-eyrie.rule
+/home/hykang/Vyond/tee/examples/build/attestation/CMakeFiles/eyrie-attestor-eyrie-complete.rule
+/home/hykang/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie-stamp/eyrie-attestor-eyrie-build.rule
+/home/hykang/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie-stamp/eyrie-attestor-eyrie-configure.rule
+/home/hykang/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie-stamp/eyrie-attestor-eyrie-download.rule
+/home/hykang/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie-stamp/eyrie-attestor-eyrie-install.rule
+/home/hykang/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie-stamp/eyrie-attestor-eyrie-mkdir.rule
+/home/hykang/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie-stamp/eyrie-attestor-eyrie-patch.rule
+/home/hykang/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie-stamp/eyrie-attestor-eyrie-update.rule

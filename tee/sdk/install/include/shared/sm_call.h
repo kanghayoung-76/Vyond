@@ -20,6 +20,7 @@
 #define SBI_SM_DESTROY_ENCLAVE   2002
 #define SBI_SM_RUN_ENCLAVE       2003
 #define SBI_SM_RESUME_ENCLAVE    2005
+#define SBI_SM_WAIT_AND_RESUME   2006  /* host: SM wfi-blocks until enc2 has OCALL */
 #define FID_RANGE_HOST           2999
 
 /* 3000-3999 are called by enclave */
@@ -44,6 +45,11 @@
 #define SBI_SM_CREATE_DEV_SHM        4006  /* host: create device-enclave SHM (device_wid, lazy WGC) */
 #define SBI_SM_CREATE_ENCLAVE_SHM    4007  /* host: create enclave-channel SHM (no host EID in perm_conf) */
 #define SBI_SM_GET_SHM_EIDS          4008  /* enclave: query EID list of a channel before mapping */
+#define SBI_SM_REGISTER_ENC_CHANNEL  3011  /* enc: bind creator+allowed hash to an enc-enc SHM rid */
+#define SBI_SM_FIND_SHM_BY_HASH      3012  /* enc: find enc-enc rid by creator hash */
+#define SBI_SM_GET_MY_HASH           3013  /* enc: retrieve own measurement hash (64 bytes) */
+#define SBI_SM_FIND_DEV_SHM          3014  /* enc: find RegionDevEnc matching own hash */
+#define SBI_SM_TRIGGER_DEV           3015  /* enc: ask SM to write CMD register of a device */
 #define FID_RANGE_CUSTOM          4999
 
 /* Plugin IDs and Call IDs */

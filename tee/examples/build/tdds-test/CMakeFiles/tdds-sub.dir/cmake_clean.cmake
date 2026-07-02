@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/tdds-sub.dir/link.d"
   "CMakeFiles/tdds-sub.dir/sub/sub.c.o"
   "CMakeFiles/tdds-sub.dir/sub/sub.c.o.d"
   "tdds-sub"

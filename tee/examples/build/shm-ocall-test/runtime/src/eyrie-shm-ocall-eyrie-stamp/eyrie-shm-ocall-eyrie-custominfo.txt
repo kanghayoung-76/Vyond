@@ -3,7 +3,7 @@
 # No other meaning or use of this file is supported.
 
 method=custom
-command=rm;-rf;/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie;&&;cp;-ar;/data/hykang/RVSS/WGTEE_project/Vyond/tee/runtime;/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie
-source_dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie
-work_dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src
+command=rm;-rf;/home/hykang/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie;&&;cp;-ar;/home/hykang/Vyond/tee/runtime;/home/hykang/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie
+source_dir=/home/hykang/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie
+work_dir=/home/hykang/Vyond/tee/examples/build/shm-ocall-test/runtime/src
 

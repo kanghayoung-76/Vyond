@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_ASM
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/runtime.ld.S" "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/CMakeFiles/rt_linkscript.dir/runtime.ld.S.o"
+  "/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/runtime.ld.S" "/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/CMakeFiles/rt_linkscript.dir/runtime.ld.S.o"
   )
 set(CMAKE_ASM_COMPILER_ID "GNU")
 
@@ -19,8 +19,8 @@ set(CMAKE_TARGET_DEFINITIONS_ASM
 
 # The include file search paths:
 set(CMAKE_ASM_TARGET_INCLUDE_PATH
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/edge"
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/sdk/install/include/shared"
+  "/home/hykang/Vyond/tee/sdk/install/include/edge"
+  "/home/hykang/Vyond/tee/sdk/install/include/shared"
   "tmplib"
   "include"
   )

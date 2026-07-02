@@ -1,13 +1,13 @@
 # Target labels
  eyrie-tdds-pub-eyrie
 # Source files and their labels
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/eyrie-tdds-pub-eyrie
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/eyrie-tdds-pub-eyrie.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/CMakeFiles/eyrie-tdds-pub-eyrie-complete.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-build.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-configure.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-download.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-install.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-mkdir.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-patch.rule
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-update.rule
+/home/hykang/Vyond/tee/examples/build/tdds-test/CMakeFiles/eyrie-tdds-pub-eyrie
+/home/hykang/Vyond/tee/examples/build/tdds-test/CMakeFiles/eyrie-tdds-pub-eyrie.rule
+/home/hykang/Vyond/tee/examples/build/tdds-test/CMakeFiles/eyrie-tdds-pub-eyrie-complete.rule
+/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-build.rule
+/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-configure.rule
+/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-download.rule
+/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-install.rule
+/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-mkdir.rule
+/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-patch.rule
+/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie-stamp/eyrie-tdds-pub-eyrie-update.rule

@@ -8,7 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/shm-ocall-test/eapp/shm_ocall.c" "shm-ocall-test/CMakeFiles/shm-ocall.dir/eapp/shm_ocall.c.o" "gcc" "shm-ocall-test/CMakeFiles/shm-ocall.dir/eapp/shm_ocall.c.o.d"
+  "/home/hykang/Vyond/tee/examples/shm-ocall-test/eapp/shm_ocall.c" "shm-ocall-test/CMakeFiles/shm-ocall.dir/eapp/shm_ocall.c.o" "gcc" "shm-ocall-test/CMakeFiles/shm-ocall.dir/eapp/shm_ocall.c.o.d"
+  "" "shm-ocall-test/shm-ocall" "gcc" "shm-ocall-test/CMakeFiles/shm-ocall.dir/link.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

@@ -2,34 +2,34 @@
 	"sources" : 
 	[
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/eyrie-dev_irq_eapp-eyrie"
+			"file" : "/home/hykang/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/eyrie-dev_irq_eapp-eyrie"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/eyrie-dev_irq_eapp-eyrie.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/eyrie-dev_irq_eapp-eyrie.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/eyrie-dev_irq_eapp-eyrie-complete.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/dev-irq-test/CMakeFiles/eyrie-dev_irq_eapp-eyrie-complete.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/runtime/src/eyrie-dev_irq_eapp-eyrie-stamp/eyrie-dev_irq_eapp-eyrie-build.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/dev-irq-test/runtime/src/eyrie-dev_irq_eapp-eyrie-stamp/eyrie-dev_irq_eapp-eyrie-build.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/runtime/src/eyrie-dev_irq_eapp-eyrie-stamp/eyrie-dev_irq_eapp-eyrie-configure.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/dev-irq-test/runtime/src/eyrie-dev_irq_eapp-eyrie-stamp/eyrie-dev_irq_eapp-eyrie-configure.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/runtime/src/eyrie-dev_irq_eapp-eyrie-stamp/eyrie-dev_irq_eapp-eyrie-download.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/dev-irq-test/runtime/src/eyrie-dev_irq_eapp-eyrie-stamp/eyrie-dev_irq_eapp-eyrie-download.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/runtime/src/eyrie-dev_irq_eapp-eyrie-stamp/eyrie-dev_irq_eapp-eyrie-install.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/dev-irq-test/runtime/src/eyrie-dev_irq_eapp-eyrie-stamp/eyrie-dev_irq_eapp-eyrie-install.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/runtime/src/eyrie-dev_irq_eapp-eyrie-stamp/eyrie-dev_irq_eapp-eyrie-mkdir.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/dev-irq-test/runtime/src/eyrie-dev_irq_eapp-eyrie-stamp/eyrie-dev_irq_eapp-eyrie-mkdir.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/runtime/src/eyrie-dev_irq_eapp-eyrie-stamp/eyrie-dev_irq_eapp-eyrie-patch.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/dev-irq-test/runtime/src/eyrie-dev_irq_eapp-eyrie-stamp/eyrie-dev_irq_eapp-eyrie-patch.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/dev-irq-test/runtime/src/eyrie-dev_irq_eapp-eyrie-stamp/eyrie-dev_irq_eapp-eyrie-update.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/dev-irq-test/runtime/src/eyrie-dev_irq_eapp-eyrie-stamp/eyrie-dev_irq_eapp-eyrie-update.rule"
 		}
 	],
 	"target" : 

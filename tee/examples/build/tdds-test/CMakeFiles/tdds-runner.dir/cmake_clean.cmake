@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/tdds-runner.dir/link.d"
   "CMakeFiles/tdds-runner.dir/host/host.cpp.o"
   "CMakeFiles/tdds-runner.dir/host/host.cpp.o.d"
   "tdds-runner"

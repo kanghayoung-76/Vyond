@@ -34,7 +34,7 @@ pub extern "C" fn sbi_sm_destroy_enclave(eid: usize) -> isize {
         Ok(_) => Error::Success,
         Err(err) => {
             dbg!("Failed {:?}", err);
-            panic!("Failed {:?}", err);
+            err
         }
     };
     ret as isize
@@ -75,7 +75,7 @@ pub extern "C" fn sbi_sm_stop_enclave(regs: &mut TrapFrame, request: usize) -> i
     let ret = match enclave::stop_enclave(regs, request) {
         Ok(_) => Error::Success,
         Err(err) => {
-            if err != Error::Interrupted && err != Error::EdgeCallHost {
+            if err != Error::Interrupted && err != Error::EdgeCallHost && err != Error::IpiHandled {
                 dbg!("Failed {:?}", err);
                 panic!("Failed {:?}", err);
             } else {
@@ -92,8 +92,12 @@ pub extern "C" fn sbi_sm_exit_enclave(regs: &mut TrapFrame) -> isize {
     let ret = match enclave::exit_enclave(regs) {
         Ok(_) => Error::Success,
         Err(err) => {
-            dbg!("Failed {:?}", err);
-            panic!("Failed {:?}", err);
+            if err != Error::IpiHandled {
+                dbg!("Failed {:?}", err);
+                panic!("Failed {:?}", err);
+            } else {
+                err
+            }
         }
     };
     ret as isize
@@ -246,6 +250,18 @@ pub extern "C" fn sbi_sm_is_enclave_context() -> bool {
     cpu::is_enclave_context()
 }
 
+/// Called by host (sub-host) when enc_subscriber is parked at wait_shm.
+/// SM blocks in M-mode with WFI until IPI arrives for eid, then switches directly
+/// into enc2 — no repeated RESUME_ENCLAVE calls, no SM log spam.
+#[no_mangle]
+pub extern "C" fn sbi_sm_wait_and_resume(regs: &mut TrapFrame, eid: usize) -> isize {
+    let ret = match enclave::wait_and_resume_for_shm(regs, eid) {
+        Ok(_) => Error::Success,
+        Err(err) => err,
+    };
+    ret as isize
+}
+
 /// Called from the M-mode IRQ_M_SOFT handler when the hart is in host-context
 /// (mtvec = trap_vector_enclave, enc_subscriber parked in wait_shm).
 /// Clears CLINT MSIP, finds the pending enc_subscriber, and directly switches
@@ -319,6 +335,38 @@ pub extern "C" fn sbi_sm_create_enclave_shm(rid: *mut usize, pa: usize, size: us
     ret as isize
 }
 
+/// Binds hash-based attestation to an enc-enc SHM channel.
+/// Called by enc1 (publisher, in enclave context) after the host allocated the SHM.
+/// SM records enc1's own hash as creator_hash and stores the caller-provided allowed_hash.
+/// SBI call 3011 (enclave-callable).
+#[no_mangle]
+pub extern "C" fn sbi_sm_register_enc_channel(rid: usize, allowed_hash_pa: usize) -> isize {
+    let ret = match enclave::register_enc_channel(rid, allowed_hash_pa) {
+        Ok(()) => Error::Success,
+        Err(err) => {
+            dbg!("sbi_sm_register_enc_channel failed {:?}", err);
+            err
+        }
+    };
+    ret as isize
+}
+
+/// Locates an enc-enc SHM channel by matching creator_hash and caller's own hash.
+/// Called by enc2 (subscriber, in enclave context) to discover the rid without RID_FILE.
+/// Writes the rid to rid_out_pa on success.
+/// SBI call 3012 (enclave-callable).
+#[no_mangle]
+pub extern "C" fn sbi_sm_find_shm_by_hash(creator_hash_pa: usize, rid_out_pa: usize) -> isize {
+    let ret = match enclave::find_shm_by_hash(creator_hash_pa, rid_out_pa) {
+        Ok(()) => Error::Success,
+        Err(err) => {
+            dbg!("sbi_sm_find_shm_by_hash failed {:?}", err);
+            err
+        }
+    };
+    ret as isize
+}
+
 /// Returns the EID list for a shared memory region into a caller-provided buffer.
 /// The enclave uses this to verify no unexpected EIDs (especially host EID 11)
 /// have access to the channel before mapping it.
@@ -337,6 +385,47 @@ pub extern "C" fn sbi_sm_get_shm_eids(
         }
         Err(err) => {
             dbg!("Failed {:?}", err);
+            err
+        }
+    };
+    ret as isize
+}
+
+/// Called by enclave to retrieve its own measurement hash (SBI 3013).
+/// Writes 64 bytes to hash_out_pa (physical address translated by runtime).
+#[no_mangle]
+pub extern "C" fn sbi_sm_get_my_hash(hash_out_pa: usize) -> isize {
+    let ret = match enclave::get_my_hash(hash_out_pa) {
+        Ok(_) => Error::Success,
+        Err(err) => {
+            dbg!("sbi_sm_get_my_hash failed {:?}", err);
+            err
+        }
+    };
+    ret as isize
+}
+
+/// Called by enclave to locate a RegionDevEnc whose allowed_hash matches
+/// the caller (or is open). Writes rid to rid_out_pa (SBI 3014).
+#[no_mangle]
+pub extern "C" fn sbi_sm_find_dev_shm(rid_out_pa: usize) -> isize {
+    let ret = match enclave::find_dev_shm(rid_out_pa) {
+        Ok(_) => Error::Success,
+        Err(err) => {
+            dbg!("sbi_sm_find_dev_shm failed {:?}", err);
+            err
+        }
+    };
+    ret as isize
+}
+
+/// Called by enclave to ask SM to write CMD=1 to the device's MMIO register (SBI 3015).
+#[no_mangle]
+pub extern "C" fn sbi_sm_trigger_dev(device_wid: u32) -> isize {
+    let ret = match enclave::trigger_dev(device_wid) {
+        Ok(_) => Error::Success,
+        Err(err) => {
+            dbg!("sbi_sm_trigger_dev failed {:?}", err);
             err
         }
     };

@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/attestor-runner.dir/link.d"
   "CMakeFiles/attestor-runner.dir/host/attestor-runner.cpp.o"
   "CMakeFiles/attestor-runner.dir/host/attestor-runner.cpp.o.d"
   "CMakeFiles/attestor-runner.dir/host/host.cpp.o"

@@ -3,7 +3,7 @@
 # No other meaning or use of this file is supported.
 
 method=custom
-command=rm;-rf;/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie;&&;cp;-ar;/data/hykang/RVSS/WGTEE_project/Vyond/tee/runtime;/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie
-source_dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie
-work_dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/attestation/runtime/src
+command=rm;-rf;/home/hykang/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie;&&;cp;-ar;/home/hykang/Vyond/tee/runtime;/home/hykang/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie
+source_dir=/home/hykang/Vyond/tee/examples/build/attestation/runtime/src/eyrie-attestor-eyrie
+work_dir=/home/hykang/Vyond/tee/examples/build/attestation/runtime/src
 

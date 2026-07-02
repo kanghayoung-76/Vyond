@@ -8,7 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/split-host-test/sub/sub.c" "split-host-test/CMakeFiles/split-sub.dir/sub/sub.c.o" "gcc" "split-host-test/CMakeFiles/split-sub.dir/sub/sub.c.o.d"
+  "/home/hykang/Vyond/tee/examples/split-host-test/sub/sub.c" "split-host-test/CMakeFiles/split-sub.dir/sub/sub.c.o" "gcc" "split-host-test/CMakeFiles/split-sub.dir/sub/sub.c.o.d"
+  "" "split-host-test/split-sub" "gcc" "split-host-test/CMakeFiles/split-sub.dir/link.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

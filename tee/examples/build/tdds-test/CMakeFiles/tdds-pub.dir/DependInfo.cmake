@@ -8,7 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/tdds-test/pub/pub.c" "tdds-test/CMakeFiles/tdds-pub.dir/pub/pub.c.o" "gcc" "tdds-test/CMakeFiles/tdds-pub.dir/pub/pub.c.o.d"
+  "/home/hykang/Vyond/tee/examples/tdds-test/pub/pub.c" "tdds-test/CMakeFiles/tdds-pub.dir/pub/pub.c.o" "gcc" "tdds-test/CMakeFiles/tdds-pub.dir/pub/pub.c.o.d"
+  "" "tdds-test/tdds-pub" "gcc" "tdds-test/CMakeFiles/tdds-pub.dir/link.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

@@ -1,1 +1,1 @@
-/data/hykang/riscv-hy/bin/riscv64-unknown-linux-gnu-gcc -Wall -O3 -DNDEBUG CMakeFiles/hello.dir/eapp/hello.c.o -o hello  -static 
+/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc -Wall -Wl,--dependency-file=CMakeFiles/hello.dir/link.d CMakeFiles/hello.dir/eapp/hello.c.o -o hello  -static

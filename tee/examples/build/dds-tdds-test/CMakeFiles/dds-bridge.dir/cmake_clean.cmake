@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/dds-bridge.dir/link.d"
   "CMakeFiles/dds-bridge.dir/bridge/bridge.c.o"
   "CMakeFiles/dds-bridge.dir/bridge/bridge.c.o.d"
   "dds-bridge"

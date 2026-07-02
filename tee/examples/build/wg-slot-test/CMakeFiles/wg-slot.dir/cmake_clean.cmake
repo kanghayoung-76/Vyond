@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/wg-slot.dir/link.d"
   "CMakeFiles/wg-slot.dir/eapp/wg_slot.c.o"
   "CMakeFiles/wg-slot.dir/eapp/wg_slot.c.o.d"
   "wg-slot"

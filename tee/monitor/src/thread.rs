@@ -184,4 +184,13 @@ impl State {
         self.mepc = current_mepc;
         regs.mepc = tmp;
     }
+
+    /// Advance the saved mepc past the ecall instruction and set a0=0.
+    /// Called by wait_and_resume_for_shm before switch_to_enclave so enc2
+    /// resumes at wait_shm+4 with a0=0 (Interrupted/success), matching what
+    /// the IRQ_M_SOFT handler does in the resume_from_shm_ipi path.
+    pub fn advance_past_ecall_with_interrupted(&mut self) {
+        self.mepc += 4;
+        self.context.a0 = 0;
+    }
 }

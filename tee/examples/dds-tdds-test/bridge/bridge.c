@@ -11,6 +11,7 @@
 #include "app/eapp_utils.h"
 #include "app/string.h"
 #include "app/syscall.h"
+#include "shared/tdds_common.h"
 #include "tdds_rclcpp.h"
 
 /* MYDEV MMIO register offsets */

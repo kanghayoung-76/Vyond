@@ -8,10 +8,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/mm/freemem.c" "mm/CMakeFiles/rt_mm.dir/freemem.c.o" "gcc" "mm/CMakeFiles/rt_mm.dir/freemem.c.o.d"
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/mm/mm.c" "mm/CMakeFiles/rt_mm.dir/mm.c.o" "gcc" "mm/CMakeFiles/rt_mm.dir/mm.c.o.d"
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/mm/page_swap.c" "mm/CMakeFiles/rt_mm.dir/page_swap.c.o" "gcc" "mm/CMakeFiles/rt_mm.dir/page_swap.c.o.d"
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/mm/vm.c" "mm/CMakeFiles/rt_mm.dir/vm.c.o" "gcc" "mm/CMakeFiles/rt_mm.dir/vm.c.o.d"
+  "/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/mm/freemem.c" "mm/CMakeFiles/rt_mm.dir/freemem.c.o" "gcc" "mm/CMakeFiles/rt_mm.dir/freemem.c.o.d"
+  "/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/mm/mm.c" "mm/CMakeFiles/rt_mm.dir/mm.c.o" "gcc" "mm/CMakeFiles/rt_mm.dir/mm.c.o.d"
+  "/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/mm/page_swap.c" "mm/CMakeFiles/rt_mm.dir/page_swap.c.o" "gcc" "mm/CMakeFiles/rt_mm.dir/page_swap.c.o.d"
+  "/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/mm/vm.c" "mm/CMakeFiles/rt_mm.dir/vm.c.o" "gcc" "mm/CMakeFiles/rt_mm.dir/vm.c.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

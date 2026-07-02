@@ -93,3 +93,28 @@ verify_shm_channel(rid_t rid) {
   }
   return 0;
 }
+
+int
+register_enc_channel(rid_t rid, const uint8_t *allowed_hash) {
+  return (int)SYSCALL_2(RUNTIME_SYSCALL_REGISTER_ENC_CHANNEL, rid, allowed_hash);
+}
+
+int
+find_shm_by_hash(const uint8_t *creator_hash, rid_t *rid_out) {
+  return (int)SYSCALL_2(RUNTIME_SYSCALL_FIND_SHM_BY_HASH, creator_hash, rid_out);
+}
+
+int
+get_my_hash(uint8_t *hash_out) {
+  return (int)SYSCALL_1(RUNTIME_SYSCALL_GET_MY_HASH, hash_out);
+}
+
+int
+find_dev_shm(rid_t *rid_out) {
+  return (int)SYSCALL_1(RUNTIME_SYSCALL_FIND_DEV_SHM, rid_out);
+}
+
+int
+trigger_dev(uint32_t device_wid) {
+  return (int)SYSCALL_1(RUNTIME_SYSCALL_TRIGGER_DEV, device_wid);
+}

@@ -1,22 +1,17 @@
-/* Shared definitions for Trusted DDS OCALL wire format.
- * Included by both the enclave app (sdk/include/app/tdds.h) and the
- * host broker (sdk/include/host/TddsBroker.hpp). */
+/* Shared definitions for Trusted DDS OCALL wire format. */
 #ifndef __TDDS_COMMON_H__
 #define __TDDS_COMMON_H__
 
 #include <stdint.h>
-#include <stddef.h>   /* size_t, uintptr_t */
+#include <stddef.h>
 
 /* Edge-call IDs */
-#define OCALL_TDDS_WAIT     1   /* sub -> host: need publisher to run */
-#define OCALL_LOAN_DEV_SHM  4   /* pub -> host: get device SHM info */
+#define OCALL_TDDS_WAIT        1   /* sub -> host: need publisher to run */
+#define OCALL_LOAN_DEV_SHM     4   /* bridge -> host: get dev-SHM {rid,pa,size} */
+#define OCALL_GET_RID_FOR_TOPIC 6  /* enc -> host: topic name -> TDDS rid */
+#define OCALL_GET_RID_OUT      7   /* bridge -> host: get output channel rid */
 
-/* Arguments packed into the edge_call shared buffer. */
-struct tdds_ocall_wait_args {
-    uint32_t rid;   /* RID of the channel the subscriber is waiting on */
-};
-
-/* Device SHM info returned by OCALL_LOAN_DEV_SHM */
+/* Descriptor returned by OCALL_LOAN_DEV_SHM */
 typedef struct {
     uint32_t  rid;
     uintptr_t pa;

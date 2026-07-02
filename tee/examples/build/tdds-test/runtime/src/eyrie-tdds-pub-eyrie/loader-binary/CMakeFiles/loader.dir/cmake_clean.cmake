@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/loader.dir/link.d"
   "CMakeFiles/loader.dir/loader-binary.c.o"
   "CMakeFiles/loader.dir/loader-binary.c.o.d"
   "CMakeFiles/loader.dir/loader.S.o"

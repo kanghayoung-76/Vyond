@@ -8,7 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/split-host-test/bridge-host/bridge-host.cpp" "split-host-test/CMakeFiles/split-bridge-host.dir/bridge-host/bridge-host.cpp.o" "gcc" "split-host-test/CMakeFiles/split-bridge-host.dir/bridge-host/bridge-host.cpp.o.d"
+  "/home/hykang/Vyond/tee/examples/split-host-test/bridge-host/bridge-host.cpp" "split-host-test/CMakeFiles/split-bridge-host.dir/bridge-host/bridge-host.cpp.o" "gcc" "split-host-test/CMakeFiles/split-bridge-host.dir/bridge-host/bridge-host.cpp.o.d"
+  "" "split-host-test/split-bridge-host" "gcc" "split-host-test/CMakeFiles/split-bridge-host.dir/link.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

@@ -2,34 +2,34 @@
 	"sources" : 
 	[
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/hello/CMakeFiles/eyrie-hello-eyrie"
+			"file" : "/home/hykang/Vyond/tee/examples/build/hello/CMakeFiles/eyrie-hello-eyrie"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/hello/CMakeFiles/eyrie-hello-eyrie.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/hello/CMakeFiles/eyrie-hello-eyrie.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/hello/CMakeFiles/eyrie-hello-eyrie-complete.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/hello/CMakeFiles/eyrie-hello-eyrie-complete.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie-stamp/eyrie-hello-eyrie-build.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie-stamp/eyrie-hello-eyrie-build.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie-stamp/eyrie-hello-eyrie-configure.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie-stamp/eyrie-hello-eyrie-configure.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie-stamp/eyrie-hello-eyrie-download.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie-stamp/eyrie-hello-eyrie-download.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie-stamp/eyrie-hello-eyrie-install.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie-stamp/eyrie-hello-eyrie-install.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie-stamp/eyrie-hello-eyrie-mkdir.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie-stamp/eyrie-hello-eyrie-mkdir.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie-stamp/eyrie-hello-eyrie-patch.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie-stamp/eyrie-hello-eyrie-patch.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie-stamp/eyrie-hello-eyrie-update.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie-stamp/eyrie-hello-eyrie-update.rule"
 		}
 	],
 	"target" : 

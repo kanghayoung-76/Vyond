@@ -87,6 +87,9 @@ eyrie_boot(uintptr_t dummy, // $a0 contains the return value from the SBI
            uintptr_t utm_vaddr,
            uintptr_t utm_size)
 {
+  /* Unconditional boot probe — helps distinguish "eyrie_boot not reached" vs "printf broken" */
+  sbi_putchar('Y'); sbi_putchar('B'); sbi_putchar(':');
+
   /* set initial values */
   load_pa_start = dram_base;
   root_page_table = (pte*) __va(csr_read(satp) << RISCV_PAGE_BITS);

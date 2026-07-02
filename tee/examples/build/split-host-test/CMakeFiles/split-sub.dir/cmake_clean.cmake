@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/split-sub.dir/link.d"
   "CMakeFiles/split-sub.dir/sub/sub.c.o"
   "CMakeFiles/split-sub.dir/sub/sub.c.o.d"
   "split-sub"

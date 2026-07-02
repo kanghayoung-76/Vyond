@@ -9,8 +9,8 @@ if(PAGE_HASH)
     list(APPEND CRYPTO_SOURCES sha256.c merkle.c)
 endif()
 
-if(NOT CRYPTO_SOURCES)
-    list(APPEND CRYPTO_SOURCES ../util/empty.c)
+if(CRYPTO_SOURCES)
+    add_library(rt_crypto ${CRYPTO_SOURCES})
+else()
+    add_library(rt_crypto INTERFACE)
 endif()
-
-add_library(rt_crypto ${CRYPTO_SOURCES})

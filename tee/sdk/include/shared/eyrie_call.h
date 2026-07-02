@@ -17,6 +17,11 @@
 #define RUNTIME_SYSCALL_MAP_UTM             1013  /* get pre-mapped UTM base VA    */
 #define RUNTIME_SYSCALL_WAIT_SHM            1014  /* suspend until notify_shm(rid) */
 #define RUNTIME_SYSCALL_NOTIFY_SHM          1015  /* wake enclave waiting on rid   */
+#define RUNTIME_SYSCALL_REGISTER_ENC_CHANNEL 1016 /* enc: bind hash attestation to enc-enc SHM rid */
+#define RUNTIME_SYSCALL_FIND_SHM_BY_HASH    1017  /* enc: find enc-enc rid by creator hash */
+#define RUNTIME_SYSCALL_GET_MY_HASH         1018  /* enc: get own measurement hash (64 bytes) */
+#define RUNTIME_SYSCALL_FIND_DEV_SHM        1019  /* enc: find RegionDevEnc matching own hash */
+#define RUNTIME_SYSCALL_TRIGGER_DEV         1020  /* enc: ask SM to write CMD register of a device */
 #define RUNTIME_SYSCALL_EXIT                1101
 
 #endif  // __EYRIE_CALL_H__

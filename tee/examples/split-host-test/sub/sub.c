@@ -2,9 +2,14 @@
  * split-host-test: subscriber enclave (enc2)
  *
  * sub-host initializes this enclave and parks it at wait_shm().
- * enc1 (bridge) calls notify_shm() → SM directly resumes enc2 here
- * (no host involvement).  After 3 iterations enc2 exits — SM restores
- * bridge-host's thread context.
+ * enc1 (bridge) calls notify_shm() → SM directly resumes enc2 here.
+ *
+ * Hash-based attestation:
+ *   1. create_subscription(rid) — map the TDDS SHM.
+ *   2. register_enc_channel(rid, open_hash) — promote to RegionEncEnc.
+ *        SM records enc2.hash as creator_hash; enc1 finds it via find_shm_by_hash.
+ *        open_hash = {0}: any allowed enclave may subscribe (for testing).
+ *   3. wait(&sub) — park; sub-host signals bridge-host.
  *
  * OCALLs:
  *   OCALL_GET_TDDS_RID (5): sub-host returns rid of the TDDS channel
@@ -48,25 +53,32 @@ int main(void)
         EAPP_RETURN(1);
     }
 
-    /* Park here: SM (via wait_shm) suspends enc2, returns to sub-host.
-     * sub-host's run() returns Success.  When bridge calls notify_shm,
-     * SM directly resumes enc2 (single-core: within bridge-host's ioctl
-     * thread; multi-core: via M-mode MSIP IPI). */
+    /* Promote TDDS SHM to hash-attested enc-enc channel.
+     * SM records enc2.hash as creator_hash.
+     * enc1 finds this channel via find_shm_by_hash(EXPECTED_ENC2_HASH).
+     * open_hash = {0}: enc1's allowed_hash check is wildcard for testing. */
+    static const uint8_t open_hash[64] = {0};
+    register_enc_channel(rid, open_hash);
+
+    /* Park: SM suspends enc2, returns WaitingForShm to sub-host.
+     * sub-host signals bridge-host. When enc1 calls notify_shm,
+     * SM directly resumes enc2. */
     wait(&sub);
 
     char buf[TDDS_MAX_MSG_SIZE + 1];
     for (int i = 0; i < N_ITERS; i++) {
-        int n = take(&sub, buf, TDDS_MAX_MSG_SIZE);
-        if (n > 0) {
-            buf[n] = '\0';
-            eprint("[ENC2] received: ");
-            eprint(buf);
-        }
+        /* retry until real data arrives: spurious wakeups return TDDS_NOT_READY */
+        int n;
+        do {
+            n = take(&sub, buf, TDDS_MAX_MSG_SIZE);
+            if (n <= 0) wait(&sub);
+        } while (n <= 0);
+        buf[n] = '\0';
+        eprint("[ENC2] received: ");
+        eprint(buf);
         if (i < N_ITERS - 1)
-            wait(&sub); /* park again → SM resumes enc1 */
+            wait(&sub);
     }
 
-    /* enc2 exits: SM restores bridge-host's Linux context (single-core),
-     * bridge-host's ioctl returns Success.  bridge-host then resumes enc1. */
     EAPP_RETURN(0);
 }

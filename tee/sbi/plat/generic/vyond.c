@@ -78,6 +78,11 @@ unsigned long sbi_sm_create_shm_region(unsigned long *rid, uintptr_t pa, unsigne
 unsigned long sbi_sm_create_dev_shm(unsigned long *rid, uintptr_t pa, unsigned long size, uint32_t device_wid);
 unsigned long sbi_sm_create_enclave_shm(unsigned long *rid, uintptr_t pa, unsigned long size);
 unsigned long sbi_sm_get_shm_eids(unsigned long rid, uintptr_t buf_pa, unsigned long max_count, unsigned long *out_count);
+unsigned long sbi_sm_register_enc_channel(uintptr_t rid, uintptr_t allowed_hash_pa);
+unsigned long sbi_sm_find_shm_by_hash(uintptr_t creator_hash_pa, uintptr_t rid_out_pa);
+unsigned long sbi_sm_get_my_hash(uintptr_t hash_out_pa);
+unsigned long sbi_sm_find_dev_shm(uintptr_t rid_out_pa);
+unsigned long sbi_sm_trigger_dev(uint32_t device_wid);
 unsigned long sbi_sm_map_shm_region(struct sbi_trap_regs *regs, unsigned long rid);
 unsigned long sbi_sm_unmap_shm_region(unsigned long rid);
 unsigned long sbi_sm_change_shm_region(unsigned long rid, unsigned long dyn_perm);
@@ -91,6 +96,8 @@ long         sbi_sm_handle_dev_irq(struct sbi_trap_regs *regs, uint32_t irq_num)
 /* SHM IPI: direct M-mode resume of enc_subscriber without host involvement */
 int          sbi_sm_is_enclave_context(void);
 long         sbi_sm_handle_shm_ipi(struct sbi_trap_regs *regs);
+/* WFI-based hold: SM blocks until IPI then wakes enc2 directly */
+unsigned long sbi_sm_wait_and_resume(struct sbi_trap_regs *regs, unsigned long eid);
 
 /* PLIC M-mode claim/complete  (QEMU virt: M-mode context = hartid * 2) */
 #define PLIC_BASE_ADDR  0xc000000UL
@@ -155,6 +162,19 @@ static int sbi_ecall_vyond_monitor_handler(
         ((struct sbi_trap_regs *)regs)->mepc += 4;
         sbi_trap_exit(regs);
         break;
+    case SBI_SM_WAIT_AND_RESUME:
+        /* SM blocks in M-mode WFI until IPI arrives for eid (regs->a0), then
+         * switches directly into enc_subscriber.  Returns WaitingForShm if enc2
+         * re-parks (caller loops), or EdgeCallHost/Success when enc2 makes an OCALL
+         * or exits.  switch_to_enclave inside the Rust handler does mret to enc2;
+         * that enc2 ecall eventually fires a fresh SBI handler that restores sub-host's
+         * context and calls sbi_trap_exit — so the mepc+=4 below serves the normal-
+         * return (WaitingForShm / error) path only. */
+        retval = sbi_sm_wait_and_resume((struct sbi_trap_regs*) regs, regs->a0);
+        ((struct sbi_trap_regs *)regs)->a0 = retval;
+        ((struct sbi_trap_regs *)regs)->mepc += 4;
+        sbi_trap_exit(regs);
+        break;
     case SBI_SM_ATTEST_ENCLAVE:
         retval = sbi_sm_attest_enclave(regs->a0, regs->a1, regs->a2);
         break;
@@ -172,6 +192,12 @@ static int sbi_ecall_vyond_monitor_handler(
         break;
     case SBI_SM_STOP_ENCLAVE:
         retval = sbi_sm_stop_enclave((struct sbi_trap_regs*) regs, regs->a0);
+        if ((long)retval == SBI_ERR_SM_ENCLAVE_IPI_HANDLED) {
+            /* enc_subscriber made an OCALL or exited while running in IPI context.
+             * switch_to_host restored the interrupted Linux task into regs.
+             * Do NOT touch regs->a0 or regs->mepc — mret back to Linux as-is. */
+            sbi_trap_exit(regs);
+        }
         ((struct sbi_trap_regs *)regs)->a0 = retval;
         ((struct sbi_trap_regs *)regs)->mepc += 4;
         sbi_trap_exit(regs);
@@ -179,6 +205,10 @@ static int sbi_ecall_vyond_monitor_handler(
     case SBI_SM_EXIT_ENCLAVE:
         unsigned long prev_reg_a0 = regs->a0;
         retval = sbi_sm_exit_enclave((struct sbi_trap_regs*) regs);
+        if ((long)retval == SBI_ERR_SM_ENCLAVE_IPI_HANDLED) {
+            /* Same as STOP_ENCLAVE IPI_HANDLED: mret to interrupted Linux unchanged. */
+            sbi_trap_exit(regs);
+        }
         ((struct sbi_trap_regs *)regs)->a0 = retval;
         ((struct sbi_trap_regs *)regs)->a1 = prev_reg_a0;
         ((struct sbi_trap_regs *)regs)->mepc += 4;
@@ -201,6 +231,21 @@ static int sbi_ecall_vyond_monitor_handler(
 		*out_val = eid_count;
 		break;
 	}
+	case SBI_SM_REGISTER_ENC_CHANNEL:
+		retval = sbi_sm_register_enc_channel((uintptr_t)regs->a0, (uintptr_t)regs->a1);
+		break;
+	case SBI_SM_FIND_SHM_BY_HASH:
+		retval = sbi_sm_find_shm_by_hash((uintptr_t)regs->a0, (uintptr_t)regs->a1);
+		break;
+	case SBI_SM_GET_MY_HASH:
+		retval = sbi_sm_get_my_hash((uintptr_t)regs->a0);
+		break;
+	case SBI_SM_FIND_DEV_SHM:
+		retval = sbi_sm_find_dev_shm((uintptr_t)regs->a0);
+		break;
+	case SBI_SM_TRIGGER_DEV:
+		retval = sbi_sm_trigger_dev((uint32_t)regs->a0);
+		break;
 	case SBI_SM_MAP_SHM_REGION:
 		retval = sbi_sm_map_shm_region((struct sbi_trap_regs *)regs, (uint32_t)regs->a0);
 		break;
@@ -230,6 +275,12 @@ static int sbi_ecall_vyond_monitor_handler(
              * enc_subscriber's saved context. Return wait_shm = 0 (success). */
             ((struct sbi_trap_regs *)regs)->a0 = 0;
             ((struct sbi_trap_regs *)regs)->mepc += 4;
+            sbi_trap_exit(regs);
+        }
+        if ((long)retval == SBI_ERR_SM_ENCLAVE_IPI_HANDLED) {
+            /* enc_subscriber parked again (next-iteration wait_shm) while in IPI context.
+             * switch_to_host restored the interrupted Linux task into regs.
+             * Mret back to Linux without modifying a0 or mepc. */
             sbi_trap_exit(regs);
         }
         /* WaitingForShm or error: regs holds host context (switch_to_host happened).
@@ -409,8 +460,13 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
                      * writes host's saved sip (STIP=0) which would clear any STIP set
                      * before stop_enclave. */
                     regs->mepc -= 4;
-                    sbi_sm_stop_enclave(regs, 0/*STOP_TIMER_INTERRUPT*/);
+                    long stop_ret = sbi_sm_stop_enclave(regs, 0/*STOP_TIMER_INTERRUPT*/);
                     csr_set(CSR_MIP, MIP_STIP);
+                    if ((long)stop_ret == SBI_ERR_SM_ENCLAVE_IPI_HANDLED) {
+                        /* IPI context: stop_enclave restored interrupted Linux task T into
+                         * regs.  Do NOT advance mepc or set a0 — mret back to task T. */
+                        sbi_trap_exit(regs);
+                    }
                     ((struct sbi_trap_regs *)regs)->a0 = SBI_ERR_SM_ENCLAVE_INTERRUPTED;
                     ((struct sbi_trap_regs *)regs)->mepc += 4;
                 } else {
@@ -424,7 +480,11 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
                 if (sbi_sm_is_enclave_context()) {
                     /* Enclave preempted by IPI: stop enclave, return to host. */
                     regs->mepc -= 4;
-                    sbi_sm_stop_enclave((struct sbi_trap_regs*) regs, 0/*STOP_TIMER_INTERRUPT*/);
+                    long msip_stop_ret = sbi_sm_stop_enclave((struct sbi_trap_regs*) regs, 0/*STOP_TIMER_INTERRUPT*/);
+                    if ((long)msip_stop_ret == SBI_ERR_SM_ENCLAVE_IPI_HANDLED) {
+                        /* IPI context: task T restored, mret back to Linux unchanged. */
+                        sbi_trap_exit(regs);
+                    }
                     ((struct sbi_trap_regs *)regs)->a0 = SBI_ERR_SM_ENCLAVE_INTERRUPTED;
                     ((struct sbi_trap_regs *)regs)->mepc += 4;
                 } else {

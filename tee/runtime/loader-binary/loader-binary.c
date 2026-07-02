@@ -57,6 +57,9 @@ int load_runtime(uintptr_t dummy,
   (void)wg_read;
 #endif
 
+  /* Loader start probe — always visible if loader and sbi_putchar work */
+  sbi_putchar('L'); sbi_putchar('D'); sbi_putchar(':');
+
   root_page_table = root_page_table_storage;
 
   // initialize freemem
@@ -96,6 +99,7 @@ int load_runtime(uintptr_t dummy,
 }
 
 void error_and_exit() {
+  sbi_putchar('L'); sbi_putchar('F'); sbi_putchar('!');
   printf("[loader] FATAL: failed to load.\n");
   sbi_exit_enclave(-1);
 }

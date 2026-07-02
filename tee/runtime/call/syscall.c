@@ -353,6 +353,61 @@ handle_syscall(struct encl_ctx* ctx) {
       }
       break;
     }
+    case (RUNTIME_SYSCALL_REGISTER_ENC_CHANNEL): {
+      /* arg0=rid, arg1=allowed_hash VA (64 bytes)
+       * Copy hash from eapp VA into rt_copy_buffer_1, translate to PA, call SM. */
+      copy_from_user(rt_copy_buffer_1, (void*)arg1, 64);
+      uintptr_t hash_pa = translate((uintptr_t)rt_copy_buffer_1);
+      ret = SBI_CALL_2(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE,
+                       SBI_SM_REGISTER_ENC_CHANNEL,
+                       (uintptr_t)arg0, hash_pa);
+      break;
+    }
+    case (RUNTIME_SYSCALL_FIND_SHM_BY_HASH): {
+      /* arg0=creator_hash VA (64 bytes), arg1=rid_out VA (sizeof(rid_t)) */
+      copy_from_user(rt_copy_buffer_1, (void*)arg0, 64);
+      uintptr_t hash_pa    = translate((uintptr_t)rt_copy_buffer_1);
+      uintptr_t rid_out_pa = translate((uintptr_t)rt_copy_buffer_2);
+      ret = SBI_CALL_2(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE,
+                       SBI_SM_FIND_SHM_BY_HASH,
+                       hash_pa, rid_out_pa);
+      if (!ret) {
+        copy_to_user((void*)arg1, rt_copy_buffer_2, sizeof(uintptr_t));
+      }
+      break;
+    }
+    case (RUNTIME_SYSCALL_GET_MY_HASH): {
+      /* arg0=hash_out VA (64 bytes)
+       * Use rt_copy_buffer_1 as landing buffer, translate to PA, call SM,
+       * then copy 64 bytes back to eapp VA. */
+      uintptr_t hash_out_pa = translate((uintptr_t)rt_copy_buffer_1);
+      ret = SBI_CALL_1(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE,
+                       SBI_SM_GET_MY_HASH,
+                       hash_out_pa);
+      if (!ret) {
+        copy_to_user((void*)arg0, rt_copy_buffer_1, 64);
+      }
+      break;
+    }
+    case (RUNTIME_SYSCALL_FIND_DEV_SHM): {
+      /* arg0=rid_out VA (sizeof(rid_t))
+       * Use rt_copy_buffer_1 as landing buffer for the rid. */
+      uintptr_t rid_out_pa = translate((uintptr_t)rt_copy_buffer_1);
+      ret = SBI_CALL_1(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE,
+                       SBI_SM_FIND_DEV_SHM,
+                       rid_out_pa);
+      if (!ret) {
+        copy_to_user((void*)arg0, rt_copy_buffer_1, sizeof(uintptr_t));
+      }
+      break;
+    }
+    case (RUNTIME_SYSCALL_TRIGGER_DEV): {
+      /* arg0=device_wid (u32) */
+      ret = SBI_CALL_1(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE,
+                       SBI_SM_TRIGGER_DEV,
+                       (uintptr_t)arg0);
+      break;
+    }
 
 #ifdef USE_LINUX_SYSCALL
   case(SYS_clock_gettime):

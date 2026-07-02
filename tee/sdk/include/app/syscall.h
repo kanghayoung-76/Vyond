@@ -71,6 +71,35 @@ get_shm_eids(rid_t rid, uintptr_t* eids_out, size_t max_count);
 int
 verify_shm_channel(rid_t rid);
 
+/* register_enc_channel: bind hash-based attestation to an existing enc-enc SHM rid.
+ * allowed_hash: 64-byte hash of the enclave permitted to subscribe.
+ * SM records caller's own hash as creator_hash automatically.
+ * Returns 0 on success, -1 on error. */
+int
+register_enc_channel(rid_t rid, const uint8_t *allowed_hash);
+
+/* find_shm_by_hash: locate an enc-enc SHM channel without a RID_FILE.
+ * creator_hash: 64-byte hash of the publisher enclave.
+ * rid_out: receives the rid of the matching channel.
+ * SM matches creator_hash AND verifies caller's own hash == allowed_hash.
+ * Returns 0 on success, -1 if no matching channel found. */
+int
+find_shm_by_hash(const uint8_t *creator_hash, rid_t *rid_out);
+
+/* get_my_hash: retrieve this enclave's own 64-byte measurement hash from SM. */
+int
+get_my_hash(uint8_t *hash_out);
+
+/* find_dev_shm: locate the RegionDevEnc channel whose allowed_hash matches
+ * this enclave (or is open). rid_out receives the matching rid. */
+int
+find_dev_shm(rid_t *rid_out);
+
+/* trigger_dev: ask SM to write CMD=1 to the MMIO register of device_wid.
+ * The enclave never writes MMIO directly. */
+int
+trigger_dev(uint32_t device_wid);
+
 void*
 mydev_map(uintptr_t base, size_t size);
 

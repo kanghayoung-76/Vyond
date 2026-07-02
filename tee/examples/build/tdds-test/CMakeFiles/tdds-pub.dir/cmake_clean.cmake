@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/tdds-pub.dir/link.d"
   "CMakeFiles/tdds-pub.dir/pub/pub.c.o"
   "CMakeFiles/tdds-pub.dir/pub/pub.c.o.d"
   "tdds-pub"

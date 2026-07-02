@@ -1,22 +1,27 @@
 # Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
-# file Copyright.txt or https://cmake.org/licensing for details.
+# file LICENSE.rst or https://cmake.org/licensing for details.
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION ${CMAKE_VERSION}) # this file comes with cmake
 
+# If CMAKE_DISABLE_SOURCE_CHANGES is set to true and the source directory is an
+# existing directory in our source tree, calling file(MAKE_DIRECTORY) on it
+# would cause a fatal error, even though it would be a no-op.
+if(NOT EXISTS "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie")
+  file(MAKE_DIRECTORY "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie")
+endif()
 file(MAKE_DIRECTORY
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie"
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-build"
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime"
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/tmp"
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp"
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src"
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp"
+  "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-build"
+  "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime"
+  "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/tmp"
+  "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp"
+  "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/src"
+  "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/${subDir}")
+    file(MAKE_DIRECTORY "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp${cfgdir}") # cfgdir has leading slash
 endif()

@@ -8,8 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/call/sbi.c" "call/CMakeFiles/rt_call.dir/sbi.c.o" "gcc" "call/CMakeFiles/rt_call.dir/sbi.c.o.d"
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/call/syscall.c" "call/CMakeFiles/rt_call.dir/syscall.c.o" "gcc" "call/CMakeFiles/rt_call.dir/syscall.c.o.d"
+  "/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/call/sbi.c" "call/CMakeFiles/rt_call.dir/sbi.c.o" "gcc" "call/CMakeFiles/rt_call.dir/sbi.c.o.d"
+  "/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/call/syscall.c" "call/CMakeFiles/rt_call.dir/syscall.c.o" "gcc" "call/CMakeFiles/rt_call.dir/syscall.c.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

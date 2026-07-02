@@ -24,6 +24,12 @@ struct sbiret sbi_sm_resume_enclave(unsigned long eid) {
       eid, 0, 0, 0, 0, 0);
 }
 
+struct sbiret sbi_sm_wait_and_resume(unsigned long eid) {
+  return sbi_ecall(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE,
+      SBI_SM_WAIT_AND_RESUME,
+      eid, 0, 0, 0, 0, 0);
+}
+
 struct sbiret sbi_sm_create_shm(unsigned long pa, unsigned long size)
 {
   return sbi_ecall(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE,

@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/dev-irq-runner.dir/link.d"
   "CMakeFiles/dev-irq-runner.dir/host/dev_irq_host.cpp.o"
   "CMakeFiles/dev-irq-runner.dir/host/dev_irq_host.cpp.o.d"
   "CMakeFiles/dev-irq-runner.dir/host/edge_wrapper.cpp.o"

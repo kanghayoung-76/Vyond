@@ -8,7 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/wg-slot-test/eapp/wg_slot.c" "wg-slot-test/CMakeFiles/wg-slot.dir/eapp/wg_slot.c.o" "gcc" "wg-slot-test/CMakeFiles/wg-slot.dir/eapp/wg_slot.c.o.d"
+  "/home/hykang/Vyond/tee/examples/wg-slot-test/eapp/wg_slot.c" "wg-slot-test/CMakeFiles/wg-slot.dir/eapp/wg_slot.c.o" "gcc" "wg-slot-test/CMakeFiles/wg-slot.dir/eapp/wg_slot.c.o.d"
+  "" "wg-slot-test/wg-slot" "gcc" "wg-slot-test/CMakeFiles/wg-slot.dir/link.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

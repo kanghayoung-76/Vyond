@@ -60,9 +60,11 @@ pub enum Error {
     SBIProhibited,
     IllegalPTE,
     NotFresh,
-    WaitingForDevice = 100017,
-    WaitingForShm    = 100018,
-    RegionSizeInvalid = 10020,
+    WaitingForDevice    = 100017,
+    WaitingForShm       = 100018,
+    IpiHandled          = 100019,
+    TimerInterrupted    = 100027,
+    RegionSizeInvalid   = 10020,
     NotPageGranularity,
     NotAligned,
     MaxReached,
@@ -103,6 +105,8 @@ pub extern "C" fn sm_init(cold_boot: bool) -> isize {
         }
 
         crypto::sm_init_keys();
+
+        enclave::init_dev_shm_regions();
 
         isolator::sm_init_done();
 

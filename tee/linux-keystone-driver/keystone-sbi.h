@@ -14,6 +14,7 @@ struct sbiret sbi_sm_create_enclave(struct keystone_sbi_create_t* args);
 struct sbiret sbi_sm_destroy_enclave(unsigned long eid);
 struct sbiret sbi_sm_run_enclave(unsigned long eid);
 struct sbiret sbi_sm_resume_enclave(unsigned long eid);
+struct sbiret sbi_sm_wait_and_resume(unsigned long eid);
 struct sbiret sbi_sm_create_shm(unsigned long pa, unsigned long size);
 struct sbiret sbi_sm_map_shm(unsigned long rid);
 struct sbiret sbi_sm_unmap_shm(unsigned long rid);

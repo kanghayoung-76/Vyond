@@ -40,6 +40,8 @@
   _IOR(KEYSTONE_IOC_MAGIC, 0x0d, struct keystone_ioctl_create_dev_shm)
 #define KEYSTONE_IOC_CREATE_ENCLAVE_SHM \
   _IOR(KEYSTONE_IOC_MAGIC, 0x0e, struct keystone_ioctl_create_shm)
+#define KEYSTONE_IOC_WAIT_AND_RESUME \
+  _IOR(KEYSTONE_IOC_MAGIC, 0x0f, struct keystone_ioctl_run_enclave)
 
 #define RT_NOEXEC 0
 #define USER_NOEXEC 1

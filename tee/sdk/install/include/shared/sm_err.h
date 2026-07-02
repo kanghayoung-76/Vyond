@@ -21,6 +21,8 @@
 #define SBI_ERR_SM_ENCLAVE_NOT_FRESH                   100016
 #define SBI_ERR_SM_ENCLAVE_WAITING_FOR_DEVICE          100017
 #define SBI_ERR_SM_ENCLAVE_WAITING_FOR_SHM             100018
+#define SBI_ERR_SM_ENCLAVE_IPI_HANDLED                 100019
+#define SBI_ERR_SM_ENCLAVE_TIMER_INTERRUPTED           100027
 #define SBI_ERR_SM_DEPRECATED                          100099
 #define SBI_ERR_SM_NOT_IMPLEMENTED                     100100
 

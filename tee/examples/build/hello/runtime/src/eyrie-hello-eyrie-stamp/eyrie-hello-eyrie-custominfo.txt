@@ -3,7 +3,7 @@
 # No other meaning or use of this file is supported.
 
 method=custom
-command=rm;-rf;/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie;&&;cp;-ar;/data/hykang/RVSS/WGTEE_project/Vyond/tee/runtime;/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie
-source_dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie
-work_dir=/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/hello/runtime/src
+command=rm;-rf;/home/hykang/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie;&&;cp;-ar;/home/hykang/Vyond/tee/runtime;/home/hykang/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie
+source_dir=/home/hykang/Vyond/tee/examples/build/hello/runtime/src/eyrie-hello-eyrie
+work_dir=/home/hykang/Vyond/tee/examples/build/hello/runtime/src
 

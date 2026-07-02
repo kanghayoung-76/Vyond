@@ -2,34 +2,34 @@
 	"sources" : 
 	[
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/CMakeFiles/eyrie-shm-ocall-eyrie"
+			"file" : "/home/hykang/Vyond/tee/examples/build/shm-ocall-test/CMakeFiles/eyrie-shm-ocall-eyrie"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/CMakeFiles/eyrie-shm-ocall-eyrie.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/shm-ocall-test/CMakeFiles/eyrie-shm-ocall-eyrie.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/CMakeFiles/eyrie-shm-ocall-eyrie-complete.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/shm-ocall-test/CMakeFiles/eyrie-shm-ocall-eyrie-complete.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-build.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-build.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-configure.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-configure.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-download.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-download.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-install.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-install.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-mkdir.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-mkdir.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-patch.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-patch.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-update.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/shm-ocall-test/runtime/src/eyrie-shm-ocall-eyrie-stamp/eyrie-shm-ocall-eyrie-update.rule"
 		}
 	],
 	"target" : 

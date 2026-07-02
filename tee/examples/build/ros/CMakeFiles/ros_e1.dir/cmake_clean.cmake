@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/ros_e1.dir/link.d"
   "CMakeFiles/ros_e1.dir/eapp/edge_wrapper.c.o"
   "CMakeFiles/ros_e1.dir/eapp/edge_wrapper.c.o.d"
   "CMakeFiles/ros_e1.dir/eapp/ros_enclave1.c.o"

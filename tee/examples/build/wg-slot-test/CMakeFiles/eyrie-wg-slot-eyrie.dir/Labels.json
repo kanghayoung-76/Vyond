@@ -2,34 +2,34 @@
 	"sources" : 
 	[
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie"
+			"file" : "/home/hykang/Vyond/tee/examples/build/wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie-complete.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/wg-slot-test/CMakeFiles/eyrie-wg-slot-eyrie-complete.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/eyrie-wg-slot-eyrie-build.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/eyrie-wg-slot-eyrie-build.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/eyrie-wg-slot-eyrie-configure.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/eyrie-wg-slot-eyrie-configure.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/eyrie-wg-slot-eyrie-download.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/eyrie-wg-slot-eyrie-download.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/eyrie-wg-slot-eyrie-install.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/eyrie-wg-slot-eyrie-install.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/eyrie-wg-slot-eyrie-mkdir.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/eyrie-wg-slot-eyrie-mkdir.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/eyrie-wg-slot-eyrie-patch.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/eyrie-wg-slot-eyrie-patch.rule"
 		},
 		{
-			"file" : "/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/eyrie-wg-slot-eyrie-update.rule"
+			"file" : "/home/hykang/Vyond/tee/examples/build/wg-slot-test/runtime/src/eyrie-wg-slot-eyrie-stamp/eyrie-wg-slot-eyrie-update.rule"
 		}
 	],
 	"target" : 

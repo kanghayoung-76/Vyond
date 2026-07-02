@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/eyrie-build.dir/link.d"
   "CMakeFiles/eyrie-build.dir/boot.c.o"
   "CMakeFiles/eyrie-build.dir/boot.c.o.d"
   "CMakeFiles/eyrie-build.dir/entry.S.o"

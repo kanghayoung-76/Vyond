@@ -1,0 +1,16 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/hykang/Vyond/tee/examples/build/cmake_install.cmake",
+		"/home/hykang/Vyond/tee/examples/build/hello/cmake_install.cmake",
+		"/home/hykang/Vyond/tee/examples/build/attestation/cmake_install.cmake",
+		"/home/hykang/Vyond/tee/examples/build/wg-slot-test/cmake_install.cmake",
+		"/home/hykang/Vyond/tee/examples/build/shm-ocall-test/cmake_install.cmake",
+		"/home/hykang/Vyond/tee/examples/build/ros/cmake_install.cmake",
+		"/home/hykang/Vyond/tee/examples/build/dev-irq-test/cmake_install.cmake",
+		"/home/hykang/Vyond/tee/examples/build/tdds-test/cmake_install.cmake",
+		"/home/hykang/Vyond/tee/examples/build/dds-tdds-test/cmake_install.cmake",
+		"/home/hykang/Vyond/tee/examples/build/split-host-test/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

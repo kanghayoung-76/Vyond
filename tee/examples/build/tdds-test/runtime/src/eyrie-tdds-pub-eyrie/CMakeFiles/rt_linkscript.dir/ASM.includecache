@@ -6,9 +6,9 @@
 
 #IncludeRegexTransform: 
 
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/runtime.ld.S
+/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/runtime.ld.S
 mm/vm_defs.h
-/data/hykang/RVSS/WGTEE_project/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/mm/vm_defs.h
+/home/hykang/Vyond/tee/examples/build/tdds-test/runtime/src/eyrie-tdds-pub-eyrie/mm/vm_defs.h
 
 include/mm/vm_defs.h
 

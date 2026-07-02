@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/split-bridge-host.dir/link.d"
   "CMakeFiles/split-bridge-host.dir/bridge-host/bridge-host.cpp.o"
   "CMakeFiles/split-bridge-host.dir/bridge-host/bridge-host.cpp.o.d"
   "split-bridge-host"
