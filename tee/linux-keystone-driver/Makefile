@@ -19,7 +19,7 @@ PWD := $(shell pwd)
 #LINUXSRC := 
 
 default:
-	$(MAKE) -C $(LINUXSRC) ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- M=$(PWD)
+	$(MAKE) -C $(LINUXSRC) ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- KBUILD_MODPOST_WARN=1 M=$(PWD)
 
 endif
 

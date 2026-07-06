@@ -59,20 +59,10 @@ fn restore_host_ctx(ctx: &HostContext, tf: &mut TrapFrame) {
     csr_write!(satp,       ctx.satp);
 }
 
-// Per-hart: context of the Linux task that was running when IPI fired.
-// Set by resume_from_shm_ipi; cleared (and task restored) when enc2 parks.
+// Per-hart: context of the Linux task T that was running when IPI fired (always S-mode path).
+// Set by resume_from_shm_ipi; cleared when enc2 parks or exits.
 static mut IPI_INTERRUPTED: [Option<HostContext>; crate::ipi::MAX_HARTS] =
     [None; crate::ipi::MAX_HARTS];
-
-// Fallback flag: set when IPI fires but saved_host is not yet available.
-// In this case thread.State holds the interrupted task (old behavior).
-// All stop/exit/park calls must return IpiHandled to avoid corrupting tf.
-static mut IN_IPI_CTX: [bool; crate::ipi::MAX_HARTS] = [false; crate::ipi::MAX_HARTS];
-
-// Set when MSIP fired while hart was in S-mode (sub-host sleeping, no M-mode ecall context).
-// enc2 was switched directly: thread.State holds task T (not sub-host).
-// OCALL delivery uses the pending_ocall_for_host path; park/exit restores T from thread.State.
-static mut SHM_IPI_SMODE: [bool; crate::ipi::MAX_HARTS] = [false; crate::ipi::MAX_HARTS];
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 pub enum State {
@@ -788,66 +778,40 @@ pub fn wait_and_resume_for_shm(tf: &mut TrapFrame, eid: usize) -> Result<(), Err
 
     let this_hart = csr_read!(mhartid) as usize;
 
-    // S-mode IPI OCALL path: enc2 made an OCALL while running in direct-switch IPI mode
-    // (sub-host was sleeping, not in M-mode ecall).  stop_enclave set this flag and restored
-    // task T.  Capture a fresh sub-host context from THIS ecall frame, then return EdgeCallHost
-    // so the driver delivers the pending OCALL normally.
-    {
-        let has_pending = match find_enclave(eid) {
-            Some(enc) => enc.pending_ocall_for_host,
-            None => return Err(Error::InvalidId),
-        };
-        if has_pending {
-            if let Some(enc) = find_enclave(eid) {
-                enc.pending_ocall_for_host = false;
-                enc.saved_host = Some(capture_host_ctx(tf));
-                heprintln!("[SM:wait_and_resume] hart={} eid={} → pending_ocall captured fresh saved_host", this_hart, eid);
-                return Err(Error::EdgeCallHost);
-            }
-            return Err(Error::InvalidId);
+    // IPI OCALL path: stop_enclave set pending_ocall_for_host + SSIP; driver woke here.
+    // Capture fresh sub-host context from this ecall frame and return EdgeCallHost.
+    if let Some(enc) = find_enclave(eid) {
+        if enc.pending_ocall_for_host {
+            enc.pending_ocall_for_host = false;
+            enc.saved_host = Some(capture_host_ctx(tf));
+            heprintln!("[SM:wait_and_resume] hart={} eid={} → pending OCALL, fresh ctx", this_hart, eid);
+            return Err(Error::EdgeCallHost);
         }
+    } else {
+        return Err(Error::InvalidId);
     }
 
-    // Quick state check without holding enc alive across resume_enclave call.
     let is_waiting = match find_enclave(eid) {
         Some(enc) => matches!(enc.state.lock().state, State::WaitingForShm(_)),
         None => return Err(Error::InvalidId),
     };
-
-    // Deferred-IPI race: notify_shm changes enc2 WaitingForShm→Running AND sends MSIP.
-    // enc2 is left in Running state but there IS a pending IPI — we must NOT call
-    // resume_enclave (enc2 Running → count corruption).  Fall through to the poll path.
     let has_deferred_ipi = crate::ipi::peek_pending_resume_for(this_hart, eid);
-
-    // S-mode IPI direct-switch path: enc2 is Running (switched by resume_from_shm_ipi)
-    // but sub-host has no valid context in thread.State (T is there instead).
-    // IPI_INTERRUPTED[hart] is set until enc2 makes OCALL or parks.
-    // Driver should sleep and retry — don't call resume_enclave on a Running enc2.
     let in_ipi_ctx = unsafe { IPI_INTERRUPTED[this_hart].is_some() };
-    if !is_waiting && !has_deferred_ipi && !in_ipi_ctx {
-        // Not parked AND no deferred/direct IPI — normal resume (OCALL-return path or error).
+
+    if !is_waiting && !has_deferred_ipi {
+        if in_ipi_ctx { return Err(Error::WaitingForShm); }
         return resume_enclave(tf, eid);
     }
-    if !is_waiting && !has_deferred_ipi && in_ipi_ctx {
-        // enc2 is Running in IPI context (direct switch active, no OCALL yet).
-        // Caller should sleep and retry after enc2 makes OCALL or parks.
-        return Err(Error::WaitingForShm);
-    }
 
-    // Save sub-host's complete context (tf + live S-mode CSRs) into enc.saved_host.
-    // When IPI fires in the Linux path (resume_from_shm_ipi), this snapshot is
-    // loaded into tf before switch_to_enclave so that thread.State ends up holding
-    // sub-host's context — enabling OCALLs from within IPI-woken enc2.
+    // Save fresh sub-host context; used if IPI fires while we return WaitingForShm.
     if let Some(enc) = find_enclave(eid) {
         enc.saved_host = Some(capture_host_ctx(tf));
     }
 
-    // Check for a pending IPI before sleeping — handles the race where IPI
-    // arrived between the caller getting WaitingForShm and this call.
+    // Race: IPI arrived between previous WaitingForShm return and this call.
     if crate::ipi::peek_pending_resume_for(this_hart, eid) {
         crate::ipi::clear_msip(this_hart);
         crate::ipi::take_pending_resume(this_hart);
-
         if let Some(enc) = find_enclave(eid) {
             {
                 let mut rs = enc.state.lock();
@@ -859,14 +823,12 @@ pub fn wait_and_resume_for_shm(tf: &mut TrapFrame, eid: usize) -> Result<(), Err
             if let Some(thread) = enc.threads[0].as_mut() {
                 thread.advance_past_ecall_with_interrupted();
             }
-            heprintln!("[SM:wait_and_resume] hart={} eid={} IPI → switch_to_enclave (WFI path)", this_hart, eid);
             enc.switch_to_enclave(tf, false);
             return Ok(());
         }
         return Err(Error::InvalidId);
     }
 
-    // No IPI pending yet — return so Linux can sleep and schedule other tasks.
     Err(Error::WaitingForShm)
 }
 
@@ -918,83 +880,16 @@ pub fn stop_enclave(tf: &mut TrapFrame, request: usize) -> Result<(), Error> {
         enclave.switch_to_host(tf, false);
 
         let this_hart = csr_read!(mhartid) as usize;
-        let is_smode_ipi = unsafe { SHM_IPI_SMODE[this_hart] };
-        let is_ipi_ctx = unsafe { IPI_INTERRUPTED[this_hart].is_some() };
-        let is_fallback_ipi = unsafe { IN_IPI_CTX[this_hart] };
 
-        // S-mode IPI path: MSIP fired while sub-host was sleeping (MPP=S).
-        // enc2 was switched directly; thread.State held task T (not sub-host).
-        // switch_to_host above loaded T from thread.State into tf.
-        // IPI_INTERRUPTED also holds T — both are equivalent; clear both.
-        if is_smode_ipi {
-            unsafe { SHM_IPI_SMODE[this_hart] = false; }
+        // IPI path: MSIP fired while sub-host was sleeping (S-mode).
+        // enc2 was switched directly; thread.State held T; switch_to_host restored T into tf.
+        if unsafe { IPI_INTERRUPTED[this_hart].is_some() } {
             unsafe { IPI_INTERRUPTED[this_hart] = None; }
-
             if request == 1 /* EdgeCallHost */ {
-                // enc2 made an OCALL but sub-host context is not available.
-                // Mark OCALL pending: driver's next WAIT_AND_RESUME call will capture
-                // a fresh sub-host context and return EdgeCallHost.
-                // Set SSIP to nudge Linux toward scheduling sub-host sooner.
                 enclave.pending_ocall_for_host = true;
                 csr_set!(mip, MIP_SSIP);
-                heprintln!("[SM:stop_enclave] S-mode IPI OCALL → pending_ocall, SSIP (hart={})", this_hart);
-            } else {
-                // enc2 stopped/exited: tf = T already — just mret to T.
-                heprintln!("[SM:stop_enclave] S-mode IPI stop → restored T (hart={})", this_hart);
+                heprintln!("[SM:stop_enclave] IPI OCALL → pending, SSIP (hart={})", this_hart);
             }
-            return Err(Error::IpiHandled);
-        }
-
-        // IPI-context path (M-mode): IPI_INTERRUPTED[hart] is set when enc2 was woken by
-        // resume_from_shm_ipi while sub-host was in M-mode (WAIT_AND_RESUME ecall).
-        // thread.State held sub-host's context; switch_to_host restored sub-host into tf.
-        //
-        // For EdgeCallHost (OCALL): sub-host is now in tf — let normal processing continue.
-        // For non-OCALL (enc2 parks or exits): restore task T from IPI_INTERRUPTED.
-
-        // IPI context, non-OCALL (enc2 stops or is preempted): restore task T.
-        if is_ipi_ctx && request != 1 /*EdgeCallHost*/ {
-            enclave.saved_host = Some(capture_host_ctx(tf));
-            if let Some(task_t) = unsafe { IPI_INTERRUPTED[this_hart].take() } {
-                restore_host_ctx(&task_t, tf);
-            }
-            heprintln!("[SM:stop_enclave] IPI ctx stop → restored task T (hart={})", this_hart);
-            return Err(Error::IpiHandled);
-        }
-
-        // IPI context + EdgeCallHost + saved_host path: deliver OCALL to sub-host.
-        // tf already holds sub-host's context (switch_to_host above).
-        // Fall through to normal EdgeCallHost return below.
-        if is_ipi_ctx && request == 1 /*EdgeCallHost*/ && !is_fallback_ipi {
-            heprintln!("[SM:stop_enclave] IPI ctx OCALL → delivering to sub-host (hart={})", this_hart);
-            // IPI_INTERRUPTED left intact — restored when enc2 parks.
-        }
-
-        // Fallback (IN_IPI_CTX), non-OCALL: switch_to_host already restored task T
-        // from thread.State into tf. Clear flag and return IpiHandled.
-        if request != 1 && is_fallback_ipi {
-            unsafe { IN_IPI_CTX[this_hart] = false; }
-            heprintln!("[SM:stop_enclave] fallback IPI ctx → IpiHandled (hart={})", this_hart);
-            return Err(Error::IpiHandled);
-        }
-
-        // Fallback (IN_IPI_CTX) + EdgeCallHost: tf = task T (from thread.State),
-        // thread.State = enc2's OCALL frame. Advance enc2's frame and re-enter enc2.
-        // When enc2 parks next (wait_shm), IN_IPI_CTX=false → WaitingForShm path
-        // mrets to task T which switch_to_host will restore from thread.State.
-        if request == 1 && is_fallback_ipi {
-            unsafe { IN_IPI_CTX[this_hart] = false; }
-            {
-                let mut rs = enclave.state.lock();
-                rs.count += 1;
-                rs.state = State::Running;
-            }
-            if let Some(thread) = enclave.threads[0].as_mut() {
-                thread.advance_past_ecall_with_interrupted(); // mepc+=4, a0=0
-            }
-            enclave.saved_host = Some(capture_host_ctx(tf));
-            enclave.switch_to_enclave(tf, false);
-            heprintln!("[SM:stop_enclave] fallback IPI ctx OCALL suppressed → re-entered enc2 (hart={})", this_hart);
             return Err(Error::IpiHandled);
         }
 
@@ -1156,38 +1051,10 @@ pub fn wait_shm(tf: &mut TrapFrame, rid: u32) -> Result<(), Error> {
             }
         }
 
-        // IPI-context park: enc_subscriber called wait_shm after being woken by IPI.
-        // switch_to_host above restored sub-host's context into tf.
-        // We now:
-        //   1. Save sub-host's refreshed context into enc.saved_host (for next IPI).
-        //   2. Restore the interrupted Linux task T from IPI_INTERRUPTED[hart].
-        //   3. Return IpiHandled so vyond.c mrets to task T cleanly.
-        if unsafe { IPI_INTERRUPTED[this_hart].is_some() } {
-            let is_smode = unsafe { SHM_IPI_SMODE[this_hart] };
-            unsafe { SHM_IPI_SMODE[this_hart] = false; }
-            if !is_smode {
-                // M-mode IPI path: thread.State held sub-host; tf = sub-host after switch_to_host.
-                // Save refreshed sub-host context for the next IPI cycle.
-                enclave.saved_host = Some(capture_host_ctx(tf));
-                heprintln!("[SM:wait_shm] M-mode IPI ctx park → saved sub-host, restored T (hart={})", this_hart);
-            } else {
-                // S-mode IPI path: thread.State held T; tf = T after switch_to_host.
-                // Do NOT save T as saved_host (it's garbage for that purpose).
-                // The next WAIT_AND_RESUME poll will set a fresh saved_host.
-                heprintln!("[SM:wait_shm] S-mode IPI ctx park → tf=T, skipped saved_host (hart={})", this_hart);
-            }
-            if let Some(task_t) = unsafe { IPI_INTERRUPTED[this_hart].take() } {
-                restore_host_ctx(&task_t, tf);
-            }
-            return Err(Error::IpiHandled);
-        }
-
-        // Fallback path: saved_host was not available; thread.State held the interrupted
-        // task's context (old behavior).  switch_to_host restored that task into tf.
-        // Return IpiHandled so vyond.c does not corrupt tf.a0/tf.mepc.
-        if unsafe { IN_IPI_CTX[this_hart] } {
-            unsafe { IN_IPI_CTX[this_hart] = false; }
-            heprintln!("[SM:wait_shm] fallback IPI ctx → IpiHandled (hart={})", this_hart);
+        // IPI park: enc2 called wait_shm after being IPI-woken (S-mode path).
+        // thread.State held T; switch_to_host restored T into tf — mret to T.
+        if unsafe { IPI_INTERRUPTED[this_hart].take().is_some() } {
+            heprintln!("[SM:wait_shm] IPI park → mret to T (hart={})", this_hart);
             return Err(Error::IpiHandled);
         }
 
@@ -1340,39 +1207,10 @@ pub fn notify_shm(tf: &mut TrapFrame, rid: u32) -> Result<(), Error> {
 /// Returns true if an enclave was resumed, false otherwise.
 pub fn resume_from_shm_ipi(tf: &mut TrapFrame) -> bool {
     let this_hart = csr_read!(mhartid) as usize;
-    crate::ipi::clear_msip(this_hart); // Deassert CLINT MSIP
+    crate::ipi::clear_msip(this_hart);
 
     if let Some(eid) = crate::ipi::take_pending_resume(this_hart) {
-        heprintln!("[SM:shm_ipi] hart={} resuming eid={}", this_hart, eid);
-
-        // mstatus.MPP (bits [12:11]) = 3 → M-mode, 1 → S-mode, 0 → U-mode.
-        let mpp = (tf.mstatus >> 11) & 0x3;
-
-        if mpp != 3 /* S-mode or U-mode: sub-host is sleeping, not in M-mode ecall */ {
-            // Direct switch even from S-mode: saved_host is stale, so we cannot use it.
-            // Instead: save T in IPI_INTERRUPTED, set SHM_IPI_SMODE, and switch enc2 directly.
-            // thread.State will hold T (not sub-host).
-            // OCALLs are delivered via the pending_ocall_for_host path in wait_and_resume_for_shm.
-            if let Some(enc) = find_enclave(eid) {
-                {
-                    let mut rs = enc.state.lock();
-                    if matches!(rs.state, State::WaitingForShm(_)) {
-                        rs.count += 1;
-                        rs.state = State::Running;
-                    }
-                }
-                unsafe { IPI_INTERRUPTED[this_hart] = Some(capture_host_ctx(tf)); }
-                unsafe { SHM_IPI_SMODE[this_hart] = true; }
-                heprintln!("[SM:shm_ipi] hart={} eid={} → S-mode DIRECT switch (pending_ocall path)", this_hart, eid);
-                enc.switch_to_enclave(tf, false);
-                return true;
-            }
-            return false;
-        }
-
-        // M-mode path: sub-host is actively in WAIT_AND_RESUME ecall — saved_host is fresh.
         if let Some(enc) = find_enclave(eid) {
-            // Fix state: enc_subscriber was WaitingForShm; we are now Running it in IPI ctx.
             {
                 let mut rs = enc.state.lock();
                 if matches!(rs.state, State::WaitingForShm(_)) {
@@ -1380,29 +1218,10 @@ pub fn resume_from_shm_ipi(tf: &mut TrapFrame) -> bool {
                     rs.state = State::Running;
                 }
             }
-
-            // Save the interrupted Linux task's complete context (tf + S-mode CSRs).
-            // This will be restored when enc2 parks (wait_shm) or exits.
+            // sub-host is sleeping (S-mode); save T and switch enc2 directly.
+            // OCALLs are delivered via pending_ocall_for_host in wait_and_resume_for_shm.
             unsafe { IPI_INTERRUPTED[this_hart] = Some(capture_host_ctx(tf)); }
-
-            // Load sub-host's saved context into tf and the live S-mode CSRs.
-            // switch_to_enclave will then store sub-host's context into thread.State
-            // (via swap_prev_state), so any subsequent OCALL can restore sub-host
-            // correctly — just like a regular RESUME_ENCLAVE call would.
-            match enc.saved_host.as_ref() {
-                Some(host_ctx) => {
-                    restore_host_ctx(host_ctx, tf);
-                    heprintln!("[SM:shm_ipi] hart={} eid={} → M-mode, loaded saved_host, OCALLs enabled", this_hart, eid);
-                }
-                None => {
-                    // saved_host not available (first IPI before wait_and_resume_for_shm ran).
-                    // Fall back: thread.State gets the interrupted task's context.
-                    // Set IN_IPI_CTX so stop/exit/park return IpiHandled (not WaitingForShm).
-                    heprintln!("[SM:shm_ipi] hart={} eid={} → M-mode, no saved_host, fallback IPI ctx", this_hart, eid);
-                    unsafe { IN_IPI_CTX[this_hart] = true; }
-                }
-            }
-
+            heprintln!("[SM:shm_ipi] hart={} eid={} → direct switch", this_hart, eid);
             enc.switch_to_enclave(tf, false);
             return true;
         }
@@ -1427,24 +1246,10 @@ pub fn exit_enclave(tf: &mut TrapFrame) -> Result<(), Error> {
 
         enclave.switch_to_host(tf, false);
 
-        // IPI-context guard: same rationale as stop_enclave (non-OCALL path).
+        // IPI exit: tf = T already (switch_to_host loaded T from thread.State).
         let this_hart = csr_read!(mhartid) as usize;
-        // Always clear S-mode IPI flag on exit (covers case where enc2 exits without OCALL).
-        unsafe { SHM_IPI_SMODE[this_hart] = false; }
-        if unsafe { IPI_INTERRUPTED[this_hart].is_some() } {
-            // S-mode IPI path: tf = T (from thread.State); restore_host_ctx is a no-op.
-            // M-mode IPI path: tf = sub-host; restore T from IPI_INTERRUPTED.
-            if let Some(task_t) = unsafe { IPI_INTERRUPTED[this_hart].take() } {
-                restore_host_ctx(&task_t, tf);
-            }
-            heprintln!("[SM:exit_enclave] IPI ctx → restored task T (hart={})", this_hart);
-            return Err(Error::IpiHandled);
-        }
-
-        // Fallback: saved_host was None; switch_to_host already restored task T into tf.
-        if unsafe { IN_IPI_CTX[this_hart] } {
-            unsafe { IN_IPI_CTX[this_hart] = false; }
-            heprintln!("[SM:exit_enclave] fallback IPI ctx → IpiHandled (hart={})", this_hart);
+        if unsafe { IPI_INTERRUPTED[this_hart].take().is_some() } {
+            heprintln!("[SM:exit_enclave] IPI ctx → mret to T (hart={})", this_hart);
             return Err(Error::IpiHandled);
         }
 

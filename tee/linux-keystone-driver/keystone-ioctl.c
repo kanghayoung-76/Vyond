@@ -10,6 +10,26 @@
 #include <linux/string.h>
 #include "sm_err.h"
 #include <linux/mm.h>
+#include <linux/wait.h>
+#include <linux/atomic.h>
+#include <linux/kprobes.h>
+
+static DECLARE_WAIT_QUEUE_HEAD(keystone_enc2_wq);
+static atomic_t keystone_enc2_wakeup = ATOMIC_INIT(0);
+
+static int sbi_ipi_kprobe_handler(struct kprobe *p, struct pt_regs *regs)
+{
+  if (atomic_read(&keystone_enc2_wakeup)) {
+    atomic_set(&keystone_enc2_wakeup, 0);
+    wake_up_interruptible(&keystone_enc2_wq);
+  }
+  return 0;
+}
+
+struct kprobe keystone_sbi_ipi_kp = {
+  .symbol_name  = "sbi_ipi_handle",
+  .pre_handler  = sbi_ipi_kprobe_handler,
+};
 
 #define read_reg(reg)                                     \
   ({                                                      \
@@ -285,18 +305,19 @@ int keystone_wait_and_resume(unsigned long data)
     return -EINVAL;
   }
 
-  /* Poll SM until enc2 is woken by IPI. SM returns WAITING_FOR_SHM immediately
-   * when no IPI is pending (no WFI, no hart monopolization). Sleep 1 jiffie
-   * (~1-4 ms) between polls so Linux can schedule other tasks freely. */
-  do {
+  ret = sbi_sm_wait_and_resume(enclave->eid);
+  while (ret.error == SBI_ERR_SM_ENCLAVE_WAITING_FOR_SHM) {
+    if (signal_pending(current))
+      return -EINTR;
+    atomic_set(&keystone_enc2_wakeup, 1);
+    wait_event_interruptible(keystone_enc2_wq,
+      !atomic_read(&keystone_enc2_wakeup) || signal_pending(current));
+    if (signal_pending(current))
+      return -EINTR;
     ret = sbi_sm_wait_and_resume(enclave->eid);
-    if (ret.error == SBI_ERR_SM_ENCLAVE_WAITING_FOR_SHM) {
-      if (signal_pending(current))
-        return -EINTR;
-      schedule_timeout_interruptible(1);
-    }
-  } while (ret.error == SBI_ERR_SM_ENCLAVE_WAITING_FOR_SHM);
+  }
 
+done:
   arg->error = ret.error;
   arg->value = ret.value;
 
