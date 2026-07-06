@@ -81,12 +81,35 @@ int main(void)
 
     /* --- Main loop: trigger DMA → wait IRQ → publish (SM switches to enc2) --- */
     for (int i = 0; i < N_ITERS; i++) {
+        /* Print iteration separator — data must be in UTM for ocall to work. */
+        {
+            size_t avail;
+            char *utm = (char *)tdds_utm_data(&avail);
+            if (utm && avail >= 30) {
+                char sep[30] = "[ENC1] ===== iteration X =====";
+                sep[23] = '0' + i;
+                memcpy(utm, sep, 30);
+                ocall(OCALL_PRINT, utm, 30, NULL, 0);
+            }
+        }
+
+        /* Wait for sub-host to enter WAIT_AND_RESUME (M-mode WFI) before triggering
+         * next DMA — ensures notify_shm fires M-mode IPI instead of S-mode. */
+        {
+            volatile int wait;
+            for (wait = 0; wait < 200000000; wait++) ;
+        }
+
         /* SM writes CMD=1 to MYDEV MMIO register — enc1 never touches MMIO */
         trigger_dev(MYDEV_WID);
         SYSCALL_1(RUNTIME_SYSCALL_WAIT_DEV_DATA, MYDEV_IRQ);
         /* SM direct-switches enc1→enc2 inside publish() → notify_shm().
          * enc1 resumes here when enc2 calls wait_shm() (next iteration or exit). */
         publish(&pub, dma_buf, TDDS_MAX_MSG_SIZE);
+        /* Give sub-host time to finish enc2's OCALLs and re-enter WAIT_AND_RESUME (M-mode)
+         * so the next IPI fires in M-mode instead of S-mode. */
+        volatile int spin;
+        for (spin = 0; spin < 50000000; spin++) ;
     }
 
     ocall(OCALL_DONE, NULL, 0, NULL, 0);

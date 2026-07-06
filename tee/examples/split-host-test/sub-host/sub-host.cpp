@@ -58,11 +58,7 @@ static void handle_print(struct edge_call *ec)
         char buf[512] = {};
         size_t n = (len < sizeof(buf) - 1) ? len : sizeof(buf) - 1;
         memcpy(buf, (void *)ptr, n);
-        printf("[sub-host] OCALL_PRINT len=%zu: '%s'\n", n, buf);
-        printf("[sub-host]   hex:");
-        for (size_t i = 0; i < (n < 32 ? n : 32); i++)
-            printf(" %02x", (unsigned char)buf[i]);
-        printf("\n");
+        printf("[sub-host] OCALL_PRINT: '%s'\n", buf);
         fflush(stdout);
     } else {
         printf("[sub-host] OCALL_PRINT: empty (len=%zu ptr=%p)\n", len, (void *)ptr);

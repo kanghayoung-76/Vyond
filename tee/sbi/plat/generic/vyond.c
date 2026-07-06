@@ -112,9 +112,6 @@ unsigned long sbi_sm_wait_and_resume(struct sbi_trap_regs *regs, unsigned long e
 #define CLINT_MSIP_BASE      0x02000000UL
 #define CLINT_MTIMECMP_BASE  0x02004000UL
 
-static inline void clint_clear_msip(ulong hartid) {
-    *((volatile uint32_t *)(CLINT_MSIP_BASE + hartid * 4)) = 0;
-}
 static inline void clint_clear_timer(ulong hartid) {
     *((volatile uint64_t *)(CLINT_MTIMECMP_BASE + hartid * 8)) = (uint64_t)-1ULL;
 }
@@ -290,7 +287,6 @@ static int sbi_ecall_vyond_monitor_handler(
         sbi_trap_exit(regs);
         break;
     case SBI_SM_NOTIFY_SHM:
-        sbi_printf("[VYOND] NOTIFY_SHM called, rid=%lu\n", (unsigned long)regs->a0);
         retval = sbi_sm_notify_shm((struct sbi_trap_regs *)regs, (uint32_t)regs->a0);
         if ((long)retval == SBI_ERR_SM_ENCLAVE_INTERRUPTED) {
             /* Direct enc1→enc2 switch: *regs = enc2's context at its wait_shm call */
@@ -310,7 +306,6 @@ static int sbi_ecall_vyond_monitor_handler(
     return retval;
 }
   
-//extern struct sbi_ecall_extension ecall_vyond_monitor;
 #define SBI_EXT_EXPERIMENTAL_VYOND_MONITOR 0x08424b45 // BKE (Berkeley Keystone Enclave)
   
 struct sbi_ecall_extension ecall_vyond_monitor = {

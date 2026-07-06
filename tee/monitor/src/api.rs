@@ -55,7 +55,6 @@ pub extern "C" fn sbi_sm_enter_enclave(regs: &mut TrapFrame, eid: usize) -> isiz
 
 #[no_mangle]
 pub extern "C" fn sbi_sm_resume_enclave(regs: &mut TrapFrame, eid: usize) -> isize {
-    dbg!("[resume_enclave] eid: {:?}", eid);
     let ret = match enclave::resume_enclave(regs, eid) {
         Ok(_) => Error::Success,
         Err(err) => {
@@ -214,7 +213,6 @@ pub extern "C" fn sbi_sm_register_dev_irq(irq_num: u32) -> isize {
 /// the enclave WaitingForDevice so the IRQ handler can resume it without host help.
 #[no_mangle]
 pub extern "C" fn sbi_sm_wait_dev_data(regs: &mut TrapFrame, irq_num: u32) -> isize {
-    dbg!("[wait_dev_data] eid {:?} irq {:?}", cpu::get_enclave_id(), irq_num);
     let ret = match enclave::wait_dev_data(regs, irq_num) {
         Ok(_) => Error::Success,
         Err(err) => err,

@@ -1,9 +1,7 @@
-use core::arch::asm;
 use core::ptr::swap;
 
 use crate::encoding::*;
 use crate::trap::TrapFrame;
-use crate::{csr_read, csr_write};
 
 /* enclave thread state */
 pub struct State {

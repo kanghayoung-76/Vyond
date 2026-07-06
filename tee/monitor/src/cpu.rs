@@ -1,4 +1,3 @@
-use core::arch::asm;
 
 #[macro_export]
 macro_rules! csr_read {

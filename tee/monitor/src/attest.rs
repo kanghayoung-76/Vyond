@@ -1,6 +1,6 @@
 use crate::cpu;
 use crate::crypto::{
-    self, hash_extend, hash_extend_page, hash_finalize, hash_init, sm_sign, Sha3Ctx, ATTEST_DATA_MAXLEN,
+    hash_extend, hash_extend_page, hash_finalize, hash_init, sm_sign, Sha3Ctx, ATTEST_DATA_MAXLEN,
     MDSIZE, PUBLIC_KEY_SIZE, RISCV_PGSIZE, SIGNATURE_SIZE,
 };
 use crate::enclave::find_enclave;

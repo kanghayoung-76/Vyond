@@ -341,7 +341,7 @@ ifeq ($(SM_ENCLAVE_PMP_CONTROL),y)
 GENFLAGS	+=	-DENCLAVE_PMP_CONTROL
 endif
 
-CFLAGS		=	-g -Wall -Werror -ffreestanding -nostdlib -fno-stack-protector -fno-strict-aliasing
+CFLAGS		=	-g -Wall -Werror -std=gnu11 -ffreestanding -nostdlib -fno-stack-protector -fno-strict-aliasing
 ifneq ($(DEBUG),)
 CFLAGS		+=	-O0
 else

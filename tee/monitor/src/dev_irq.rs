@@ -6,7 +6,6 @@
 // handler calls handle_dev_irq() which looks up the waiting enclave and
 // directly resumes it, bypassing the host OS entirely.
 
-use semihosting::heprintln;
 
 pub const INVALID_EID: usize = usize::MAX;
 const MAX_DEV_IRQS: usize = 64;
@@ -41,7 +40,6 @@ pub fn register_irq(irq_num: u32, eid: usize) {
     if (irq_num as usize) < MAX_DEV_IRQS {
         unsafe { IRQ_TABLE[irq_num as usize] = eid; }
         plic_enable_m_mode(irq_num);
-        heprintln!("[dev_irq] irq={} bound to eid={}", irq_num, eid);
     }
 }
 
