@@ -147,8 +147,8 @@ pub extern "C" fn sbi_sm_attest_enclave(report: usize, data: usize, size: usize)
 }
 
 #[no_mangle]
-pub extern "C" fn sbi_sm_create_shm_region(rid: *mut usize, pa: usize, size: usize, device_wid: u32) -> isize {
-    let ret = match enclave::create_shared_mem(pa, size, device_wid) {
+pub extern "C" fn sbi_sm_create_shm_region(rid: *mut usize, pa: usize, size: usize) -> isize {
+    let ret = match enclave::create_shared_mem(pa, size) {
         Ok(id) => {
             unsafe { *rid = id; }
             dbg!("[create_shm_region] pa={:x} size={:?} rid={:?}", pa, size, id);
@@ -198,47 +198,6 @@ pub extern "C" fn sbi_sm_change_shm_region(rid: usize, dyn_perm: i8) -> isize {
     ret as isize
 }
 
-/// Called by the enclave to register which IRQ it wants the SM to intercept.
-/// The SM enables irq_num in the PLIC M-mode context (disabling it in S-mode)
-/// so host Linux never receives it.
-#[no_mangle]
-pub extern "C" fn sbi_sm_register_dev_irq(irq_num: u32) -> isize {
-    let eid = cpu::get_enclave_id();
-    crate::dev_irq::register_irq(irq_num, eid);
-    Error::Success as isize
-}
-
-/// Called by the enclave to suspend itself until irq_num fires.
-/// SM saves enclave context, restores host context (like stop_enclave), and marks
-/// the enclave WaitingForDevice so the IRQ handler can resume it without host help.
-#[no_mangle]
-pub extern "C" fn sbi_sm_wait_dev_data(regs: &mut TrapFrame, irq_num: u32) -> isize {
-    let ret = match enclave::wait_dev_data(regs, irq_num) {
-        Ok(_) => Error::Success,
-        Err(err) => err,
-    };
-    ret as isize
-}
-
-/// Called from the M-mode IRQ handler in vyond.c when a device IRQ fires.
-/// Finds the enclave waiting for irq_num and switches directly into it.
-/// Returns 1 if an enclave was resumed, 0 otherwise.
-#[no_mangle]
-pub extern "C" fn sbi_sm_handle_dev_irq(regs: &mut TrapFrame, irq_num: u32) -> isize {
-    if let Some(eid) = crate::dev_irq::get_eid_for_irq(irq_num) {
-        match enclave::resume_from_dev_irq(regs, eid) {
-            Ok(_) => 1,
-            Err(_) => {
-                // IRQ arrived before enclave called wait_dev_data (e.g. QEMU sync DMA).
-                // Save the fact so wait_dev_data can detect it and return Ok immediately.
-                crate::dev_irq::mark_irq_fired(irq_num);
-                0
-            }
-        }
-    } else {
-        0
-    }
-}
 
 /// Returns true (1) if the calling hart is currently in enclave context.
 /// Exported for use by the C trap handler (sbi_trap_handler_keystone_enclave)
@@ -303,14 +262,6 @@ pub extern "C" fn sbi_sm_share_shm_region(rid: usize, eid2share: usize, st_perm:
         }
     };
     ret as isize
-}
-
-// sbi_sm_create_dev_shm: same as sbi_sm_create_shm_region with device_wid != 0.
-// Kept as a separate symbol so vyond.c can dispatch SBI_SM_CREATE_DEV_SHM.
-#[no_mangle]
-pub extern "C" fn sbi_sm_create_dev_shm(rid: *mut usize, pa: usize, size: usize, device_wid: u32) -> isize {
-    crate::dbg!("[create_dev_shm] device_wid={}", device_wid);
-    sbi_sm_create_shm_region(rid, pa, size, device_wid)
 }
 
 /// Creates a shared memory region for enclave-to-enclave communication.
@@ -403,29 +354,3 @@ pub extern "C" fn sbi_sm_get_my_hash(hash_out_pa: usize) -> isize {
     ret as isize
 }
 
-/// Called by enclave to locate a RegionDevEnc whose allowed_hash matches
-/// the caller (or is open). Writes rid to rid_out_pa (SBI 3014).
-#[no_mangle]
-pub extern "C" fn sbi_sm_find_dev_shm(rid_out_pa: usize) -> isize {
-    let ret = match enclave::find_dev_shm(rid_out_pa) {
-        Ok(_) => Error::Success,
-        Err(err) => {
-            dbg!("sbi_sm_find_dev_shm failed {:?}", err);
-            err
-        }
-    };
-    ret as isize
-}
-
-/// Called by enclave to ask SM to write CMD=1 to the device's MMIO register (SBI 3015).
-#[no_mangle]
-pub extern "C" fn sbi_sm_trigger_dev(device_wid: u32) -> isize {
-    let ret = match enclave::trigger_dev(device_wid) {
-        Ok(_) => Error::Success,
-        Err(err) => {
-            dbg!("sbi_sm_trigger_dev failed {:?}", err);
-            err
-        }
-    };
-    ret as isize
-}

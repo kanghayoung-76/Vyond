@@ -36,8 +36,6 @@
   _IOR(KEYSTONE_IOC_MAGIC, 0x0b, struct keystone_ioctl_change_shm)
 #define KEYSTONE_IOC_SHARE_SHM \
   _IOR(KEYSTONE_IOC_MAGIC, 0x0c, struct keystone_ioctl_share_shm)
-#define KEYSTONE_IOC_CREATE_DEV_SHM \
-  _IOR(KEYSTONE_IOC_MAGIC, 0x0d, struct keystone_ioctl_create_dev_shm)
 #define KEYSTONE_IOC_CREATE_ENCLAVE_SHM \
   _IOR(KEYSTONE_IOC_MAGIC, 0x0e, struct keystone_ioctl_create_shm)
 #define KEYSTONE_IOC_WAIT_AND_RESUME \
@@ -102,11 +100,5 @@ struct keystone_ioctl_share_shm {
   unsigned long perm;
 };
 
-struct keystone_ioctl_create_dev_shm {
-  unsigned long size;
-  uintptr_t pa;
-  rid_t rid;
-  uint32_t device_wid;
-};
 
 #endif

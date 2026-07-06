@@ -29,8 +29,6 @@
 #define SBI_SM_GET_SEALING_KEY   3003
 #define SBI_SM_STOP_ENCLAVE      3004
 #define SBI_SM_EXIT_ENCLAVE      3006
-#define SBI_SM_REGISTER_DEV_IRQ  3007  /* bind current enclave to a device IRQ */
-#define SBI_SM_WAIT_DEV_DATA     3008  /* suspend enclave until that IRQ fires  */
 #define SBI_SM_WAIT_SHM          3009  /* suspend enclave until notify_shm(rid) */
 #define SBI_SM_NOTIFY_SHM        3010  /* resume enclave waiting on rid         */
 #define FID_RANGE_ENCLAVE        3999
@@ -42,14 +40,11 @@
 #define SBI_SM_UNMAP_SHM_REGION   4003
 #define SBI_SM_CHANGE_SHM_REGION  4004
 #define SBI_SM_SHARE_SHM_REGION   4005
-#define SBI_SM_CREATE_DEV_SHM        4006  /* host: create device-enclave SHM (device_wid, lazy WGC) */
 #define SBI_SM_CREATE_ENCLAVE_SHM    4007  /* host: create enclave-channel SHM (no host EID in perm_conf) */
 #define SBI_SM_GET_SHM_EIDS          4008  /* enclave: query EID list of a channel before mapping */
 #define SBI_SM_REGISTER_ENC_CHANNEL  3011  /* enc: bind creator+allowed hash to an enc-enc SHM rid */
 #define SBI_SM_FIND_SHM_BY_HASH      3012  /* enc: find enc-enc rid by creator hash */
 #define SBI_SM_GET_MY_HASH           3013  /* enc: retrieve own measurement hash (64 bytes) */
-#define SBI_SM_FIND_DEV_SHM          3014  /* enc: find RegionDevEnc matching own hash */
-#define SBI_SM_TRIGGER_DEV           3015  /* enc: ask SM to write CMD register of a device */
 #define FID_RANGE_CUSTOM          4999
 
 /* Plugin IDs and Call IDs */
@@ -61,7 +56,6 @@
 #define STOP_TIMER_INTERRUPT  0
 #define STOP_EDGE_CALL_HOST   1
 #define STOP_EXIT_ENCLAVE     2
-#define STOP_WAITING_DEV_DATA 3  /* enclave is waiting for a device IRQ */
 #define STOP_WAITING_SHM      4  /* enclave is waiting for notify_shm   */
 
 /* Structs for interfacing into the SM */

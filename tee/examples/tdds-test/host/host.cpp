@@ -24,7 +24,7 @@
 #define OCALL_GET_RID  2
 #define OCALL_PRINT    3
 
-#define DEV_WID        29
+#define DEV_WID        5
 #define DEV_SHM_SIZE   64
 
 /* Channel RID — global so lambdas can capture by reference */

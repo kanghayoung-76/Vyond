@@ -74,25 +74,18 @@ done:
 
 unsigned long copy_enclave_create_args(uintptr_t src, struct keystone_sbi_create_t* dest);
 unsigned long sbi_sm_attest_enclave(unsigned long report, unsigned long data, unsigned long size);
-unsigned long sbi_sm_create_shm_region(unsigned long *rid, uintptr_t pa, unsigned long size, uint32_t device_wid);
-unsigned long sbi_sm_create_dev_shm(unsigned long *rid, uintptr_t pa, unsigned long size, uint32_t device_wid);
+unsigned long sbi_sm_create_shm_region(unsigned long *rid, uintptr_t pa, unsigned long size);
 unsigned long sbi_sm_create_enclave_shm(unsigned long *rid, uintptr_t pa, unsigned long size);
 unsigned long sbi_sm_get_shm_eids(unsigned long rid, uintptr_t buf_pa, unsigned long max_count, unsigned long *out_count);
 unsigned long sbi_sm_register_enc_channel(uintptr_t rid, uintptr_t allowed_hash_pa);
 unsigned long sbi_sm_find_shm_by_hash(uintptr_t creator_hash_pa, uintptr_t rid_out_pa);
 unsigned long sbi_sm_get_my_hash(uintptr_t hash_out_pa);
-unsigned long sbi_sm_find_dev_shm(uintptr_t rid_out_pa);
-unsigned long sbi_sm_trigger_dev(uint32_t device_wid);
 unsigned long sbi_sm_map_shm_region(struct sbi_trap_regs *regs, unsigned long rid);
 unsigned long sbi_sm_unmap_shm_region(unsigned long rid);
 unsigned long sbi_sm_change_shm_region(unsigned long rid, unsigned long dyn_perm);
 unsigned long sbi_sm_share_shm_region(unsigned long rid, unsigned long eid2share, unsigned long st_perm);
-/* Device IRQ path */
-unsigned long sbi_sm_register_dev_irq(uint32_t irq_num);
-unsigned long sbi_sm_wait_dev_data(struct sbi_trap_regs *regs, uint32_t irq_num);
 unsigned long sbi_sm_wait_shm(struct sbi_trap_regs *regs, uint32_t rid);
 unsigned long sbi_sm_notify_shm(struct sbi_trap_regs *regs, uint32_t rid);
-long         sbi_sm_handle_dev_irq(struct sbi_trap_regs *regs, uint32_t irq_num);
 /* SHM IPI: direct M-mode resume of enc_subscriber without host involvement */
 int          sbi_sm_is_enclave_context(void);
 long         sbi_sm_handle_shm_ipi(struct sbi_trap_regs *regs);
@@ -212,12 +205,7 @@ static int sbi_ecall_vyond_monitor_handler(
         sbi_trap_exit(regs);
         break;
 	case SBI_SM_CREATE_SHM_REGION:
-		retval = sbi_sm_create_shm_region(out_val, (uintptr_t)regs->a0, (unsigned long)regs->a1, 0);
-		break;
-	case SBI_SM_CREATE_DEV_SHM:
-		sbi_printf("[DBG] CREATE_DEV_SHM a0=%lx a1=%lx a2=%lx\n",
-		           (unsigned long)regs->a0, (unsigned long)regs->a1, (unsigned long)regs->a2);
-		retval = sbi_sm_create_dev_shm(out_val, (uintptr_t)regs->a0, (unsigned long)regs->a1, (uint32_t)regs->a2);
+		retval = sbi_sm_create_shm_region(out_val, (uintptr_t)regs->a0, (unsigned long)regs->a1);
 		break;
 	case SBI_SM_CREATE_ENCLAVE_SHM:
 		retval = sbi_sm_create_enclave_shm(out_val, (uintptr_t)regs->a0, (unsigned long)regs->a1);
@@ -237,12 +225,6 @@ static int sbi_ecall_vyond_monitor_handler(
 	case SBI_SM_GET_MY_HASH:
 		retval = sbi_sm_get_my_hash((uintptr_t)regs->a0);
 		break;
-	case SBI_SM_FIND_DEV_SHM:
-		retval = sbi_sm_find_dev_shm((uintptr_t)regs->a0);
-		break;
-	case SBI_SM_TRIGGER_DEV:
-		retval = sbi_sm_trigger_dev((uint32_t)regs->a0);
-		break;
 	case SBI_SM_MAP_SHM_REGION:
 		retval = sbi_sm_map_shm_region((struct sbi_trap_regs *)regs, (uint32_t)regs->a0);
 		break;
@@ -255,15 +237,6 @@ static int sbi_ecall_vyond_monitor_handler(
 	case SBI_SM_SHARE_SHM_REGION:
 		retval = sbi_sm_share_shm_region(regs->a0, regs->a1, regs->a2);
 		break;
-    case SBI_SM_REGISTER_DEV_IRQ:
-        retval = sbi_sm_register_dev_irq((uint32_t)regs->a0);
-        break;
-    case SBI_SM_WAIT_DEV_DATA:
-        retval = sbi_sm_wait_dev_data((struct sbi_trap_regs*) regs, (uint32_t)regs->a0);
-        ((struct sbi_trap_regs *)regs)->a0 = retval;
-        ((struct sbi_trap_regs *)regs)->mepc += 4;
-        sbi_trap_exit(regs);
-        break;
     case SBI_SM_WAIT_SHM:
         retval = sbi_sm_wait_shm((struct sbi_trap_regs*) regs, (uint32_t)regs->a0);
         if ((long)retval == SBI_ERR_SM_ENCLAVE_INTERRUPTED) {
@@ -504,25 +477,6 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
                     sbi_ipi_process();
                 }
 			    break;
-            }
-		    case IRQ_M_EXT: {
-                /* Device IRQ intercepted in M-mode.
-                 * Claim the IRQ from the PLIC M-mode context, check whether
-                 * an enclave is waiting for it, and if so resume it directly
-                 * without involving the host OS. */
-                ulong hartid = current_hartid();
-                uint32_t irq = plic_claim_m(hartid);
-                if (irq != 0) {
-                    long resumed = sbi_sm_handle_dev_irq((struct sbi_trap_regs*) regs, irq);
-                    plic_complete_m(hartid, irq);
-                    if (resumed > 0 && !sbi_sm_is_enclave_context()) {
-                        /* Enclave resumed from host-waiting context (same pattern as SHM IPI). */
-                        ((struct sbi_trap_regs *)regs)->a0 = 0;
-                        ((struct sbi_trap_regs *)regs)->mepc += 4;
-                        sbi_trap_exit(regs);
-                    }
-                }
-                break;
             }
 		    default:
 			    msg = "unhandled external interrupt";

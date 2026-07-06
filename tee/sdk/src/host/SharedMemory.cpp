@@ -43,21 +43,6 @@ SharedMemory::createEnclaveShm(size_t size) {
   return create_shm.rid;
 }
 
-rid_t
-SharedMemory::createDevShm(size_t size, uint32_t device_wid) {
-  struct keystone_ioctl_create_dev_shm create_dev_shm;
-  this->size = create_dev_shm.size = size;
-  create_dev_shm.device_wid        = device_wid;
-  if (ioctl(fd, KEYSTONE_IOC_CREATE_DEV_SHM, &create_dev_shm)) {
-    return 0;
-  }
-
-  pa         = (void*)create_dev_shm.pa;
-  rid        = create_dev_shm.rid;
-  this->size = create_dev_shm.size;  // driver page-aligns; reflect actual allocation
-  return create_dev_shm.rid;
-}
-
 void*
 SharedMemory::mapShm(rid_t rid) {
   unsigned long size;

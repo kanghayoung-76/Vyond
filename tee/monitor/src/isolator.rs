@@ -45,9 +45,6 @@ fn init_peripheral_wgc() {
     flash.set_slot_perm(flash.get_nslots() as usize, u64::MAX);
     let uart = wg::WGChecker::new(wg::WGC_UART_BASE);
     uart.set_slot_perm(uart.get_nslots() as usize, u64::MAX);
-    // TODO: allow for only enclave 1 to access mydev
-    let mydev = wg::WGChecker::new(wg::WGC_MYDEV_BASE);
-    mydev.set_slot_perm(mydev.get_nslots() as usize, u64::MAX);
 }
 
 pub fn smm_init<'a>() -> Result<(), Error> {
@@ -121,11 +118,8 @@ pub fn region_init(start: usize, size: usize, eid: usize, shared: bool) -> Resul
     #[cfg(feature = "isolator_wg")]
     {
         // TODO(slot-virt): pWID assignment is temporary (eid+1); replace with dynamic LRU table.
-        // WID 0: legacy/untrusted, WID 1-4: enclaves, WID 5: device, WID 6: OS, WID 7: SM.
+        // WID 0: legacy/untrusted, WID 1-5: enclaves, WID 6: OS, WID 7: SM.
         // Only EPM regions (shared=false) use eid-derived WIDs; SHM regions use OS_WID/custom perms.
-        if !shared {
-            assert!(eid + 1 < wg::DEV_WID as usize, "enclave WID would collide with DEV_WID");
-        }
         let region_idx = wg::region_init(start, size, 3 << ((eid + 1) * 2), true)?;
         // WGC slot virtualization: do NOT write EPM slot to hardware at create time.
         // The ACCESS FAULT handler loads it on-demand when the enclave first accesses EPM.

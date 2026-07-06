@@ -48,19 +48,6 @@ unmap_shm(rid_t rid, void* addr, size_t size) {
   return SYSCALL_3(RUNTIME_SYSCALL_UNMAP_SHM, rid, addr, size);
 }
 
-void*
-mydev_map(uintptr_t base, size_t size) {
-  uintptr_t vaddr;
-  uintptr_t* vaddr_ptr = &vaddr;
-  int ret = SYSCALL_3(RUNTIME_SYSCALL_MYDEV_MAP, base, size, vaddr_ptr);
-  if (ret) vaddr = 0;
-  return (void*)vaddr;
-}
-
-int
-mydev_unmap(void* addr, size_t size) {
-  return SYSCALL_2(RUNTIME_SYSCALL_MYDEV_UNMAP, addr, size);
-}
 
 int
 get_shm_eids(rid_t rid, uintptr_t* eids_out, size_t max_count) {
@@ -109,12 +96,3 @@ get_my_hash(uint8_t *hash_out) {
   return (int)SYSCALL_1(RUNTIME_SYSCALL_GET_MY_HASH, hash_out);
 }
 
-int
-find_dev_shm(rid_t *rid_out) {
-  return (int)SYSCALL_1(RUNTIME_SYSCALL_FIND_DEV_SHM, rid_out);
-}
-
-int
-trigger_dev(uint32_t device_wid) {
-  return (int)SYSCALL_1(RUNTIME_SYSCALL_TRIGGER_DEV, device_wid);
-}

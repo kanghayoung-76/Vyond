@@ -56,16 +56,6 @@ sbi_get_sealing_key(uintptr_t key_struct, uintptr_t key_ident, uintptr_t len) {
 }
 
 uintptr_t
-sbi_register_dev_irq(uint32_t irq_num) {
-  return SBI_CALL_1(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE, SBI_SM_REGISTER_DEV_IRQ, irq_num);
-}
-
-uintptr_t
-sbi_wait_dev_data(uint32_t irq_num) {
-  return SBI_CALL_1(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE, SBI_SM_WAIT_DEV_DATA, irq_num);
-}
-
-uintptr_t
 sbi_wait_shm(uint32_t rid) {
   return SBI_CALL_1(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE, SBI_SM_WAIT_SHM, rid);
 }

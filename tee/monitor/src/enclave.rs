@@ -7,7 +7,6 @@ use crate::spinlock::SpinLock;
 use crate::thread;
 use crate::trap::TrapFrame;
 use crate::Error;
-use semihosting::{heprintln, hprint, hprintln};
 
 // Complete snapshot of a host (S-mode) context: general-purpose registers +
 // M-mode fields from TrapFrame + the S-mode CSRs that Linux context-switches.
@@ -69,7 +68,6 @@ pub enum State {
     Stopped,
     Running,
     Destroying,
-    WaitingForDevice(u32), // suspended; will be resumed by SM on device IRQ
     WaitingForShm(u32),    // suspended; will be resumed by notify_shm
 }
 
@@ -80,7 +78,6 @@ pub enum RegionType {
     RegionUTM,
     RegionShared,
     RegionEncEnc,  // enc-to-enc channel with hash-based attestation
-    RegionDevEnc,  // device-to-enc channel with hash-based attestation
 }
 
 pub struct Region {
@@ -88,7 +85,6 @@ pub struct Region {
     r_type: RegionType,
     paddr: usize,
     size: usize,
-    device_wid: Option<u32>,  // Some(wid) for dev-SHM regions; None otherwise
     perm_conf: shm::RegionPermConfig,
     // Hash-based attestation fields (enc-enc and dev-enc channels).
     // Zeroed means "no hash check" (host-enc and legacy paths).
@@ -343,7 +339,6 @@ static mut ENCLAVES: [Option<Enclave>; MAX_ENCLAVES] = [INIT_VALUE; MAX_ENCLAVES
 const INIT_SHM: Option<Region> = None;
 static mut SHARED_MEM: [Option<Region>; MAX_SHARED_REGIONS] = [INIT_SHM; MAX_SHARED_REGIONS];
 
-
 /* This handles creation of a new enclave, based on arguments provided
  * by the untrusted host.
  *
@@ -371,13 +366,12 @@ pub fn create_enclave<'a>(create_args: &KeystoneSBICreate) -> Result<&'a Enclave
         enclave.id(),
         false,
     ) {
-        //hprintln!("Found unused pmp slot: {}", region);
+        //
         enclave.regions[0] = Some(Region {
             id: region,
             r_type: RegionType::RegionEPM,
             paddr: create_args.epm_region.paddr,
             size: create_args.epm_region.size,
-            device_wid: None,
             perm_conf: shm::RegionPermConfig {
                 owner_id: enclave.id(),
                 conf_list: [None; shm::MAX_SHM_SHARERS],
@@ -399,13 +393,11 @@ pub fn create_enclave<'a>(create_args: &KeystoneSBICreate) -> Result<&'a Enclave
             match create_shared_mem(
                 create_args.utm_region.paddr,
                 create_args.utm_region.size,
-                0, // host-SHM (UTM for ocall)
             ) {
                 Ok(rid) => {
                     let _ = share_shm_region(rid, enclave.id(), shm::Perm::FULL);
                 }
                 Err(err) => {
-                    heprintln!("[create_enclave] failed to create SHM for ocall: {:?}", err);
                 }
             }
         }
@@ -433,21 +425,6 @@ fn is_open_hash(h: &[u8; 64]) -> bool {
     for &b in h.iter() { if b != 0 { all_zero = false; } }
     all_zero
 }
-
-// WID → device MMIO base for known devices.
-// SM uses this to configure DMA target registers without exposing MMIO to enclaves.
-fn device_mmio_base(device_wid: u32) -> Option<usize> {
-    match device_wid {
-        29 => Some(0x6004000),  // MYDEV (WID=29)
-        _  => None,
-    }
-}
-
-// MMIO register offsets inside MYDEV (matches bridge.c / MYDEV hardware spec).
-const MYDEV_OFF_CMD:      usize = 0x00;
-const MYDEV_OFF_DMA_LOW:  usize = 0x08;
-const MYDEV_OFF_DMA_HIGH: usize = 0x0c;
-const MYDEV_OFF_DMA_LEN:  usize = 0x10;
 
 pub fn find_enclave<'a>(eid: usize) -> Option<&'a mut Enclave> {
     unsafe {
@@ -482,10 +459,8 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
                         {
                             let (wid, action) = crate::wid::assign_wid(eid, region_id);
                             match action {
-                                crate::wid::WIDAction::Assigned { slot } =>
-                                    heprintln!("[WGC:EPM] eid={} fault=0x{:x} | ASSIGN slot={} WID={}", eid, fault_addr, slot, wid),
-                                crate::wid::WIDAction::Evicted { slot, evicted_eid } =>
-                                    heprintln!("[WGC:EPM] eid={} fault=0x{:x} | EVICT  slot={} WID={} (was eid={}) -> new eid={}", eid, fault_addr, slot, wid, evicted_eid, eid),
+                                crate::wid::WIDAction::Assigned { slot: _ } => (),
+                                crate::wid::WIDAction::Evicted { slot: _, evicted_eid: _ } => (),
                             }
                             enclave.last_wid = wid;
                             let _ = isolator::set_isolator_with_wid(region_id, wid);
@@ -499,12 +474,10 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
                                 unsafe {
                                     if let Some(ref shm) = SHARED_MEM[shm_idx] {
                                         if shm.perm_conf.get_perm(eid).is_some() {
-                                            let is_dev = shm.device_wid.is_some();
                                             let mut perm: u64 = 0;
                                             for copt in shm.perm_conf.conf_list.iter() {
                                                 if let Some(c) = copt {
                                                     if c.eid == 11 {
-                                                        if is_dev { continue; }
                                                         perm |= 3u64 << (crate::wg::OS_WID as u64 * 2);
                                                     } else {
                                                         let w = if c.eid == eid { wid } else {
@@ -516,9 +489,6 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
                                                         perm |= 3u64 << (w as u64 * 2);
                                                     }
                                                 }
-                                            }
-                                            if let Some(dwid) = shm.device_wid {
-                                                perm |= 3u64 << (dwid as u64 * 2);
                                             }
                                             if perm != 0 {
                                                 let _ = isolator::set_shm_perm(shm.id, perm);
@@ -548,10 +518,7 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
                     #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
                     {
                         // Compute perm bitmap from current sharers.
-                        // For dev-SHM (device_wid.is_some()):  skip eid=11 (host) to keep OS_WID
-                        //   out of the hardware slot; only device_wid + enclave_wid are granted.
-                        // For host-enclave SHM:  eid=11 → OS_WID is included normally.
-                        let is_dev_shm = region.device_wid.is_some();
+                        // For host-enclave SHM: eid=11 → OS_WID is included normally.
                         #[derive(Copy, Clone)]
                         struct PermEntry { wid: usize, eid: usize }
                         let mut entries = [PermEntry { wid: 0, eid: 0 }; 8];
@@ -560,7 +527,6 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
                         for conf_opt in region.perm_conf.conf_list.iter() {
                             if let Some(c) = conf_opt {
                                 if c.eid == 11 {
-                                    if is_dev_shm { continue; } // host must not access dev-SHM
                                     let w = crate::wg::OS_WID as usize;
                                     perm |= 3u64 << (w as u64 * 2);
                                     if n < 8 { entries[n] = PermEntry { wid: w, eid: c.eid }; n += 1; }
@@ -574,22 +540,7 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
                                 }
                             }
                         }
-                        // Add device_wid to perm bitmap for dev-SHM
-                        if let Some(dwid) = region.device_wid {
-                            perm |= 3u64 << (dwid as u64 * 2);
-                        }
-                        hprint!("[WGC:SHM] eid={} fault=0x{:x} size=0x{:x} | LOAD",
-                            eid, fault_addr, region.size);
-                        for i in 0..n {
-                            let e = &entries[i];
-                            if i == 0 { hprint!(" "); } else { hprint!("+"); }
-                            if e.eid == 11 { hprint!("WID={}(OS)", e.wid); }
-                            else           { hprint!("WID={}(eid={})", e.wid, e.eid); }
-                        }
-                        if let Some(dwid) = region.device_wid {
-                            hprint!("+WID={}(dev)", dwid);
-                        }
-                        hprintln!("");
+                        let _ = (n, entries);
                         let _ = isolator::set_shm_perm(region.id, perm);
                     }
                     return true;
@@ -740,7 +691,6 @@ pub fn resume_enclave(tf: &mut TrapFrame, eid: usize) -> Result<(), Error> {
 
         let resumable = (runstate.state == State::Running
             || runstate.state == State::Stopped
-            || matches!(runstate.state, State::WaitingForDevice(_))
             || matches!(runstate.state, State::WaitingForShm(_)))
             && runstate.count < MAX_ENCLAVE_THREADS;
 
@@ -784,7 +734,6 @@ pub fn wait_and_resume_for_shm(tf: &mut TrapFrame, eid: usize) -> Result<(), Err
         if enc.pending_ocall_for_host {
             enc.pending_ocall_for_host = false;
             enc.saved_host = Some(capture_host_ctx(tf));
-            heprintln!("[SM:wait_and_resume] hart={} eid={} → pending OCALL, fresh ctx", this_hart, eid);
             return Err(Error::EdgeCallHost);
         }
     } else {
@@ -888,7 +837,6 @@ pub fn stop_enclave(tf: &mut TrapFrame, request: usize) -> Result<(), Error> {
             if request == 1 /* EdgeCallHost */ {
                 enclave.pending_ocall_for_host = true;
                 csr_set!(mip, MIP_SSIP);
-                heprintln!("[SM:stop_enclave] IPI OCALL → pending, SSIP (hart={})", this_hart);
             }
             return Err(Error::IpiHandled);
         }
@@ -904,65 +852,6 @@ pub fn stop_enclave(tf: &mut TrapFrame, request: usize) -> Result<(), Error> {
     return Err(Error::Invalid);
 }
 
-/// Enclave suspends itself waiting for a device IRQ.
-/// Behaves like stop_enclave but transitions to WaitingForDevice instead of Stopped.
-/// The SM will resume this enclave directly when irq_num fires (no host involvement).
-pub fn wait_dev_data(tf: &mut TrapFrame, irq_num: u32) -> Result<(), Error> {
-    if let Some(_enclave) = find_enclave(cpu::get_enclave_id()) {
-        // Fast-path A: IRQ fired before we got here (QEMU sync DMA — M-mode IRQ handler
-        // ran while enclave was still Running and saved the pre-fired flag).
-        if crate::dev_irq::take_fired_irq(irq_num) {
-            return Ok(());
-        }
-
-        // Fast-path B: IRQ still pending in PLIC (rare: M-mode interrupts masked briefly).
-        let hartid = csr_read!(mhartid) as usize;
-        let claimed = crate::dev_irq::plic_claim(hartid);
-        if claimed == irq_num {
-            crate::dev_irq::plic_complete(hartid, irq_num);
-            return Ok(());
-        }
-        if claimed != 0 {
-            crate::dev_irq::plic_complete(hartid, claimed);
-        }
-
-        // Slow-path: IRQ not yet pending — suspend enclave, let host run,
-        // IRQ_M_EXT handler will call resume_from_dev_irq when IRQ fires.
-        let enclave = find_enclave(cpu::get_enclave_id()).ok_or(Error::Invalid)?;
-        let mut runstate = enclave.state.lock();
-        if runstate.state != State::Running {
-            return Err(Error::NotRunning);
-        }
-        runstate.count -= 1;
-        runstate.state = State::WaitingForDevice(irq_num);
-        drop(runstate);
-        enclave.switch_to_host(tf, false);
-        return Err(Error::WaitingForDevice);
-    }
-    Err(Error::Invalid)
-}
-
-/// Called by the M-mode IRQ handler to resume an enclave that called wait_dev_data.
-/// regs currently holds the preempted host context; switch_to_enclave swaps it
-/// so mret lands in the enclave.
-pub fn resume_from_dev_irq(tf: &mut TrapFrame, eid: usize) -> Result<(), Error> {
-    if let Some(enclave) = find_enclave(eid) {
-        let mut runstate = enclave.state.lock();
-        let resumable = matches!(runstate.state, State::WaitingForDevice(_))
-            && runstate.count < MAX_ENCLAVE_THREADS;
-        if resumable {
-            runstate.count += 1;
-            runstate.state = State::Running;
-        }
-        drop(runstate);
-        if !resumable {
-            return Err(Error::NotResumable);
-        }
-        enclave.switch_to_enclave(tf, false);
-        return Ok(());
-    }
-    Err(Error::InvalidId)
-}
 
 /// Called by enc_subscriber to suspend itself until enc_publisher calls notify_shm(rid).
 ///
@@ -989,8 +878,6 @@ pub fn wait_shm(tf: &mut TrapFrame, rid: u32) -> Result<(), Error> {
         if let Some(pending_rid) = runstate.pending_shm_notify.take() {
             if pending_rid == rid {
                 drop(runstate);
-                heprintln!("[SM:wait_shm] eid={} rid={} → pending notify consumed, skip park",
-                           enclave.eid, rid);
                 return Err(Error::Interrupted); // C: a0=0, mepc+=4 → enc resumes immediately
             }
             runstate.pending_shm_notify = Some(pending_rid); // put back on rid mismatch
@@ -1004,8 +891,6 @@ pub fn wait_shm(tf: &mut TrapFrame, rid: u32) -> Result<(), Error> {
 
         // Record which hart we're parking on so notify_shm can target the IPI.
         enclave.last_hart = csr_read!(mhartid) as usize;
-        heprintln!("[SM:wait_shm] eid={} rid={} last_hart={} → WaitingForShm",
-                   enclave.eid, rid, enclave.last_hart);
 
         // Switch to host context while keeping mtvec = trap_vector_enclave.
         // Linux will run on this hart; any M-mode interrupt goes to our handler,
@@ -1054,7 +939,6 @@ pub fn wait_shm(tf: &mut TrapFrame, rid: u32) -> Result<(), Error> {
         // IPI park: enc2 called wait_shm after being IPI-woken (S-mode path).
         // thread.State held T; switch_to_host restored T into tf — mret to T.
         if unsafe { IPI_INTERRUPTED[this_hart].take().is_some() } {
-            heprintln!("[SM:wait_shm] IPI park → mret to T (hart={})", this_hart);
             return Err(Error::IpiHandled);
         }
 
@@ -1082,7 +966,6 @@ pub fn wait_shm(tf: &mut TrapFrame, rid: u32) -> Result<(), Error> {
 pub fn notify_shm(tf: &mut TrapFrame, rid: u32) -> Result<(), Error> {
     let enc1_eid = cpu::get_enclave_id();
     let current_hart = csr_read!(mhartid) as usize;
-    heprintln!("[SM:notify_shm] eid={} rid={} hart={}", enc1_eid, rid, current_hart);
 
     // Find enc_subscriber waiting on this rid, update its state.
     let found: Option<(usize, usize)> = unsafe {
@@ -1150,10 +1033,6 @@ pub fn notify_shm(tf: &mut TrapFrame, rid: u32) -> Result<(), Error> {
                                 // Running: enc2 awake between IPI wake and wait_shm.
                                 // Stopped: enc2 mid-OCALL; consumed by wait_shm on next park.
                                 let state_str = if rs2.state == State::Running { "Running" } else { "Stopped(OCALL)" };
-                                heprintln!(
-                                    "[SM:notify_shm] rid={} eid={} {} on hart={}, overwrite pending notify",
-                                    rid, enc2.eid, state_str, enc2.last_hart
-                                );
                                 rs2.pending_shm_notify = Some(rid);
                                 drop(rs2);
                                 return Ok(());
@@ -1167,7 +1046,6 @@ pub fn notify_shm(tf: &mut TrapFrame, rid: u32) -> Result<(), Error> {
             match retry {
                 Some(t) => t,
                 None => {
-                    heprintln!("[SM:notify_shm] rid={} → no WaitingForShm match", rid);
                     return Ok(());
                 }
             }
@@ -1190,7 +1068,6 @@ pub fn notify_shm(tf: &mut TrapFrame, rid: u32) -> Result<(), Error> {
         return Err(Error::Interrupted);
     } else {
         // ---- Multi-core: fire MSIP on target hart, enc_publisher keeps running ----
-        heprintln!("[SM:notify_shm] multicore: IPI to hart={} for eid={}", target_hart, enc2_eid);
         crate::ipi::post_resume(target_hart, enc2_eid); // Release fence + store
         crate::ipi::send_msip(target_hart);             // Assert CLINT MSIP
         return Ok(()); // enc_publisher's notify_shm returns 0 (non-blocking)
@@ -1221,7 +1098,6 @@ pub fn resume_from_shm_ipi(tf: &mut TrapFrame) -> bool {
             // sub-host is sleeping (S-mode); save T and switch enc2 directly.
             // OCALLs are delivered via pending_ocall_for_host in wait_and_resume_for_shm.
             unsafe { IPI_INTERRUPTED[this_hart] = Some(capture_host_ctx(tf)); }
-            heprintln!("[SM:shm_ipi] hart={} eid={} → direct switch", this_hart, eid);
             enc.switch_to_enclave(tf, false);
             return true;
         }
@@ -1249,7 +1125,6 @@ pub fn exit_enclave(tf: &mut TrapFrame) -> Result<(), Error> {
         // IPI exit: tf = T already (switch_to_host loaded T from thread.State).
         let this_hart = csr_read!(mhartid) as usize;
         if unsafe { IPI_INTERRUPTED[this_hart].take().is_some() } {
-            heprintln!("[SM:exit_enclave] IPI ctx → mret to T (hart={})", this_hart);
             return Err(Error::IpiHandled);
         }
 
@@ -1287,14 +1162,10 @@ extern "C" {
 ///
 ///
 //pub fn create_shared_mem(eid: usize, paddr: usize, size: usize) -> Result<usize, Error> {
-// device_wid: 0 = host-SHM (eager OS_WID slot), non-zero = dev-SHM (lazy, device_wid | enclave_wid)
-pub fn create_shared_mem(paddr: usize, size: usize, device_wid: u32) -> Result<usize, Error> {
+pub fn create_shared_mem(paddr: usize, size: usize) -> Result<usize, Error> {
     if let Ok(region_idx) = isolator::region_init(paddr, size, 11, true) {
-        // Eagerly load WGC slot for host-SHM only; dev-SHM is lazy (loaded on first enclave fault).
         #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
-        if device_wid == 0 {
-            let _ = isolator::set_shm_host_only(region_idx);
-        }
+        let _ = isolator::set_shm_host_only(region_idx);
 
         for i in 0..MAX_SHARED_REGIONS {
             if unsafe { SHARED_MEM[i].is_none() } {
@@ -1304,7 +1175,6 @@ pub fn create_shared_mem(paddr: usize, size: usize, device_wid: u32) -> Result<u
                         r_type: RegionType::RegionShared,
                         paddr,
                         size,
-                        device_wid: if device_wid != 0 { Some(device_wid) } else { None },
                         perm_conf: shm::RegionPermConfig {
                             owner_id: 11,
                             conf_list: [None; shm::MAX_SHM_SHARERS],
@@ -1341,7 +1211,6 @@ pub fn map_shm_region(regs: &mut TrapFrame, rid: usize) -> Result<(), Error> {
             // (or be all-zeros = open/wildcard for testing).
             if region.r_type == RegionType::RegionEncEnc {
                 if !cpu::is_enclave_context() {
-                    heprintln!("[map_shm_region] DENIED: non-enclave caller on enc-enc rid={}", rid);
                     return Err(Error::Invalid);
                 }
                 if !is_open_hash(&region.allowed_hash) {
@@ -1350,7 +1219,6 @@ pub fn map_shm_region(regs: &mut TrapFrame, rid: usize) -> Result<(), Error> {
                         None => return Err(Error::Invalid),
                     };
                     if !hash_eq(&caller_hash, &region.allowed_hash) {
-                        heprintln!("[map_shm_region] DENIED: hash mismatch on enc-enc rid={} caller_eid={}", rid, caller_eid);
                         return Err(Error::Invalid);
                     }
                 }
@@ -1358,31 +1226,6 @@ pub fn map_shm_region(regs: &mut TrapFrame, rid: usize) -> Result<(), Error> {
                     eid: caller_eid,
                     dyn_perm: shm::Perm::FULL,
                     st_perm: shm::Perm::FULL,
-                    maps: 1,
-                });
-                return Ok(());
-            }
-            // dev-enc channel: hash-based attestation — read-only for allowed enc.
-            // SM also writes DMA target registers so the enclave never touches MMIO.
-            if region.r_type == RegionType::RegionDevEnc {
-                if !cpu::is_enclave_context() {
-                    return Err(Error::Invalid);
-                }
-                if !is_open_hash(&region.allowed_hash) {
-                    let caller_hash = match find_enclave(caller_eid) {
-                        Some(enc) => enc.hash,
-                        None => return Err(Error::Invalid),
-                    };
-                    if !hash_eq(&caller_hash, &region.allowed_hash) {
-                        heprintln!("[map_shm_region] DENIED: hash mismatch on dev-enc rid={} caller_eid={}", rid, caller_eid);
-                        return Err(Error::Invalid);
-                    }
-                }
-                // DMA registers are programmed once at boot in init_dev_shm_regions().
-                region.perm_conf.insert_perm(shm::PermConfig {
-                    eid: caller_eid,
-                    dyn_perm: shm::Perm::R,
-                    st_perm: shm::Perm::R,
                     maps: 1,
                 });
                 return Ok(());
@@ -1526,7 +1369,6 @@ pub fn create_enclave_shm(paddr: usize, size: usize) -> Result<usize, Error> {
                         r_type: RegionType::RegionShared,
                         paddr,
                         size,
-                        device_wid: None,
                         perm_conf: shm::RegionPermConfig {
                             owner_id: 11,
                             conf_list: [None; shm::MAX_SHM_SHARERS],
@@ -1541,105 +1383,6 @@ pub fn create_enclave_shm(paddr: usize, size: usize) -> Result<usize, Error> {
         }
     }
     Err(Error::Invalid)
-}
-
-// ---------------------------------------------------------------------------
-// dev-enc: hardcoded config table
-// ---------------------------------------------------------------------------
-
-/// One entry in the boot-time device SHM config table.
-/// PA and size describe a pre-allocated physical memory region shared between
-/// a hardware device (identified by device_wid) and a trusted enclave node
-/// (identified by allowed_hash).  allowed_hash is a placeholder for now;
-/// replace with the real SHA3-512 measurement of the target enclave binary.
-struct DevShmConfig {
-    pa:           usize,
-    size:         usize,
-    device_wid:   u32,
-    allowed_hash: [u8; 64],
-}
-
-/// Compile-time device SHM table.  Add one entry per device-enclave channel.
-/// PA addresses and WIDs must not overlap with EPM / host memory regions.
-static DEV_SHM_TABLE: &[DevShmConfig] = &[
-    // my_dev (WID=29): DMA buffer at 0x9000_0000, 4 KiB.
-    // allowed_hash=[0u8;64] = open for testing (any enclave may map).
-    DevShmConfig {
-        pa:           0x9000_0000,
-        size:         4096,
-        device_wid:   29,
-        allowed_hash: [0u8; 64],
-    },
-];
-
-/// Create a single RegionDevEnc SHM region from a config entry.
-/// Called only at cold-boot from init_dev_shm_regions().
-fn create_dev_enc_shm(pa: usize, size: usize, device_wid: u32, allowed_hash: [u8; 64])
-    -> Result<usize, Error>
-{
-    // Use the same isolator path as create_shared_mem for device regions.
-    if let Ok(region_idx) = isolator::region_init(pa, size, 11, true) {
-        for i in 0..MAX_SHARED_REGIONS {
-            if unsafe { SHARED_MEM[i].is_none() } {
-                unsafe {
-                    SHARED_MEM[i] = Some(Region {
-                        id: region_idx,
-                        r_type: RegionType::RegionDevEnc,
-                        paddr: pa,
-                        size,
-                        device_wid: Some(device_wid),
-                        perm_conf: shm::RegionPermConfig {
-                            owner_id: 11,
-                            conf_list: [None; shm::MAX_SHM_SHARERS],
-                        },
-                        creator_hash: [0u8; 64],
-                        allowed_hash,
-                    });
-                }
-                heprintln!(
-                    "[SM:dev_shm] created dev-enc region pa={:#x} size={} wid={} rid={}",
-                    pa, size, device_wid, region_idx
-                );
-                return Ok(region_idx);
-            }
-        }
-    }
-    Err(Error::Invalid)
-}
-
-/// Called once during cold-boot (from sm_init) to register all device SHM
-/// regions defined in DEV_SHM_TABLE into SHARED_MEM and program DMA registers.
-pub fn init_dev_shm_regions() {
-    for cfg in DEV_SHM_TABLE.iter() {
-        match create_dev_enc_shm(cfg.pa, cfg.size, cfg.device_wid, cfg.allowed_hash) {
-            Ok(rid) => {
-                heprintln!("[SM:dev_shm] registered dev-enc channel rid={}", rid);
-                // Write DMA target registers at boot — PA is fixed in DEV_SHM_TABLE.
-                if let Some(mmio_base) = device_mmio_base(cfg.device_wid) {
-                    unsafe {
-                        let base = mmio_base as *mut u8;
-                        core::ptr::write_volatile(
-                            base.add(MYDEV_OFF_DMA_LOW) as *mut u32,
-                            (cfg.pa & 0xffff_ffff) as u32,
-                        );
-                        core::ptr::write_volatile(
-                            base.add(MYDEV_OFF_DMA_HIGH) as *mut u32,
-                            (cfg.pa >> 32) as u32,
-                        );
-                        core::ptr::write_volatile(
-                            base.add(MYDEV_OFF_DMA_LEN) as *mut u32,
-                            cfg.size as u32,
-                        );
-                    }
-                    heprintln!(
-                        "[SM:dev_shm] DMA regs set at boot wid={} mmio={:#x} pa={:#x} sz={}",
-                        cfg.device_wid, mmio_base, cfg.pa, cfg.size
-                    );
-                }
-            }
-            Err(e) => heprintln!("[SM:dev_shm] failed to register dev-enc channel: {:?}", e),
-        }
-    }
 }
 
 /// Called by enc1 (publisher) to bind hash-based attestation to an existing SHM region.
@@ -1708,7 +1451,6 @@ pub fn find_shm_by_hash(creator_hash_pa: usize, rid_out_pa: usize) -> Result<(),
             }
         }
     }
-    heprintln!("[SM:find_shm_by_hash] no matching enc-enc channel for caller_eid={}", caller_eid);
     Err(Error::Invalid)
 }
 
@@ -1759,192 +1501,6 @@ pub fn get_shm_region_by_idx(idx: usize) -> Option<&'static mut Region> {
 }
 
 
-#[cfg(feature = "dbg")]
-pub fn display() {
-    hprintln!("Display Enclaves");
-    for slot in 0..MAX_ENCLAVES {
-        if let Some(enclave) = unsafe { ENCLAVES[slot].as_mut() } {
-            hprintln!("+--------+--------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+--------+");
-            hprintln!("|                                                                 Enclave                                                                         |");
-            hprintln!("+--------+--------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+--------+");
-            hprintln!("|  eid   |  state |                                              pa_params                                                               |#regions|");
-            hprintln!("+--------+--------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+--------+");
-            hprintln!("|        |        |   dram_base    |  dram_size     |  user_base     |  free_base     |   ut_base      |  ut_size       |   free_req     |        |");
-            hprintln!("+--------+--------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+--------+");
-            let runstate = enclave.state.lock();
-            hprint!("|{:>8}", enclave.eid);
-            let state_id: u8 = match runstate.state {
-                State::Stopped => 0,
-                State::Running => 1,
-                State::Destroying => 2,
-                State::WaitingForDevice(_) => 3,
-                State::WaitingForShm(_) => 4,
-            };
-            hprint!("|{:>8}", state_id);
-            hprint!("|{:>16x}", enclave.pa_params.dram_base);
-            hprint!("|{:>16x}", enclave.pa_params.dram_size);
-            hprint!("|{:>16x}", enclave.pa_params.user_base);
-            hprint!("|{:>16x}", enclave.pa_params.free_base);
-            hprint!("|{:>16x}", enclave.pa_params.untrusted_base);
-            hprint!("|{:>16x}", enclave.pa_params.untrusted_size);
-            hprint!("|{:>16x}", enclave.pa_params.free_requested);
-
-            let mut region_cnt = 0;
-            for rid in 0..MAX_ENCLAVE_REGIONS {
-                if let Some(_) = &enclave.regions[rid] {
-                    region_cnt += 1;
-                }
-            }
-            hprintln!("|{:>8}|", region_cnt);
-            hprintln!("+--------+--------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+--------+");
-            drop(runstate);
-
-            for rid in 0..MAX_ENCLAVE_REGIONS {
-                if let Some(region) = &enclave.regions[rid] {
-                    hprintln!("");
-                    hprintln!(
-                        "+--------+--------+----------------+----------------+----------------+----------------+"
-                    );
-                    hprintln!(
-                        "|                                           Region                                    |"
-                    );
-                    hprintln!(
-                        "+--------+--------+----------------+----------------+----------------+----------------+"
-                    );
-                    hprintln!(
-                        "|regionid|  type  |      paddr     |      size      |             perm_conf           |"
-                    );
-                    hprintln!(
-                        "+--------+--------+----------------+----------------+----------------+----------------+"
-                    );
-                    hprintln!(
-                        "|--------|--------|----------------|----------------|   owner_id     |   #confs       |"
-                    );
-                    hprintln!(
-                        "+--------+--------+----------------+----------------+----------------+----------------+"
-                    );
-                    break;
-                }
-            }
-
-            for rid in 0..MAX_ENCLAVE_REGIONS {
-                if let Some(region) = &enclave.regions[rid] {
-                    hprint!("|{:>8}", region.id);
-                    hprint!("|{:>8?}", region.r_type as u8);
-                    hprint!("|{:>16x}", region.paddr);
-                    hprint!("|{:>16x}", region.size);
-                    hprint!("|{:>16}", region.perm_conf.owner_id);
-                    let mut cfg_cnt = 0;
-                    for cid in 0..shm::MAX_SHM_SHARERS {
-                        if let Some(_) = region.perm_conf.conf_list[cid] {
-                            cfg_cnt += 1;
-                        }
-                    }
-                    hprintln!("|{:>16}|", cfg_cnt);
-                    hprintln!(
-                        "+--------+--------+----------------+----------------+----------------+----------------+"
-                    );
-
-                    for cid in 0..shm::MAX_SHM_SHARERS {
-                        if let Some(conf) = region.perm_conf.conf_list[cid] {
-                            hprintln!("");
-                            hprintln!("+--------+--------+--------+");
-                            hprintln!("|         PermConf         |");
-                            hprintln!("+--------+--------+--------+");
-                            hprintln!("|  eid   |st_perm |dyn_perm|");
-                            hprintln!("+--------+--------+--------+");
-                            break;
-                        }
-                    }
-
-                    for cid in 0..shm::MAX_SHM_SHARERS {
-                        if let Some(conf) = region.perm_conf.conf_list[cid] {
-                            hprint!("|{:>8}", conf.eid);
-                            hprint!("|{:>8x}", conf.st_perm);
-                            hprintln!("|{:>8x}|", conf.dyn_perm);
-                            hprintln!("+--------+--------+--------+");
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    for rid in 0..MAX_SHARED_REGIONS {
-        unsafe {
-            if let Some(_) = &SHARED_MEM[rid] {
-                hprintln!("");
-                hprintln!(
-                        "+--------+--------+----------------+----------------+----------------+----------------+"
-                    );
-                hprintln!(
-                        "+                                    Shared Region                                    +"
-                    );
-                hprintln!(
-                        "+--------+--------+----------------+----------------+----------------+----------------+"
-                    );
-                hprintln!(
-                        "|regionid|  type  |      paddr     |      size      |             perm_conf           |"
-                    );
-                hprintln!(
-                        "+--------+--------+----------------+----------------+----------------+----------------+"
-                    );
-                hprintln!(
-                        "|--------|--------|----------------|----------------|   owner_id     |   #confs       |"
-                    );
-                hprintln!(
-                        "+--------+--------+----------------+----------------+----------------+----------------+"
-                    );
-                break;
-            }
-        }
-    }
-
-    for rid in 0..MAX_SHARED_REGIONS {
-        unsafe {
-            if let Some(region) = &SHARED_MEM[rid] {
-                hprint!("|{:>8}", region.id);
-                hprint!("|{:>8?}", region.r_type as u8);
-                hprint!("|{:>16x}", region.paddr);
-                hprint!("|{:>16x}", region.size);
-                hprint!("|{:>16}", region.perm_conf.owner_id);
-                let mut cfg_cnt = 0;
-                for cid in 0..shm::MAX_SHM_SHARERS {
-                    if let Some(_) = region.perm_conf.conf_list[cid] {
-                        cfg_cnt += 1;
-                    }
-                }
-                hprintln!("|{:>16}|", cfg_cnt);
-                hprintln!(
-                        "+--------+--------+----------------+----------------+----------------+----------------+"
-                    );
-
-                for cid in 0..shm::MAX_SHM_SHARERS {
-                    if let Some(conf) = region.perm_conf.conf_list[cid] {
-                        hprintln!("");
-                        hprintln!("+--------+--------+--------+--------+");
-                        hprintln!("|         PermConf                  |");
-                        hprintln!("+--------+--------+--------+--------+");
-                        hprintln!("|  eid   |st_perm |dyn_perm|   map  |");
-                        hprintln!("+--------+--------+--------+--------+");
-                        break;
-                    }
-                }
-
-                for cid in 0..shm::MAX_SHM_SHARERS {
-                    if let Some(conf) = region.perm_conf.conf_list[cid] {
-                        hprint!("|{:>8}", conf.eid);
-                        hprint!("|{:>8x}", conf.st_perm);
-                        hprint!("|{:>8x}", conf.dyn_perm);
-                        hprintln!("|{:>8x}|", conf.maps);
-                        hprintln!("+--------+--------+--------+--------+");
-                    }
-                }
-            }
-        }
-    }
-}
-
 /// Called by enclave to retrieve its own measurement hash.
 /// Writes 64 bytes to hash_out_pa (physical address).
 pub fn get_my_hash(hash_out_pa: usize) -> Result<(), Error> {
@@ -1957,56 +1513,6 @@ pub fn get_my_hash(hash_out_pa: usize) -> Result<(), Error> {
         None => return Err(Error::Invalid),
     };
     unsafe { *(hash_out_pa as *mut [u8; 64]) = hash; }
-    heprintln!("[SM:get_my_hash] written hash for eid={}", caller_eid);
     Ok(())
 }
 
-/// Called by enclave to locate a RegionDevEnc channel whose allowed_hash
-/// matches the caller's hash (or is open/wildcard).
-/// Writes the rid to rid_out_pa on success.
-pub fn find_dev_shm(rid_out_pa: usize) -> Result<(), Error> {
-    if !cpu::is_enclave_context() {
-        return Err(Error::Invalid);
-    }
-    let caller_eid = cpu::get_enclave_id();
-    let caller_hash = match find_enclave(caller_eid) {
-        Some(enc) => enc.hash,
-        None => return Err(Error::Invalid),
-    };
-    unsafe {
-        for i in 0..MAX_SHARED_REGIONS {
-            if let Some(ref region) = SHARED_MEM[i] {
-                if region.r_type == RegionType::RegionDevEnc
-                    && (is_open_hash(&region.allowed_hash)
-                        || hash_eq(&region.allowed_hash, &caller_hash))
-                {
-                    *(rid_out_pa as *mut usize) = region.id;
-                    return Ok(());
-                }
-            }
-        }
-    }
-    heprintln!("[SM:find_dev_shm] no matching dev-enc channel for caller_eid={}", caller_eid);
-    Err(Error::Invalid)
-}
-
-/// Called by enclave to ask SM to write the CMD register of a device.
-/// The enclave never touches MMIO directly; SM validates the device_wid
-/// and performs the write on its behalf.
-pub fn trigger_dev(device_wid: u32) -> Result<(), Error> {
-    if !cpu::is_enclave_context() {
-        return Err(Error::Invalid);
-    }
-    let mmio_base = match device_mmio_base(device_wid) {
-        Some(base) => base,
-        None => {
-            heprintln!("[SM:trigger_dev] unknown device_wid={}", device_wid);
-            return Err(Error::Invalid);
-        }
-    };
-    unsafe {
-        let base = mmio_base as *mut u8;
-        core::ptr::write_volatile(base.add(MYDEV_OFF_CMD) as *mut u32, 1u32);
-    }
-    Ok(())
-}

@@ -51,10 +51,6 @@ sbi_attest_enclave(void* report, void* buf, uintptr_t len);
 uintptr_t
 sbi_get_sealing_key(uintptr_t key_struct, uintptr_t key_ident, uintptr_t len);
 uintptr_t
-sbi_register_dev_irq(uint32_t irq_num);
-uintptr_t
-sbi_wait_dev_data(uint32_t irq_num);
-uintptr_t
 sbi_wait_shm(uint32_t rid);
 uintptr_t
 sbi_notify_shm(uint32_t rid);

@@ -306,19 +306,6 @@ handle_syscall(struct encl_ctx* ctx) {
     case (RUNTIME_SYSCALL_UNMAP_SHM):
       ret = handle_unmap_shm((rid_t)arg0, (uintptr_t)arg2, (size_t)arg3);
       break;
-    case (RUNTIME_SYSCALL_MYDEV_MAP):
-      ret = handle_mydev_map((uintptr_t)arg0, (size_t)arg1, &ret_val);
-      copy_to_user((void*)arg2, &ret_val, sizeof(ret_val));
-      break;
-    case (RUNTIME_SYSCALL_MYDEV_UNMAP):
-      ret = handle_mydev_unmap((uintptr_t)arg0, (size_t)arg1);
-      break;
-    case (RUNTIME_SYSCALL_REGISTER_DEV_IRQ):
-      ret = sbi_register_dev_irq((uint32_t)arg0);
-      break;
-    case (RUNTIME_SYSCALL_WAIT_DEV_DATA):
-      ret = sbi_wait_dev_data((uint32_t)arg0);
-      break;
     case (RUNTIME_SYSCALL_WAIT_SHM):
       ret = sbi_wait_shm((uint32_t)arg0);
       break;
@@ -387,25 +374,6 @@ handle_syscall(struct encl_ctx* ctx) {
       if (!ret) {
         copy_to_user((void*)arg0, rt_copy_buffer_1, 64);
       }
-      break;
-    }
-    case (RUNTIME_SYSCALL_FIND_DEV_SHM): {
-      /* arg0=rid_out VA (sizeof(rid_t))
-       * Use rt_copy_buffer_1 as landing buffer for the rid. */
-      uintptr_t rid_out_pa = translate((uintptr_t)rt_copy_buffer_1);
-      ret = SBI_CALL_1(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE,
-                       SBI_SM_FIND_DEV_SHM,
-                       rid_out_pa);
-      if (!ret) {
-        copy_to_user((void*)arg0, rt_copy_buffer_1, sizeof(uintptr_t));
-      }
-      break;
-    }
-    case (RUNTIME_SYSCALL_TRIGGER_DEV): {
-      /* arg0=device_wid (u32) */
-      ret = SBI_CALL_1(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE,
-                       SBI_SM_TRIGGER_DEV,
-                       (uintptr_t)arg0);
       break;
     }
 

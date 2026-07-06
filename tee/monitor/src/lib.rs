@@ -5,7 +5,6 @@ use core::sync::atomic::compiler_fence;
 use core::sync::atomic::Ordering;
 
 use once_cell::OnceCell;
-use semihosting::{heprintln, hprintln};
 
 #[macro_use]
 pub mod cpu;
@@ -13,7 +12,6 @@ pub mod cpu;
 pub mod api;
 pub mod attest;
 pub mod crypto;
-pub mod dev_irq;
 pub mod enclave;
 pub mod ipi;
 pub mod encoding;
@@ -60,7 +58,6 @@ pub enum Error {
     SBIProhibited,
     IllegalPTE,
     NotFresh,
-    WaitingForDevice    = 100017,
     WaitingForShm       = 100018,
     IpiHandled          = 100019,
     TimerInterrupted    = 100027,
@@ -82,31 +79,20 @@ pub enum Error {
 #[no_mangle]
 pub extern "C" fn sm_init(cold_boot: bool) -> isize {
     let hartid = csr_read!(mhartid);
-    hprintln!("Initializing ... hart {:#x}\n", hartid);
 
     // initialize SMM
     if cold_boot {
         crate::wid::wid_init();
 
         if let Err(e) = isolator::smm_init() {
-            heprintln!(
-                "Intolerable error - failed to initialize SM memory: {:?}",
-                e
-            );
             return -1;
         }
 
         if let Err(e) = isolator::osm_init() {
-            heprintln!(
-                "Inrolerable error - failed to initialize OS memory: {:?}",
-                e
-            );
             return -1;
         }
 
         crypto::sm_init_keys();
-
-        enclave::init_dev_shm_regions();
 
         isolator::sm_init_done();
 
@@ -119,15 +105,9 @@ pub extern "C" fn sm_init(cold_boot: bool) -> isize {
 
     /* below are executed by all harts */
     if let Err(e) = isolator::update() {
-        heprintln!("Intolerable error - failed update isolator: {:?}", e);
         return -1;
     }
     isolator::display_isolator();
-
-    hprintln!(
-        "Vyond security monitor has been initialized on hart-#{:#x}!\n",
-        hartid
-    );
 
     0
 }

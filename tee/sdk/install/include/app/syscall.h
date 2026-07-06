@@ -90,22 +90,6 @@ find_shm_by_hash(const uint8_t *creator_hash, rid_t *rid_out);
 int
 get_my_hash(uint8_t *hash_out);
 
-/* find_dev_shm: locate the RegionDevEnc channel whose allowed_hash matches
- * this enclave (or is open). rid_out receives the matching rid. */
-int
-find_dev_shm(rid_t *rid_out);
-
-/* trigger_dev: ask SM to write CMD=1 to the MMIO register of device_wid.
- * The enclave never writes MMIO directly. */
-int
-trigger_dev(uint32_t device_wid);
-
-void*
-mydev_map(uintptr_t base, size_t size);
-
-int
-mydev_unmap(void* addr, size_t size);
-
 /* map_utm: return the pre-mapped UTM (host-enclave shared buffer) VA.
  * The loader already mapped UTM at EYRIE_UNTRUSTED_START with PTE_U,
  * so this simply retrieves that address and its size. */

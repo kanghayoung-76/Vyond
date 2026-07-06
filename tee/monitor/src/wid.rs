@@ -1,14 +1,13 @@
-use semihosting::heprintln;
 
 pub enum WIDAction {
     Assigned { slot: usize },
     Evicted  { slot: usize, evicted_eid: usize },
 }
 
-// WIDs 1-4 are available for enclaves (WID 0 = untrusted/default, WID 5 = DEV, WID 6 = OS, WID 7 = Trusted)
+// WIDs 1-5 are available for enclaves (WID 0 = untrusted/default, WID 6 = OS, WID 7 = Trusted)
 pub const ENCLAVE_WID_MIN: usize = 1;
-pub const ENCLAVE_WID_MAX: usize = 4;
-const NUM_ENCLAVE_WIDS: usize = ENCLAVE_WID_MAX - ENCLAVE_WID_MIN + 1; // 4
+pub const ENCLAVE_WID_MAX: usize = 5;
+const NUM_ENCLAVE_WIDS: usize = ENCLAVE_WID_MAX - ENCLAVE_WID_MIN + 1; // 5
 
 // valid=0 means the slot is free. Using usize guarantees 8-byte word width and
 // unambiguous BSS zero-initialization on all Rust nightly targets.
@@ -28,7 +27,7 @@ struct WIDState {
 const EMPTY_SLOT: WIDEntry = WIDEntry { valid: 0, eid: 0, region_id: 0, last_used: 0 };
 
 // Single-CPU M-mode: no preemption, so no lock needed.
-// slots[i] corresponds to WID (i + ENCLAVE_WID_MIN): slots[0]->WID1 ... slots[3]->WID4
+// slots[i] corresponds to WID (i + ENCLAVE_WID_MIN): slots[0]->WID1 ... slots[4]->WID5
 static mut WID_STATE: WIDState = WIDState {
     slots: [EMPTY_SLOT; NUM_ENCLAVE_WIDS],
     clock: 0,
@@ -61,7 +60,6 @@ pub fn assign_wid(eid: usize, region_id: usize) -> (usize, WIDAction) {
     for i in 0..NUM_ENCLAVE_WIDS {
         if state.slots[i].valid != 0 && state.slots[i].eid == eid {
             state.slots[i].last_used = now;
-            heprintln!("[WID] reuse slot={} wid={}", i, i + ENCLAVE_WID_MIN);
             return (i + ENCLAVE_WID_MIN, WIDAction::Assigned { slot: i });
         }
     }
@@ -71,7 +69,6 @@ pub fn assign_wid(eid: usize, region_id: usize) -> (usize, WIDAction) {
         if state.slots[i].valid == 0 {
             state.slots[i] = WIDEntry { valid: 1, eid, region_id, last_used: now };
             let wid = i + ENCLAVE_WID_MIN;
-            heprintln!("[WID] new slot={} wid={}", i, wid);
             return (wid, WIDAction::Assigned { slot: i });
         }
     }
@@ -88,7 +85,6 @@ pub fn assign_wid(eid: usize, region_id: usize) -> (usize, WIDAction) {
 
     let evicted_wid = lru_idx + ENCLAVE_WID_MIN;
     let evicted_eid = state.slots[lru_idx].eid;
-    heprintln!("[WID] evict slot={} wid={} eid={}", lru_idx, evicted_wid, evicted_eid);
 
     state.slots[lru_idx] = WIDEntry { valid: 1, eid, region_id, last_used: now };
 
