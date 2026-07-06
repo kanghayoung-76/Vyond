@@ -5,10 +5,10 @@ pub enum WIDAction {
     Evicted  { slot: usize, evicted_eid: usize },
 }
 
-// WIDs 1-28 are available for enclaves (WID 0 = untrusted/OS default, WID 29 = DEV, WID 30 = OS, WID 31 = Trusted)
+// WIDs 1-4 are available for enclaves (WID 0 = untrusted/default, WID 5 = DEV, WID 6 = OS, WID 7 = Trusted)
 pub const ENCLAVE_WID_MIN: usize = 1;
-pub const ENCLAVE_WID_MAX: usize = 28;
-const NUM_ENCLAVE_WIDS: usize = ENCLAVE_WID_MAX - ENCLAVE_WID_MIN + 1; // 28
+pub const ENCLAVE_WID_MAX: usize = 4;
+const NUM_ENCLAVE_WIDS: usize = ENCLAVE_WID_MAX - ENCLAVE_WID_MIN + 1; // 4
 
 // valid=0 means the slot is free. Using usize guarantees 8-byte word width and
 // unambiguous BSS zero-initialization on all Rust nightly targets.
@@ -28,7 +28,7 @@ struct WIDState {
 const EMPTY_SLOT: WIDEntry = WIDEntry { valid: 0, eid: 0, region_id: 0, last_used: 0 };
 
 // Single-CPU M-mode: no preemption, so no lock needed.
-// slots[i] corresponds to WID (i + ENCLAVE_WID_MIN): slots[0]->WID1 ... slots[27]->WID28
+// slots[i] corresponds to WID (i + ENCLAVE_WID_MIN): slots[0]->WID1 ... slots[3]->WID4
 static mut WID_STATE: WIDState = WIDState {
     slots: [EMPTY_SLOT; NUM_ENCLAVE_WIDS],
     clock: 0,

@@ -257,10 +257,10 @@ pub const WG_MAX_N_REGION: usize = 256;
 // Hardware WGC slot count — REG_BITMAP is usize (64-bit), so this must stay <= 64.
 // The actual hardware nslots register value is typically 16.
 const WGC_HW_SLOTS: usize = 32;
-pub const NWORLDS: u64 = 32;
-pub const TRUSTED_WID: u64 = NWORLDS - 1; // WID 31: SM
-pub const OS_WID: u64 = NWORLDS - 2;      // WID 30: host OS
-pub const DEV_WID: u64 = 29;              // WID 29: dedicated device world
+pub const NWORLDS: u64 = 8;
+pub const TRUSTED_WID: u64 = NWORLDS - 1; // WID 7: SM
+pub const OS_WID: u64 = NWORLDS - 2;      // WID 6: host OS
+pub const DEV_WID: u64 = NWORLDS - 3;     // WID 5: dedicated device world
 const INIT_VALUE: Option<Region> = None;
 
 /* PMP region getter/setters */
