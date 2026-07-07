@@ -15,6 +15,10 @@
 #include <sbi/sbi_misaligned_ldst.h>
 #include <sbi/sbi_timer.h>
 
+/* Mark all SM entry points as hidden so the compiler generates direct CALL
+ * relocations (R_RISCV_CALL) instead of PLT-based ones (R_RISCV_CALL_PLT).
+ * PLT relocations cannot be resolved in a static PIE without a dynamic linker. */
+#pragma GCC visibility push(hidden)
 unsigned long sbi_sm_create_enclave(unsigned long* edi, uintptr_t create_args);
 unsigned long sbi_sm_destroy_enclave(unsigned long eid);
 unsigned long sbi_sm_enter_enclave(struct sbi_trap_regs *regs, unsigned long eid);
@@ -83,6 +87,7 @@ unsigned long sbi_sm_find_shm_by_hash(uintptr_t creator_hash_pa, uintptr_t rid_o
 unsigned long sbi_sm_get_my_hash(uintptr_t hash_out_pa);
 unsigned long sbi_sm_find_dev_shm(uintptr_t rid_out_pa);
 unsigned long sbi_sm_trigger_dev(uint32_t device_wid);
+long         sbi_sm_prepare_epm(uintptr_t pa, unsigned long size);
 unsigned long sbi_sm_map_shm_region(struct sbi_trap_regs *regs, unsigned long rid);
 unsigned long sbi_sm_unmap_shm_region(unsigned long rid);
 unsigned long sbi_sm_change_shm_region(unsigned long rid, unsigned long dyn_perm);
@@ -98,6 +103,7 @@ int          sbi_sm_is_enclave_context(void);
 long         sbi_sm_handle_shm_ipi(struct sbi_trap_regs *regs);
 /* WFI-based hold: SM blocks until IPI then wakes enc2 directly */
 unsigned long sbi_sm_wait_and_resume(struct sbi_trap_regs *regs, unsigned long eid);
+#pragma GCC visibility pop
 
 /* PLIC M-mode claim/complete  (QEMU virt: M-mode context = hartid * 2) */
 #define PLIC_BASE_ADDR  0xc000000UL
@@ -149,6 +155,10 @@ static int sbi_ecall_vyond_monitor_handler(
     case SBI_SM_ENTER_ENCLAVE:
         retval = sbi_sm_enter_enclave((struct sbi_trap_regs*) regs, regs->a0);
         ((struct sbi_trap_regs *)regs)->mepc += 4;
+        sbi_printf("[SM] ENTER_ENCLAVE: mret to mepc=0x%lx mstatus=0x%lx a1=0x%lx\n",
+                   ((struct sbi_trap_regs *)regs)->mepc,
+                   ((struct sbi_trap_regs *)regs)->mstatus,
+                   ((struct sbi_trap_regs *)regs)->a1);
         sbi_trap_exit(regs);
         break;
     case SBI_SM_RESUME_ENCLAVE:
@@ -296,6 +306,9 @@ static int sbi_ecall_vyond_monitor_handler(
         }
         /* retval == 0: enc2 not found; OpenSBI returns enc1 normally (a0=0, mepc+4) */
         break;
+	case SBI_SM_PREPARE_EPM:
+		retval = sbi_sm_prepare_epm((uintptr_t)regs->a0, (unsigned long)regs->a1);
+		break;
 	default:
 		retval = SBI_ERR_SM_NOT_IMPLEMENTED;
 		break;
@@ -574,8 +587,10 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
 		        if (ret == 0) {
 		            rc = SBI_OK;
 		        } else {
-		            sbi_printf("[SM] ACCESS FAULT: eid=%lu pa=0x%lx not in region -> exit\n",
-		                       eid, phys_addr);
+		            sbi_printf("[SM] ACCESS FAULT: eid=%lu va=0x%lx pa=0x%lx satp=0x%lx mcause=%lu not in region -> exit\n",
+		                       eid, mtval, phys_addr, satp, mcause);
+		            sbi_printf("[SM]   mepc=0x%lx ra=0x%lx sp=0x%lx a0=0x%lx a1=0x%lx\n",
+		                       regs->mepc, regs->ra, regs->sp, regs->a0, regs->a1);
 		            sbi_sm_exit_enclave((struct sbi_trap_regs*) regs);
 		            rc = SBI_OK;
 		        }
@@ -592,7 +607,6 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
 		    break;
 		}
 	    default:
-		    sbi_printf("[DBG] UNHANDLED trap: mcause=0x%lx (not access/ecall)\n", mcause);
 		    /* If the trap came from S or U mode, redirect it there */
 		    trap.epc = regs->mepc;
 		    trap.cause = mcause;

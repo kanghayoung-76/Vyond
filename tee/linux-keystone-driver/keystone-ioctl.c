@@ -52,12 +52,12 @@ int map_shm(unsigned long arg);
 int unmap_shm(unsigned long arg);
 int change_shm(unsigned long arg);
 int share_shm(unsigned long arg);
+int keystone_write_epm(unsigned long args);
 long keystone_ioctl(struct file *filep, unsigned int cmd, unsigned long arg);
 int keystone_release(struct inode *inode, struct file *file);
 
 int keystone_create_enclave(struct file *filep, unsigned long arg)
 {
-  keystone_err("[DRV] create_enclave\n");
   /* create parameters */
   struct keystone_ioctl_create_enclave *enclp = (struct keystone_ioctl_create_enclave *) arg;
 
@@ -83,7 +83,6 @@ int keystone_create_enclave(struct file *filep, unsigned long arg)
 
 int keystone_finalize_enclave(unsigned long arg)
 {
-  keystone_err("[DRV] finalize_enclave\n");
   struct sbiret ret;
   struct enclave *enclave;
   struct utm *utm;
@@ -140,7 +139,6 @@ error_destroy_enclave:
 
 int keystone_run_enclave(unsigned long data)
 {
-  keystone_err("[DRV] run_enclave\n");
   struct sbiret ret;
   unsigned long ueid;
   struct enclave* enclave;
@@ -192,7 +190,6 @@ int utm_init_ioctl(struct file *filp, unsigned long arg)
 
   /* prepare for mmap */
   enclave->utm = utm;
-  enclave->epm_mapped = true;
 
   enclp->utm_paddr = __pa(utm->ptr);
 
@@ -202,7 +199,6 @@ int utm_init_ioctl(struct file *filp, unsigned long arg)
 
 int keystone_destroy_enclave(struct file *filep, unsigned long arg)
 {
-  keystone_err("[DRV] destroy_enclave\n");
   int ret;
   struct keystone_ioctl_create_enclave *enclp = (struct keystone_ioctl_create_enclave *) arg;
   unsigned long ueid = enclp->eid;
@@ -214,21 +210,8 @@ int keystone_destroy_enclave(struct file *filep, unsigned long arg)
   return ret;
 }
 
-struct enclave_shm
-{
-  uintptr_t pa;
-  uintptr_t size;
-};
-
-struct enclave_shm_list
-{
-  unsigned int shm_count;
-  struct enclave_shm shms[16];
-};
-
 int __keystone_destroy_enclave(unsigned int ueid)
 {
-  keystone_err("[DRV] __destroy_enclave\n");
   struct sbiret ret;
   struct enclave *enclave;
   enclave = get_enclave_by_id(ueid);
@@ -247,11 +230,6 @@ int __keystone_destroy_enclave(unsigned int ueid)
   } else {
     keystone_warn("keystone_destroy_enclave: skipping (enclave does not exist)\n");
   }
-
-  // for (int i = 0; i < enclave_shm_list.shm_count; i++)
-  //{
-  //   destroy_shm_by_pa(enclave_shm_list.shm[i].pa);
-  // }
 
   destroy_enclave(enclave);
   enclave_idr_remove(ueid);
@@ -317,7 +295,6 @@ int keystone_wait_and_resume(unsigned long data)
     ret = sbi_sm_wait_and_resume(enclave->eid);
   }
 
-done:
   arg->error = ret.error;
   arg->value = ret.value;
 
@@ -360,9 +337,6 @@ int create_dev_shm(unsigned long args)
     return -1;
 
   unsigned long aligned_size = PAGE_ALIGN(ioctl_args->size);
-  printk(KERN_ERR "[DBG-DRV] size=%lu pa=%lx rid=%u device_wid=%u\n",
-         (unsigned long)ioctl_args->size, (unsigned long)ioctl_args->pa,
-         (unsigned)ioctl_args->rid, (unsigned)ioctl_args->device_wid);
   ret = sbi_sm_create_dev_shm(pa, aligned_size, ioctl_args->device_wid);
   if (ret.error)
   {
@@ -386,23 +360,41 @@ int create_enclave_shm(unsigned long args)
 {
   struct sbiret ret;
   struct keystone_ioctl_create_shm *ioctl_args = (struct keystone_ioctl_create_shm *)args;
-
-  unsigned long pa = allocate_shm(&host_enclave, ioctl_args->size);
-  if (!pa)
-    return -1;
-
   unsigned long aligned_size = PAGE_ALIGN(ioctl_args->size);
+  unsigned long count = aligned_size >> PAGE_SHIFT;
+  phys_addr_t pa;
+  struct shm *shm;
+
+  /* Enclave SHM must come from the pool so the SM's range check passes */
+  pa = enclave_pool_alloc(count);
+  if (!pa)
+    return -ENOMEM;
+
+  shm = kzalloc(sizeof(*shm), GFP_KERNEL);
+  if (!shm) {
+    enclave_pool_free(pa, count);
+    return -ENOMEM;
+  }
+  INIT_LIST_HEAD(&shm->list);
+  shm->pa      = pa;
+  shm->ptr     = enclave_pool_phys_to_virt(pa);
+  shm->size    = aligned_size;
+  shm->is_pool = 1;
+  list_add(&shm->list, &shm_list);
+
   ret = sbi_sm_create_enclave_shm(pa, aligned_size);
   if (ret.error) {
     keystone_err("keystone_create_enclave_shm: SBI call failed with error code %ld\n", ret.error);
-    destroy_shm_by_pa(pa);
+    list_del(&shm->list);
+    enclave_pool_free(pa, count);
+    kfree(shm);
     return -EINVAL;
   }
 
   ioctl_args->pa  = pa;
   ioctl_args->rid = ret.value;
-  keystone_info("keystone_create_enclave_shm: paddr: %#lx, size: %ld, rid: %d\n",
-                pa, ioctl_args->size, ioctl_args->rid);
+  keystone_info("keystone_create_enclave_shm: paddr: %#llx, size: %lu, rid: %d [pool]\n",
+                (unsigned long long)pa, aligned_size, ioctl_args->rid);
   return 0;
 }
 
@@ -416,14 +408,7 @@ int map_shm(unsigned long arg)
     keystone_err("keystone_map_shm: SBI call failed with error code %ld\n", ret.error);
     goto error;
   }
-  map_pending = 1;
-  map_pa = read_reg(a2);
-  map_size = read_reg(a3);
-  map_rid = params->rid;
-
-  params->size = map_size;
-
-  keystone_err("keystone_map_shm: rid %d pa %#lx size %#lx\n", map_rid, map_pa, map_size);
+  params->size = read_reg(a3);
   return 0;
 error:
   return -EINVAL;
@@ -439,7 +424,6 @@ int unmap_shm(unsigned long arg)
     ;
   if (i == mem_mappings_n)
     return -1;
-  // int ret = SBI_CALL_1(SBI_SM_ELASTICLAVE_UNMAP, (uintptr_t)mem_mappings[i].uid);
   ret = sbi_sm_unmap_shm(mem_mappings[i].rid);
 
   if (ret.error)
@@ -474,6 +458,29 @@ int change_shm(unsigned long arg)
 
 error:
   return -EINVAL;
+}
+
+int keystone_write_epm(unsigned long args)
+{
+  struct keystone_ioctl_write_epm *params = (struct keystone_ioctl_write_epm *)args;
+  struct enclave *enclave;
+  void *pool_dst;
+
+  enclave = get_enclave_by_id(params->eid);
+  if (!enclave || !enclave->epm || !enclave->epm->is_pool)
+    return -EINVAL;
+
+  if (params->size == 0 || params->size > PAGE_SIZE)
+    return -EINVAL;
+  if (params->offset + params->size > enclave->epm->size)
+    return -EINVAL;
+
+  pool_dst = enclave_pool_phys_to_virt(enclave->epm->pa) + params->offset;
+
+  if (copy_from_user(pool_dst, (void __user *)params->src, params->size))
+    return -EFAULT;
+
+  return 0;
 }
 
 int share_shm(unsigned long arg)
@@ -574,6 +581,9 @@ long keystone_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
     break;
   case KEYSTONE_IOC_CREATE_ENCLAVE_SHM:
     ret = create_enclave_shm((unsigned long)data);
+    break;
+  case KEYSTONE_IOC_WRITE_EPM:
+    ret = keystone_write_epm((unsigned long)data);
     break;
   default:
     return -ENOSYS;

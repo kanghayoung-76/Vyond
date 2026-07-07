@@ -24,35 +24,24 @@ PhysicalEnclaveMemory::allocUtm(size_t size) {
   return ret;
 }
 
-// TODO: delete this 
-/* Only used to allocate memory for root page table */
 uintptr_t
 PhysicalEnclaveMemory::allocMem(size_t size) {
-  uintptr_t ret;
-
   assert(pDevice);
-
-  ret = reinterpret_cast<uintptr_t>(pDevice->map(0, size));
-  return ret;
+  return reinterpret_cast<uintptr_t>(pDevice->map(0, size));
 }
 
-// unused 
 uintptr_t
 PhysicalEnclaveMemory::readMem(uintptr_t src, size_t size) {
-  uintptr_t ret;
-
   assert(pDevice);
-
-  ret = reinterpret_cast<uintptr_t>(pDevice->map(src, size));
-  return ret;
+  return reinterpret_cast<uintptr_t>(pDevice->map(src, size));
 }
 
 /* src: virtual address */
 void
 PhysicalEnclaveMemory::writeMem(uintptr_t src, uintptr_t offset, size_t size) {
   assert(pDevice);
-  void* va_dst = pDevice->map(offset, size);
-  memcpy(va_dst, reinterpret_cast<void*>(src), size);
+  Error err = pDevice->writeEPM(offset, src, size);
+  assert(err == Error::Success);
 }
 
 }  // namespace Keystone

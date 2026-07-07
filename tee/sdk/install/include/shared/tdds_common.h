@@ -18,4 +18,9 @@ typedef struct {
     size_t    size;
 } tdds_dev_shm_t;
 
+/* Argument for OCALL_TDDS_WAIT */
+struct tdds_ocall_wait_args {
+    uint32_t rid;
+};
+
 #endif /* __TDDS_COMMON_H__ */

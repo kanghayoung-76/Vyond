@@ -167,10 +167,10 @@ pub fn enter_enclave_context(eid: usize, wid: usize) {
         CPU_STATE[hartid].is_enclave = true;
         CPU_STATE[hartid].eid = eid;
     }
-    // Set mlwid to the enclave's last known WID (Enclave.last_wid):
-    //   first entry  → ENCLAVE_WID_MIN (placeholder) → WGC fault → assign_wid
-    //   reuse        → previously assigned WID, HW slot valid   → no fault
-    //   post-evict   → stale WID, HW slot cleared               → WGC fault → assign_wid again
+    // Set mlwid to the assigned enclave WID.  M-mode accesses bypass the WGC IOMMU
+    // in QEMU (only S/U-mode accesses are filtered), so _trap_exit restores registers
+    // correctly regardless of mlwid.  The EPM WGC slot for this WID is pre-installed
+    // by switch_to_enclave before this call, so the first S-mode fetch succeeds.
     #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
     csr_write_custom!(MLWID_CSR, wid);
 }

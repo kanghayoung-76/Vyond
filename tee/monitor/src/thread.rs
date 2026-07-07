@@ -9,23 +9,15 @@ pub struct State {
     mepc: usize,
     mstatus: usize,
 
-    sstatus: usize, //Supervisor status register.
-    //sedeleg: usize,    //Supervisor exception delegation register.
-    //sideleg: usize,    //Supervisor interrupt delegation register.
-    sie: usize,        //Supervisor interrupt-enable register.
-    stvec: usize,      //Supervisor trap handler base address.
-    scounteren: usize, //Supervisor counter enable
-
-    /*  Supervisor Trap Handling */
-    sscratch: usize, //Scratch register for supervisor trap handlers.
-    sepc: usize,     //Supervisor exception program counter.
-    scause: usize,   //Supervisor trap cause.
-    //NOTE: This should be stval, toolchain issue?
-    //sbadaddr: usize, //Supervisor bad address.
-    sip: usize, //Supervisor interrupt pending.
-
-    /*  Supervisor Protection and Translation */
-    satp: usize, //Page-table base register.
+    sstatus: usize,
+    sie: usize,
+    stvec: usize,
+    scounteren: usize,
+    sscratch: usize,
+    sepc: usize,
+    scause: usize,
+    sip: usize,
+    satp: usize,
     context: TrapFrame,
 }
 
@@ -36,39 +28,18 @@ impl Default for State {
             mepc: 0,
             mstatus: 0,
 
-            sstatus: 0, //Supervisor status register.
-            //sedeleg: 0,    //Supervisor exception delegation register.
-            //sideleg: 0,    //Supervisor interrupt delegation register.
-            sie: 0,        //Supervisor interrupt-enable register.
-            stvec: 0,      //Supervisor trap handler base address.
-            scounteren: 0, //Supervisor counter enable
-
-            /*  Supervisor Trap Handling */
-            sscratch: 0, //Scratch register for supervisor trap handlers.
-            sepc: 0,     //Supervisor exception program counter.
-            scause: 0,   //Supervisor trap cause.
-            //NOTE: This should be stval, toolchain issue?
-            //sbadaddr: 0, //Supervisor bad address.
-            sip: 0, //Supervisor interrupt pending.
-
-            /*  Supervisor Protection and Translation */
-            satp: 0, //Page-table base register.
+            sstatus: 0,
+            sie: 0,
+            stvec: 0,
+            scounteren: 0,
+            sscratch: 0,
+            sepc: 0,
+            scause: 0,
+            sip: 0,
+            satp: 0,
             context: TrapFrame::default(),
         }
     }
-}
-
-extern "C" {
-    fn trap_vector_enclave();
-    fn _trap_handler();
-}
-
-pub fn switch_vector_enclave() {
-    csr_write!(mtvec, &trap_vector_enclave);
-}
-
-pub fn switch_vector_host() {
-    csr_write!(mtvec, &_trap_handler);
 }
 
 /* Swaps all s-mode csrs defined in 1.10 standard */

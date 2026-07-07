@@ -42,6 +42,8 @@
   _IOR(KEYSTONE_IOC_MAGIC, 0x0e, struct keystone_ioctl_create_shm)
 #define KEYSTONE_IOC_WAIT_AND_RESUME \
   _IOR(KEYSTONE_IOC_MAGIC, 0x0f, struct keystone_ioctl_run_enclave)
+#define KEYSTONE_IOC_WRITE_EPM \
+  _IOW(KEYSTONE_IOC_MAGIC, 0x10, struct keystone_ioctl_write_epm)
 
 #define RT_NOEXEC 0
 #define USER_NOEXEC 1
@@ -107,6 +109,13 @@ struct keystone_ioctl_create_dev_shm {
   uintptr_t pa;
   rid_t rid;
   uint32_t device_wid;
+};
+
+struct keystone_ioctl_write_epm {
+  uintptr_t eid;     /* enclave id */
+  uintptr_t offset;  /* EPM-relative byte offset (page-aligned) */
+  uintptr_t size;    /* bytes to write (<= PAGE_SIZE) */
+  uintptr_t src;     /* user-space VA of source data */
 };
 
 #endif

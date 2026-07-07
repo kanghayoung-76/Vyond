@@ -78,3 +78,10 @@ struct sbiret sbi_sm_create_enclave_shm(unsigned long pa, unsigned long size)
                    SBI_SM_CREATE_ENCLAVE_SHM,
                    pa, size, 0, 0, 0, 0);
 }
+
+struct sbiret sbi_sm_prepare_epm(unsigned long pa, unsigned long size)
+{
+  return sbi_ecall(SBI_EXT_EXPERIMENTAL_KEYSTONE_ENCLAVE,
+                   SBI_SM_PREPARE_EPM,
+                   pa, size, 0, 0, 0, 0);
+}

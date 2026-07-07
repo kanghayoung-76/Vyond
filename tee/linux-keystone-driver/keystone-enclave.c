@@ -54,8 +54,6 @@ struct enclave* create_enclave(unsigned long min_pages)
 
   enclave->epm = kmalloc(sizeof(struct epm), GFP_KERNEL);
   enclave->is_init = true;
-  enclave->epm_mapped = false;
-  enclave->recent_shm = NULL;
 
   if (!enclave->epm)
   {
@@ -123,7 +121,7 @@ uintptr_t allocate_shm(struct enclave *enclave, uintptr_t size)
     return -1;
   }
 
-  struct shm *shm = (struct shm *)kmalloc(sizeof(struct shm), GFP_KERNEL);
+  struct shm *shm = (struct shm *)kzalloc(sizeof(struct shm), GFP_KERNEL);
   if (!shm)
   {
     keystone_err("allocation error!\n");
@@ -136,7 +134,6 @@ uintptr_t allocate_shm(struct enclave *enclave, uintptr_t size)
     return -1;
   }
 
-  enclave->recent_shm = shm;
   list_add(&shm->list, &shm_list);
 
   return shm->pa;

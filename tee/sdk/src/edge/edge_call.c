@@ -7,18 +7,6 @@
 #include <sys/epoll.h>
 #include <sys/socket.h>
 
-/* global shared memory (untrusted) is not able to support multi-enclave
- * each enclave object should explicitly supply the shared buffer and size
- */
-//uintptr_t _shared_start;
-//size_t _shared_len;
-
-//void
-//edge_call_init_internals(uintptr_t buffer_start, size_t buffer_len) {
-//  _shared_start = buffer_start;
-//  _shared_len   = buffer_len;
-//}
-
 int
 edge_call_get_ptr_from_offset(
     edge_data_offset offset, size_t data_len, uintptr_t* ptr, uintptr_t _shared_start, size_t _shared_len) {

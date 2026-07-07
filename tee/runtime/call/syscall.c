@@ -145,11 +145,6 @@ uintptr_t handle_copy_from_shared(void* dst, uintptr_t offset, size_t size){
   return 0;
 }
 
-void init_edge_internals(){
-  // Do not call edge_call_init_internals
-  //edge_call_init_internals(shared_buffer, shared_buffer_size);
-}
-
 uintptr_t shm_va_ptr = RUNTIME_SHARED_START;
 
 static int handle_map_shm(rid_t rid, uintptr_t* ret_vaddr) {

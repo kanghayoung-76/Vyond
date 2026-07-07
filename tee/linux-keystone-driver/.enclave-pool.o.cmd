@@ -1,8 +1,8 @@
-savedcmd_keystone-page.o := riscv64-linux-gnu-gcc -Wp,-MMD,./.keystone-page.o.d -nostdinc -I/home/hykang/linux/arch/riscv/include -I/home/hykang/linux/arch/riscv/include/generated -I/home/hykang/linux/include -I/home/hykang/linux/include -I/home/hykang/linux/arch/riscv/include/uapi -I/home/hykang/linux/arch/riscv/include/generated/uapi -I/home/hykang/linux/include/uapi -I/home/hykang/linux/include/generated/uapi -include /home/hykang/linux/include/linux/compiler-version.h -include /home/hykang/linux/include/linux/kconfig.h -include /home/hykang/linux/include/linux/compiler_types.h -D__KERNEL__ -std=gnu11 -fshort-wchar -funsigned-char -fno-common -fno-PIE -fno-strict-aliasing -fPIE -mabi=lp64 -march=rv64imac_zicsr_zifencei_zacas_zabha -mno-save-restore -mcmodel=medany -fno-asynchronous-unwind-tables -fno-unwind-tables -mno-riscv-attribute -Wa,-mno-arch-attr -mstrict-align -fno-delete-null-pointer-checks -O2 -fno-allow-store-data-races -fstack-protector-strong -fno-omit-frame-pointer -fno-optimize-sibling-calls -fzero-init-padding-bits=all -fno-stack-clash-protection -fzero-call-used-regs=used-gpr -fmin-function-alignment=4 -fstrict-flex-arrays=3 -fno-strict-overflow -fno-stack-check -fconserve-stack -fno-builtin-wcslen -Wall -Wextra -Wundef -Werror=implicit-function-declaration -Werror=implicit-int -Werror=return-type -Werror=strict-prototypes -Wno-format-security -Wno-trigraphs -Wno-frame-address -Wno-address-of-packed-member -Wmissing-declarations -Wmissing-prototypes -Wframe-larger-than=2048 -Wno-main -Wno-dangling-pointer -Wvla-larger-than=1 -Wno-pointer-sign -Wcast-function-type -Wno-unterminated-string-initialization -Wno-array-bounds -Wno-stringop-overflow -Wno-alloc-size-larger-than -Wimplicit-fallthrough=5 -Werror=date-time -Werror=incompatible-pointer-types -Werror=designated-init -Wenum-conversion -Wunused -Wno-unused-but-set-variable -Wno-unused-const-variable -Wno-packed-not-aligned -Wno-format-overflow -Wno-format-truncation -Wno-stringop-truncation -Wno-override-init -Wno-missing-field-initializers -Wno-type-limits -Wno-shift-negative-value -Wno-maybe-uninitialized -Wno-sign-compare -Wno-unused-parameter -DGCC_PLUGINS -mstack-protector-guard=tls -mstack-protector-guard-reg=tp -mstack-protector-guard-offset=1568 -I/home/hykang/Vyond/tee/sdk/include/shared  -DMODULE -mno-relax  -DKBUILD_BASENAME='"keystone_page"' -DKBUILD_MODNAME='"keystone_driver"' -D__KBUILD_MODNAME=kmod_keystone_driver -c -o keystone-page.o keystone-page.c  
+savedcmd_enclave-pool.o := riscv64-linux-gnu-gcc -Wp,-MMD,./.enclave-pool.o.d -nostdinc -I/home/hykang/linux/arch/riscv/include -I/home/hykang/linux/arch/riscv/include/generated -I/home/hykang/linux/include -I/home/hykang/linux/include -I/home/hykang/linux/arch/riscv/include/uapi -I/home/hykang/linux/arch/riscv/include/generated/uapi -I/home/hykang/linux/include/uapi -I/home/hykang/linux/include/generated/uapi -include /home/hykang/linux/include/linux/compiler-version.h -include /home/hykang/linux/include/linux/kconfig.h -include /home/hykang/linux/include/linux/compiler_types.h -D__KERNEL__ -std=gnu11 -fshort-wchar -funsigned-char -fno-common -fno-PIE -fno-strict-aliasing -fPIE -mabi=lp64 -march=rv64imac_zicsr_zifencei_zacas_zabha -mno-save-restore -mcmodel=medany -fno-asynchronous-unwind-tables -fno-unwind-tables -mno-riscv-attribute -Wa,-mno-arch-attr -mstrict-align -fno-delete-null-pointer-checks -O2 -fno-allow-store-data-races -fstack-protector-strong -fno-omit-frame-pointer -fno-optimize-sibling-calls -fzero-init-padding-bits=all -fno-stack-clash-protection -fzero-call-used-regs=used-gpr -fmin-function-alignment=4 -fstrict-flex-arrays=3 -fno-strict-overflow -fno-stack-check -fconserve-stack -fno-builtin-wcslen -Wall -Wextra -Wundef -Werror=implicit-function-declaration -Werror=implicit-int -Werror=return-type -Werror=strict-prototypes -Wno-format-security -Wno-trigraphs -Wno-frame-address -Wno-address-of-packed-member -Wmissing-declarations -Wmissing-prototypes -Wframe-larger-than=2048 -Wno-main -Wno-dangling-pointer -Wvla-larger-than=1 -Wno-pointer-sign -Wcast-function-type -Wno-unterminated-string-initialization -Wno-array-bounds -Wno-stringop-overflow -Wno-alloc-size-larger-than -Wimplicit-fallthrough=5 -Werror=date-time -Werror=incompatible-pointer-types -Werror=designated-init -Wenum-conversion -Wunused -Wno-unused-but-set-variable -Wno-unused-const-variable -Wno-packed-not-aligned -Wno-format-overflow -Wno-format-truncation -Wno-stringop-truncation -Wno-override-init -Wno-missing-field-initializers -Wno-type-limits -Wno-shift-negative-value -Wno-maybe-uninitialized -Wno-sign-compare -Wno-unused-parameter -DGCC_PLUGINS -mstack-protector-guard=tls -mstack-protector-guard-reg=tp -mstack-protector-guard-offset=1568 -I/home/hykang/Vyond/tee/sdk/include/shared  -DMODULE -mno-relax  -DKBUILD_BASENAME='"enclave_pool"' -DKBUILD_MODNAME='"keystone_driver"' -D__KBUILD_MODNAME=kmod_keystone_driver -c -o enclave-pool.o enclave-pool.c  
 
-source_keystone-page.o := keystone-page.c
+source_enclave-pool.o := enclave-pool.c
 
-deps_keystone-page.o := \
+deps_enclave-pool.o := \
   /home/hykang/linux/include/linux/compiler-version.h \
     $(wildcard include/config/CC_VERSION_TEXT) \
   /home/hykang/linux/include/generated/gcc-plugins.h \
@@ -33,14 +33,34 @@ deps_keystone-page.o := \
     $(wildcard include/config/SHADOW_CALL_STACK) \
     $(wildcard include/config/KCOV) \
     $(wildcard include/config/CC_HAS_TYPEOF_UNQUAL) \
-  riscv64.h \
-  /home/hykang/linux/arch/riscv/include/asm/page.h \
+  /home/hykang/linux/include/linux/kernel.h \
+    $(wildcard include/config/PREEMPT_VOLUNTARY_BUILD) \
+    $(wildcard include/config/PREEMPT_DYNAMIC) \
+    $(wildcard include/config/HAVE_PREEMPT_DYNAMIC_CALL) \
+    $(wildcard include/config/HAVE_PREEMPT_DYNAMIC_KEY) \
+    $(wildcard include/config/PREEMPT_) \
+    $(wildcard include/config/DEBUG_ATOMIC_SLEEP) \
+    $(wildcard include/config/SMP) \
     $(wildcard include/config/MMU) \
+    $(wildcard include/config/PROVE_LOCKING) \
+    $(wildcard include/config/TRACING) \
+    $(wildcard include/config/DYNAMIC_FTRACE) \
+  /home/hykang/linux/include/linux/stdarg.h \
+  /home/hykang/linux/include/linux/align.h \
+  /home/hykang/linux/include/vdso/align.h \
+  /home/hykang/linux/include/vdso/const.h \
+  /home/hykang/linux/include/uapi/linux/const.h \
+  /home/hykang/linux/include/linux/array_size.h \
+  /home/hykang/linux/include/linux/compiler.h \
+    $(wildcard include/config/TRACE_BRANCH_PROFILING) \
+    $(wildcard include/config/PROFILE_ALL_BRANCHES) \
+    $(wildcard include/config/OBJTOOL) \
     $(wildcard include/config/64BIT) \
-    $(wildcard include/config/XIP_KERNEL) \
-    $(wildcard include/config/RISCV_ISA_ZICBOZ) \
-    $(wildcard include/config/DEBUG_VIRTUAL) \
-  /home/hykang/linux/include/linux/pfn.h \
+  /home/hykang/linux/arch/riscv/include/generated/asm/rwonce.h \
+  /home/hykang/linux/include/asm-generic/rwonce.h \
+  /home/hykang/linux/include/linux/kasan-checks.h \
+    $(wildcard include/config/KASAN_GENERIC) \
+    $(wildcard include/config/KASAN_SW_TAGS) \
   /home/hykang/linux/include/linux/types.h \
     $(wildcard include/config/HAVE_UID16) \
     $(wildcard include/config/UID16) \
@@ -60,41 +80,28 @@ deps_keystone-page.o := \
   /home/hykang/linux/include/uapi/linux/stddef.h \
   /home/hykang/linux/arch/riscv/include/generated/uapi/asm/posix_types.h \
   /home/hykang/linux/include/uapi/asm-generic/posix_types.h \
-  /home/hykang/linux/include/linux/const.h \
-  /home/hykang/linux/include/vdso/const.h \
-  /home/hykang/linux/include/uapi/linux/const.h \
-  /home/hykang/linux/include/vdso/page.h \
-    $(wildcard include/config/PAGE_SHIFT) \
-  /home/hykang/linux/include/asm-generic/memory_model.h \
-    $(wildcard include/config/FLATMEM) \
-    $(wildcard include/config/SPARSEMEM_VMEMMAP) \
-    $(wildcard include/config/SPARSEMEM) \
-  /home/hykang/linux/include/asm-generic/getorder.h \
-  /home/hykang/linux/include/linux/compiler.h \
-    $(wildcard include/config/TRACE_BRANCH_PROFILING) \
-    $(wildcard include/config/PROFILE_ALL_BRANCHES) \
-    $(wildcard include/config/OBJTOOL) \
-  /home/hykang/linux/arch/riscv/include/generated/asm/rwonce.h \
-  /home/hykang/linux/include/asm-generic/rwonce.h \
-  /home/hykang/linux/include/linux/kasan-checks.h \
-    $(wildcard include/config/KASAN_GENERIC) \
-    $(wildcard include/config/KASAN_SW_TAGS) \
   /home/hykang/linux/include/linux/kcsan-checks.h \
     $(wildcard include/config/KCSAN) \
     $(wildcard include/config/KCSAN_WEAK_MEMORY) \
     $(wildcard include/config/KCSAN_IGNORE_ATOMICS) \
-  /home/hykang/linux/include/linux/log2.h \
-    $(wildcard include/config/ARCH_HAS_ILOG2_U32) \
-    $(wildcard include/config/ARCH_HAS_ILOG2_U64) \
+  /home/hykang/linux/include/linux/limits.h \
+  /home/hykang/linux/include/uapi/linux/limits.h \
+  /home/hykang/linux/include/vdso/limits.h \
+  /home/hykang/linux/include/linux/linkage.h \
+    $(wildcard include/config/ARCH_USE_SYM_ANNOTATIONS) \
+  /home/hykang/linux/include/linux/stringify.h \
+  /home/hykang/linux/include/linux/export.h \
+    $(wildcard include/config/MODVERSIONS) \
+    $(wildcard include/config/GENDWARFKSYMS) \
+  /home/hykang/linux/arch/riscv/include/asm/linkage.h \
+  /home/hykang/linux/include/linux/container_of.h \
+  /home/hykang/linux/include/linux/build_bug.h \
   /home/hykang/linux/include/linux/bitops.h \
   /home/hykang/linux/include/linux/bits.h \
   /home/hykang/linux/include/vdso/bits.h \
   /home/hykang/linux/include/uapi/linux/bits.h \
-  /home/hykang/linux/include/linux/build_bug.h \
   /home/hykang/linux/include/linux/overflow.h \
-  /home/hykang/linux/include/linux/limits.h \
-  /home/hykang/linux/include/uapi/linux/limits.h \
-  /home/hykang/linux/include/vdso/limits.h \
+  /home/hykang/linux/include/linux/const.h \
   /home/hykang/linux/include/linux/typecheck.h \
   /home/hykang/linux/include/uapi/linux/kernel.h \
   /home/hykang/linux/include/uapi/linux/sysinfo.h \
@@ -114,7 +121,6 @@ deps_keystone-page.o := \
     $(wildcard include/config/DEBUG_BUGVERBOSE) \
   /home/hykang/linux/arch/riscv/include/asm/asm.h \
     $(wildcard include/config/AS_HAS_INSN) \
-    $(wildcard include/config/SMP) \
     $(wildcard include/config/KPROBES) \
   /home/hykang/linux/include/asm-generic/bug.h \
     $(wildcard include/config/BUG) \
@@ -123,7 +129,6 @@ deps_keystone-page.o := \
   /home/hykang/linux/include/linux/once_lite.h \
   /home/hykang/linux/include/linux/panic.h \
     $(wildcard include/config/PANIC_TIMEOUT) \
-  /home/hykang/linux/include/linux/stdarg.h \
   /home/hykang/linux/include/linux/printk.h \
     $(wildcard include/config/MESSAGE_LOGLEVEL_DEFAULT) \
     $(wildcard include/config/CONSOLE_LOGLEVEL_DEFAULT) \
@@ -135,14 +140,7 @@ deps_keystone-page.o := \
   /home/hykang/linux/include/linux/init.h \
     $(wildcard include/config/MEMORY_HOTPLUG) \
     $(wildcard include/config/HAVE_ARCH_PREL32_RELOCATIONS) \
-  /home/hykang/linux/include/linux/stringify.h \
   /home/hykang/linux/include/linux/kern_levels.h \
-  /home/hykang/linux/include/linux/linkage.h \
-    $(wildcard include/config/ARCH_USE_SYM_ANNOTATIONS) \
-  /home/hykang/linux/include/linux/export.h \
-    $(wildcard include/config/MODVERSIONS) \
-    $(wildcard include/config/GENDWARFKSYMS) \
-  /home/hykang/linux/arch/riscv/include/asm/linkage.h \
   /home/hykang/linux/include/linux/ratelimit_types.h \
   /home/hykang/linux/include/uapi/linux/param.h \
   /home/hykang/linux/arch/riscv/include/generated/uapi/asm/param.h \
@@ -225,7 +223,6 @@ deps_keystone-page.o := \
   /home/hykang/linux/include/asm-generic/barrier.h \
   /home/hykang/linux/arch/riscv/include/asm/bitops.h \
   /home/hykang/linux/include/linux/irqflags.h \
-    $(wildcard include/config/PROVE_LOCKING) \
     $(wildcard include/config/TRACE_IRQFLAGS) \
     $(wildcard include/config/PREEMPT_RT) \
     $(wildcard include/config/IRQSOFF_TRACER) \
@@ -262,21 +259,11 @@ deps_keystone-page.o := \
   /home/hykang/linux/include/asm-generic/bitops/non-instrumented-non-atomic.h \
   /home/hykang/linux/include/asm-generic/bitops/le.h \
   /home/hykang/linux/include/asm-generic/bitops/ext2-atomic.h \
-  /home/hykang/linux/include/linux/kernel.h \
-    $(wildcard include/config/PREEMPT_VOLUNTARY_BUILD) \
-    $(wildcard include/config/PREEMPT_DYNAMIC) \
-    $(wildcard include/config/HAVE_PREEMPT_DYNAMIC_CALL) \
-    $(wildcard include/config/HAVE_PREEMPT_DYNAMIC_KEY) \
-    $(wildcard include/config/PREEMPT_) \
-    $(wildcard include/config/DEBUG_ATOMIC_SLEEP) \
-    $(wildcard include/config/TRACING) \
-    $(wildcard include/config/DYNAMIC_FTRACE) \
-  /home/hykang/linux/include/linux/align.h \
-  /home/hykang/linux/include/vdso/align.h \
-  /home/hykang/linux/include/linux/array_size.h \
-  /home/hykang/linux/include/linux/container_of.h \
   /home/hykang/linux/include/linux/hex.h \
   /home/hykang/linux/include/linux/kstrtox.h \
+  /home/hykang/linux/include/linux/log2.h \
+    $(wildcard include/config/ARCH_HAS_ILOG2_U32) \
+    $(wildcard include/config/ARCH_HAS_ILOG2_U64) \
   /home/hykang/linux/include/linux/math.h \
   /home/hykang/linux/arch/riscv/include/generated/asm/div64.h \
   /home/hykang/linux/include/asm-generic/div64.h \
@@ -290,15 +277,6 @@ deps_keystone-page.o := \
   /home/hykang/linux/include/linux/util_macros.h \
     $(wildcard include/config/FOO_SUSPEND) \
   /home/hykang/linux/include/linux/wordpart.h \
-  keystone.h \
-  /home/hykang/linux/arch/riscv/include/asm/sbi.h \
-    $(wildcard include/config/RISCV_SBI) \
-    $(wildcard include/config/RISCV_SBI_V01) \
-  /home/hykang/linux/include/linux/cpumask.h \
-    $(wildcard include/config/FORCE_NR_CPUS) \
-    $(wildcard include/config/HOTPLUG_CPU) \
-    $(wildcard include/config/DEBUG_PER_CPU_MAPS) \
-    $(wildcard include/config/CPUMASK_OFFSTACK) \
   /home/hykang/linux/include/linux/bitmap.h \
   /home/hykang/linux/include/linux/errno.h \
   /home/hykang/linux/include/uapi/linux/errno.h \
@@ -310,76 +288,6 @@ deps_keystone-page.o := \
   /home/hykang/linux/arch/riscv/include/asm/string.h \
     $(wildcard include/config/KASAN) \
   /home/hykang/linux/include/linux/bitmap-str.h \
-  /home/hykang/linux/include/linux/cpumask_types.h \
-  /home/hykang/linux/include/linux/atomic.h \
-  /home/hykang/linux/arch/riscv/include/asm/atomic.h \
-    $(wildcard include/config/GENERIC_ATOMIC64) \
-  /home/hykang/linux/include/linux/atomic/atomic-arch-fallback.h \
-  /home/hykang/linux/include/linux/atomic/atomic-long.h \
-  /home/hykang/linux/include/linux/atomic/atomic-instrumented.h \
-  /home/hykang/linux/include/linux/gfp_types.h \
-    $(wildcard include/config/KASAN_HW_TAGS) \
-    $(wildcard include/config/SLAB_OBJ_EXT) \
-  /home/hykang/linux/include/linux/numa.h \
-    $(wildcard include/config/NUMA_KEEP_MEMINFO) \
-    $(wildcard include/config/NUMA) \
-    $(wildcard include/config/HAVE_ARCH_NODE_DEV_GROUP) \
-  /home/hykang/linux/include/linux/nodemask.h \
-    $(wildcard include/config/HIGHMEM) \
-  /home/hykang/linux/include/linux/nodemask_types.h \
-    $(wildcard include/config/NODES_SHIFT) \
-  /home/hykang/linux/include/linux/random.h \
-    $(wildcard include/config/VMGENID) \
-  /home/hykang/linux/include/linux/list.h \
-    $(wildcard include/config/LIST_HARDENED) \
-    $(wildcard include/config/DEBUG_LIST) \
-  /home/hykang/linux/include/linux/poison.h \
-    $(wildcard include/config/ILLEGAL_POINTER_VALUE) \
-  /home/hykang/linux/include/uapi/linux/random.h \
-  /home/hykang/linux/include/uapi/linux/ioctl.h \
-  /home/hykang/linux/arch/riscv/include/generated/uapi/asm/ioctl.h \
-  /home/hykang/linux/include/asm-generic/ioctl.h \
-  /home/hykang/linux/include/uapi/asm-generic/ioctl.h \
-  /home/hykang/linux/include/linux/irqnr.h \
-  /home/hykang/linux/include/uapi/linux/irqnr.h \
-  /home/hykang/linux/include/linux/slab.h \
-    $(wildcard include/config/DEBUG_OBJECTS) \
-    $(wildcard include/config/FAILSLAB) \
-    $(wildcard include/config/MEMCG) \
-    $(wildcard include/config/KFENCE) \
-    $(wildcard include/config/SLUB_TINY) \
-    $(wildcard include/config/SLUB_DEBUG) \
-    $(wildcard include/config/RANDOM_KMALLOC_CACHES) \
-    $(wildcard include/config/ZONE_DMA) \
-    $(wildcard include/config/SLAB_BUCKETS) \
-    $(wildcard include/config/KVFREE_RCU_BATCHED) \
-  /home/hykang/linux/include/linux/gfp.h \
-    $(wildcard include/config/ZONE_DMA32) \
-    $(wildcard include/config/ZONE_DEVICE) \
-    $(wildcard include/config/COMPACTION) \
-    $(wildcard include/config/CONTIG_ALLOC) \
-  /home/hykang/linux/include/linux/mmzone.h \
-    $(wildcard include/config/ARCH_FORCE_MAX_ORDER) \
-    $(wildcard include/config/PAGE_BLOCK_MAX_ORDER) \
-    $(wildcard include/config/CMA) \
-    $(wildcard include/config/MEMORY_ISOLATION) \
-    $(wildcard include/config/ZSMALLOC) \
-    $(wildcard include/config/UNACCEPTED_MEMORY) \
-    $(wildcard include/config/IOMMU_SUPPORT) \
-    $(wildcard include/config/SWAP) \
-    $(wildcard include/config/NUMA_BALANCING) \
-    $(wildcard include/config/HUGETLB_PAGE) \
-    $(wildcard include/config/TRANSPARENT_HUGEPAGE) \
-    $(wildcard include/config/LRU_GEN) \
-    $(wildcard include/config/LRU_GEN_STATS) \
-    $(wildcard include/config/LRU_GEN_WALKS_MMU) \
-    $(wildcard include/config/MEMORY_FAILURE) \
-    $(wildcard include/config/PAGE_EXTENSION) \
-    $(wildcard include/config/DEFERRED_STRUCT_PAGE_INIT) \
-    $(wildcard include/config/HAVE_MEMORYLESS_NODES) \
-    $(wildcard include/config/SPARSEMEM_EXTREME) \
-    $(wildcard include/config/SPARSEMEM_VMEMMAP_PREINIT) \
-    $(wildcard include/config/HAVE_ARCH_PFN_VALID) \
   /home/hykang/linux/include/linux/spinlock.h \
     $(wildcard include/config/PREEMPTION) \
   /home/hykang/linux/include/linux/preempt.h \
@@ -403,6 +311,18 @@ deps_keystone-page.o := \
   /home/hykang/linux/arch/riscv/include/asm/thread_info.h \
     $(wildcard include/config/THREAD_SIZE_ORDER) \
     $(wildcard include/config/VMAP_STACK) \
+  /home/hykang/linux/arch/riscv/include/asm/page.h \
+    $(wildcard include/config/XIP_KERNEL) \
+    $(wildcard include/config/RISCV_ISA_ZICBOZ) \
+    $(wildcard include/config/DEBUG_VIRTUAL) \
+  /home/hykang/linux/include/linux/pfn.h \
+  /home/hykang/linux/include/vdso/page.h \
+    $(wildcard include/config/PAGE_SHIFT) \
+  /home/hykang/linux/include/asm-generic/memory_model.h \
+    $(wildcard include/config/FLATMEM) \
+    $(wildcard include/config/SPARSEMEM_VMEMMAP) \
+    $(wildcard include/config/SPARSEMEM) \
+  /home/hykang/linux/include/asm-generic/getorder.h \
   /home/hykang/linux/include/linux/sizes.h \
   /home/hykang/linux/include/asm-generic/thread_info_tif.h \
   /home/hykang/linux/include/linux/bottom_half.h \
@@ -411,6 +331,43 @@ deps_keystone-page.o := \
   /home/hykang/linux/include/linux/smp.h \
     $(wildcard include/config/UP_LATE_INIT) \
     $(wildcard include/config/CSD_LOCK_WAIT_DEBUG) \
+  /home/hykang/linux/include/linux/list.h \
+    $(wildcard include/config/LIST_HARDENED) \
+    $(wildcard include/config/DEBUG_LIST) \
+  /home/hykang/linux/include/linux/poison.h \
+    $(wildcard include/config/ILLEGAL_POINTER_VALUE) \
+  /home/hykang/linux/include/linux/cpumask.h \
+    $(wildcard include/config/FORCE_NR_CPUS) \
+    $(wildcard include/config/HOTPLUG_CPU) \
+    $(wildcard include/config/DEBUG_PER_CPU_MAPS) \
+    $(wildcard include/config/CPUMASK_OFFSTACK) \
+  /home/hykang/linux/include/linux/cpumask_types.h \
+  /home/hykang/linux/include/linux/atomic.h \
+  /home/hykang/linux/arch/riscv/include/asm/atomic.h \
+    $(wildcard include/config/GENERIC_ATOMIC64) \
+  /home/hykang/linux/include/linux/atomic/atomic-arch-fallback.h \
+  /home/hykang/linux/include/linux/atomic/atomic-long.h \
+  /home/hykang/linux/include/linux/atomic/atomic-instrumented.h \
+  /home/hykang/linux/include/linux/gfp_types.h \
+    $(wildcard include/config/KASAN_HW_TAGS) \
+    $(wildcard include/config/SLAB_OBJ_EXT) \
+  /home/hykang/linux/include/linux/numa.h \
+    $(wildcard include/config/NUMA_KEEP_MEMINFO) \
+    $(wildcard include/config/NUMA) \
+    $(wildcard include/config/HAVE_ARCH_NODE_DEV_GROUP) \
+  /home/hykang/linux/include/linux/nodemask.h \
+    $(wildcard include/config/HIGHMEM) \
+  /home/hykang/linux/include/linux/nodemask_types.h \
+    $(wildcard include/config/NODES_SHIFT) \
+  /home/hykang/linux/include/linux/random.h \
+    $(wildcard include/config/VMGENID) \
+  /home/hykang/linux/include/uapi/linux/random.h \
+  /home/hykang/linux/include/uapi/linux/ioctl.h \
+  /home/hykang/linux/arch/riscv/include/generated/uapi/asm/ioctl.h \
+  /home/hykang/linux/include/asm-generic/ioctl.h \
+  /home/hykang/linux/include/uapi/asm-generic/ioctl.h \
+  /home/hykang/linux/include/linux/irqnr.h \
+  /home/hykang/linux/include/uapi/linux/irqnr.h \
   /home/hykang/linux/include/linux/smp_types.h \
   /home/hykang/linux/include/linux/llist.h \
     $(wildcard include/config/ARCH_HAVE_NMI_SAFE_CMPXCHG) \
@@ -464,6 +421,59 @@ deps_keystone-page.o := \
     $(wildcard include/config/INLINE_WRITE_UNLOCK_IRQ) \
     $(wildcard include/config/INLINE_READ_UNLOCK_IRQRESTORE) \
     $(wildcard include/config/INLINE_WRITE_UNLOCK_IRQRESTORE) \
+  /home/hykang/linux/include/linux/io.h \
+    $(wildcard include/config/HAS_IOPORT_MAP) \
+    $(wildcard include/config/PCI) \
+    $(wildcard include/config/STRICT_DEVMEM) \
+  /home/hykang/linux/arch/riscv/include/asm/io.h \
+  /home/hykang/linux/include/linux/pgtable.h \
+    $(wildcard include/config/PGTABLE_LEVELS) \
+    $(wildcard include/config/HIGHPTE) \
+    $(wildcard include/config/TRANSPARENT_HUGEPAGE) \
+    $(wildcard include/config/ARCH_HAS_NONLEAF_PMD_YOUNG) \
+    $(wildcard include/config/ARCH_HAS_HW_PTE_YOUNG) \
+    $(wildcard include/config/GUP_GET_PXX_LOW_HIGH) \
+    $(wildcard include/config/ARCH_WANT_PMD_MKWRITE) \
+    $(wildcard include/config/HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD) \
+    $(wildcard include/config/HAVE_ARCH_SOFT_DIRTY) \
+    $(wildcard include/config/ARCH_ENABLE_THP_MIGRATION) \
+    $(wildcard include/config/NUMA_BALANCING) \
+    $(wildcard include/config/HAVE_ARCH_HUGE_VMAP) \
+    $(wildcard include/config/X86_ESPFIX64) \
+  /home/hykang/linux/arch/riscv/include/asm/pgtable.h \
+    $(wildcard include/config/RELOCATABLE) \
+    $(wildcard include/config/PHYS_RAM_BASE) \
+    $(wildcard include/config/XIP_PHYS_ADDR) \
+    $(wildcard include/config/RISCV_ISA_SVNAPOT) \
+    $(wildcard include/config/ARCH_SUPPORTS_PMD_PFNMAP) \
+    $(wildcard include/config/ARCH_SUPPORTS_PUD_PFNMAP) \
+    $(wildcard include/config/PAGE_TABLE_CHECK) \
+    $(wildcard include/config/COMPAT) \
+  /home/hykang/linux/include/linux/mmzone.h \
+    $(wildcard include/config/ARCH_FORCE_MAX_ORDER) \
+    $(wildcard include/config/PAGE_BLOCK_MAX_ORDER) \
+    $(wildcard include/config/CMA) \
+    $(wildcard include/config/MEMORY_ISOLATION) \
+    $(wildcard include/config/ZSMALLOC) \
+    $(wildcard include/config/UNACCEPTED_MEMORY) \
+    $(wildcard include/config/IOMMU_SUPPORT) \
+    $(wildcard include/config/SWAP) \
+    $(wildcard include/config/HUGETLB_PAGE) \
+    $(wildcard include/config/LRU_GEN) \
+    $(wildcard include/config/LRU_GEN_STATS) \
+    $(wildcard include/config/LRU_GEN_WALKS_MMU) \
+    $(wildcard include/config/MEMCG) \
+    $(wildcard include/config/ZONE_DMA) \
+    $(wildcard include/config/ZONE_DMA32) \
+    $(wildcard include/config/ZONE_DEVICE) \
+    $(wildcard include/config/COMPACTION) \
+    $(wildcard include/config/MEMORY_FAILURE) \
+    $(wildcard include/config/PAGE_EXTENSION) \
+    $(wildcard include/config/DEFERRED_STRUCT_PAGE_INIT) \
+    $(wildcard include/config/HAVE_MEMORYLESS_NODES) \
+    $(wildcard include/config/SPARSEMEM_EXTREME) \
+    $(wildcard include/config/SPARSEMEM_VMEMMAP_PREINIT) \
+    $(wildcard include/config/HAVE_ARCH_PFN_VALID) \
   /home/hykang/linux/include/linux/list_nulls.h \
   /home/hykang/linux/include/linux/wait.h \
   /home/hykang/linux/include/linux/seqlock.h \
@@ -570,7 +580,6 @@ deps_keystone-page.o := \
     $(wildcard include/config/CPUSETS) \
     $(wildcard include/config/X86_CPU_RESCTRL) \
     $(wildcard include/config/FUTEX) \
-    $(wildcard include/config/COMPAT) \
     $(wildcard include/config/PERF_EVENTS) \
     $(wildcard include/config/RSEQ) \
     $(wildcard include/config/DEBUG_RSEQ) \
@@ -689,6 +698,7 @@ deps_keystone-page.o := \
     $(wildcard include/config/GENERIC_CMOS_UPDATE) \
   /home/hykang/linux/include/linux/clocksource_ids.h \
   /home/hykang/linux/include/linux/debugobjects.h \
+    $(wildcard include/config/DEBUG_OBJECTS) \
     $(wildcard include/config/DEBUG_OBJECTS_FREE) \
   /home/hykang/linux/arch/riscv/include/asm/uprobes.h \
     $(wildcard include/config/RISCV_ISA_C) \
@@ -707,6 +717,7 @@ deps_keystone-page.o := \
   /home/hykang/linux/include/linux/workqueue_types.h \
   /home/hykang/linux/include/linux/percpu_counter.h \
   /home/hykang/linux/include/linux/percpu.h \
+    $(wildcard include/config/RANDOM_KMALLOC_CACHES) \
     $(wildcard include/config/PAGE_SIZE_4KB) \
     $(wildcard include/config/NEED_PER_CPU_PAGE_FIRST_CHUNK) \
   /home/hykang/linux/include/linux/mmdebug.h \
@@ -739,6 +750,70 @@ deps_keystone-page.o := \
   /home/hykang/linux/include/linux/rcu_node_tree.h \
     $(wildcard include/config/RCU_FANOUT) \
     $(wildcard include/config/RCU_FANOUT_LEAF) \
+  /home/hykang/linux/arch/riscv/include/asm/pgtable-bits.h \
+  /home/hykang/linux/arch/riscv/include/asm/tlbflush.h \
+  /home/hykang/linux/arch/riscv/include/asm/compat.h \
+  /home/hykang/linux/include/asm-generic/compat.h \
+    $(wildcard include/config/COMPAT_FOR_U64_ALIGNMENT) \
+  /home/hykang/linux/arch/riscv/include/asm/cpufeature.h \
+    $(wildcard include/config/RISCV_SCALAR_MISALIGNED) \
+    $(wildcard include/config/RISCV_MISALIGNED) \
+    $(wildcard include/config/RISCV_VECTOR_MISALIGNED) \
+    $(wildcard include/config/RISCV_PROBE_UNALIGNED_ACCESS) \
+    $(wildcard include/config/HAVE_EFFICIENT_UNALIGNED_ACCESS) \
+  /home/hykang/linux/arch/riscv/include/asm/pgtable-64.h \
+  /home/hykang/linux/include/linux/page_table_check.h \
+  /home/hykang/linux/include/asm-generic/pgtable_uffd.h \
+    $(wildcard include/config/HAVE_ARCH_USERFAULTFD_WP) \
+  /home/hykang/linux/arch/riscv/include/generated/asm/early_ioremap.h \
+  /home/hykang/linux/include/asm-generic/early_ioremap.h \
+    $(wildcard include/config/GENERIC_EARLY_IOREMAP) \
+  /home/hykang/linux/arch/riscv/include/asm/mmio.h \
+  /home/hykang/linux/include/asm-generic/io.h \
+    $(wildcard include/config/GENERIC_IOMAP) \
+    $(wildcard include/config/TRACE_MMIO_ACCESS) \
+    $(wildcard include/config/HAS_IOPORT) \
+    $(wildcard include/config/GENERIC_IOREMAP) \
+  /home/hykang/linux/include/asm-generic/pci_iomap.h \
+    $(wildcard include/config/NO_GENERIC_PCI_IOPORT_MAP) \
+    $(wildcard include/config/GENERIC_PCI_IOMAP) \
+  /home/hykang/linux/include/linux/logic_pio.h \
+    $(wildcard include/config/INDIRECT_PIO) \
+  /home/hykang/linux/include/linux/fwnode.h \
+  /home/hykang/linux/include/linux/mm.h \
+    $(wildcard include/config/SYSCTL) \
+    $(wildcard include/config/HAVE_ARCH_MMAP_RND_BITS) \
+    $(wildcard include/config/HAVE_ARCH_MMAP_RND_COMPAT_BITS) \
+    $(wildcard include/config/MEM_SOFT_DIRTY) \
+    $(wildcard include/config/ARCH_USES_HIGH_VMA_FLAGS) \
+    $(wildcard include/config/ARCH_HAS_PKEYS) \
+    $(wildcard include/config/ARCH_PKEY_BITS) \
+    $(wildcard include/config/X86_USER_SHADOW_STACK) \
+    $(wildcard include/config/ARM64_GCS) \
+    $(wildcard include/config/PPC64) \
+    $(wildcard include/config/PARISC) \
+    $(wildcard include/config/SPARC64) \
+    $(wildcard include/config/ARM64_MTE) \
+    $(wildcard include/config/HAVE_ARCH_USERFAULTFD_MINOR) \
+    $(wildcard include/config/PPC32) \
+    $(wildcard include/config/STACK_GROWSUP) \
+    $(wildcard include/config/FIND_NORMAL_PAGE) \
+    $(wildcard include/config/SHMEM) \
+    $(wildcard include/config/ARCH_HAS_GIGANTIC_PAGE) \
+    $(wildcard include/config/ARCH_HAS_PTE_SPECIAL) \
+    $(wildcard include/config/SPLIT_PTE_PTLOCKS) \
+    $(wildcard include/config/DEBUG_VM_RB) \
+    $(wildcard include/config/PAGE_POISONING) \
+    $(wildcard include/config/INIT_ON_ALLOC_DEFAULT_ON) \
+    $(wildcard include/config/INIT_ON_FREE_DEFAULT_ON) \
+    $(wildcard include/config/DEBUG_PAGEALLOC) \
+    $(wildcard include/config/ARCH_WANT_OPTIMIZE_DAX_VMEMMAP) \
+    $(wildcard include/config/HUGETLBFS) \
+    $(wildcard include/config/MAPPING_DIRTY_HELPERS) \
+    $(wildcard include/config/MSEAL_SYSTEM_MAPPINGS) \
+    $(wildcard include/config/PAGE_POOL) \
+  /home/hykang/linux/include/linux/gfp.h \
+    $(wildcard include/config/CONTIG_ALLOC) \
   /home/hykang/linux/include/linux/topology.h \
     $(wildcard include/config/USE_PERCPU_NUMA_NODE_ID) \
     $(wildcard include/config/SCHED_SMT) \
@@ -746,82 +821,119 @@ deps_keystone-page.o := \
   /home/hykang/linux/include/linux/arch_topology.h \
   /home/hykang/linux/arch/riscv/include/asm/topology.h \
   /home/hykang/linux/include/asm-generic/topology.h \
+  /home/hykang/linux/include/linux/pgalloc_tag.h \
+  /home/hykang/linux/include/linux/mmap_lock.h \
+  /home/hykang/linux/include/linux/sched/mm.h \
+    $(wildcard include/config/MMU_LAZY_TLB_REFCOUNT) \
+    $(wildcard include/config/ARCH_HAS_MEMBARRIER_CALLBACKS) \
+    $(wildcard include/config/ARCH_HAS_SYNC_CORE_BEFORE_USERMODE) \
+  /home/hykang/linux/include/linux/sync_core.h \
+    $(wildcard include/config/ARCH_HAS_PREPARE_SYNC_CORE_CMD) \
+  /home/hykang/linux/arch/riscv/include/asm/sync_core.h \
+  /home/hykang/linux/include/linux/sched/coredump.h \
+  /home/hykang/linux/arch/riscv/include/asm/membarrier.h \
+  /home/hykang/linux/include/linux/range.h \
   /home/hykang/linux/include/linux/percpu-refcount.h \
-  /home/hykang/linux/include/linux/hash.h \
-    $(wildcard include/config/HAVE_ARCH_HASH) \
+  /home/hykang/linux/include/linux/bit_spinlock.h \
+  /home/hykang/linux/include/linux/shrinker.h \
+    $(wildcard include/config/SHRINKER_DEBUG) \
+  /home/hykang/linux/include/linux/page_ext.h \
+  /home/hykang/linux/include/linux/stacktrace.h \
+    $(wildcard include/config/ARCH_STACKWALK) \
+    $(wildcard include/config/STACKTRACE) \
+    $(wildcard include/config/HAVE_RELIABLE_STACKTRACE) \
+  /home/hykang/linux/include/linux/page_ref.h \
+    $(wildcard include/config/DEBUG_PAGE_REF) \
   /home/hykang/linux/include/linux/kasan.h \
     $(wildcard include/config/KASAN_STACK) \
     $(wildcard include/config/KASAN_VMALLOC) \
   /home/hykang/linux/include/linux/kasan-enabled.h \
     $(wildcard include/config/ARCH_DEFER_KASAN) \
   /home/hykang/linux/include/linux/kasan-tags.h \
-  /home/hykang/linux/include/linux/module.h \
-    $(wildcard include/config/MODULES_TREE_LOOKUP) \
-    $(wildcard include/config/STACKTRACE_BUILD_ID) \
-    $(wildcard include/config/ARCH_USES_CFI_TRAPS) \
-    $(wildcard include/config/MODULE_SIG) \
-    $(wildcard include/config/KALLSYMS) \
-    $(wildcard include/config/BPF_EVENTS) \
-    $(wildcard include/config/DEBUG_INFO_BTF_MODULES) \
-    $(wildcard include/config/EVENT_TRACING) \
-    $(wildcard include/config/MODULE_UNLOAD) \
-    $(wildcard include/config/CONSTRUCTORS) \
-    $(wildcard include/config/FUNCTION_ERROR_INJECTION) \
-    $(wildcard include/config/MITIGATION_RETPOLINE) \
-  /home/hykang/linux/include/linux/stat.h \
-  /home/hykang/linux/arch/riscv/include/generated/uapi/asm/stat.h \
-  /home/hykang/linux/include/uapi/asm-generic/stat.h \
-  /home/hykang/linux/include/uapi/linux/stat.h \
-  /home/hykang/linux/include/linux/uidgid.h \
-    $(wildcard include/config/MULTIUSER) \
-    $(wildcard include/config/USER_NS) \
-  /home/hykang/linux/include/linux/highuid.h \
-  /home/hykang/linux/include/linux/buildid.h \
-    $(wildcard include/config/VMCORE_INFO) \
-  /home/hykang/linux/include/linux/kmod.h \
-  /home/hykang/linux/include/linux/umh.h \
-  /home/hykang/linux/include/linux/sysctl.h \
-    $(wildcard include/config/SYSCTL) \
-  /home/hykang/linux/include/uapi/linux/sysctl.h \
-  /home/hykang/linux/include/linux/elf.h \
-    $(wildcard include/config/ARCH_HAVE_EXTRA_ELF_NOTES) \
-    $(wildcard include/config/ARCH_USE_GNU_PROPERTY) \
-    $(wildcard include/config/ARCH_HAVE_ELF_PROT) \
-  /home/hykang/linux/arch/riscv/include/asm/elf.h \
-  /home/hykang/linux/include/uapi/linux/elf.h \
-  /home/hykang/linux/include/uapi/linux/elf-em.h \
-  /home/hykang/linux/include/linux/compat.h \
-    $(wildcard include/config/ARCH_HAS_SYSCALL_WRAPPER) \
-    $(wildcard include/config/X86_X32_ABI) \
-    $(wildcard include/config/COMPAT_OLD_SIGACTION) \
-    $(wildcard include/config/HARDENED_USERCOPY) \
-    $(wildcard include/config/ODD_RT_SIGACTION) \
-  /home/hykang/linux/include/linux/sem.h \
-  /home/hykang/linux/include/uapi/linux/sem.h \
-  /home/hykang/linux/include/linux/ipc.h \
-  /home/hykang/linux/include/linux/rhashtable-types.h \
-  /home/hykang/linux/include/uapi/linux/ipc.h \
-  /home/hykang/linux/arch/riscv/include/generated/uapi/asm/ipcbuf.h \
-  /home/hykang/linux/include/uapi/asm-generic/ipcbuf.h \
-  /home/hykang/linux/arch/riscv/include/generated/uapi/asm/sembuf.h \
-  /home/hykang/linux/include/uapi/asm-generic/sembuf.h \
-  /home/hykang/linux/include/linux/socket.h \
+  /home/hykang/linux/include/linux/memremap.h \
+    $(wildcard include/config/DEVICE_PRIVATE) \
+    $(wildcard include/config/PCI_P2PDMA) \
+  /home/hykang/linux/include/linux/ioport.h \
+  /home/hykang/linux/include/linux/slab.h \
+    $(wildcard include/config/FAILSLAB) \
+    $(wildcard include/config/KFENCE) \
+    $(wildcard include/config/SLUB_TINY) \
+    $(wildcard include/config/SLUB_DEBUG) \
+    $(wildcard include/config/SLAB_BUCKETS) \
+    $(wildcard include/config/KVFREE_RCU_BATCHED) \
+  /home/hykang/linux/include/linux/hash.h \
+    $(wildcard include/config/HAVE_ARCH_HASH) \
+  /home/hykang/linux/include/linux/cacheinfo.h \
+    $(wildcard include/config/ACPI_PPTT) \
+    $(wildcard include/config/ARM) \
+    $(wildcard include/config/ARCH_HAS_CPU_CACHE_ALIASING) \
+  /home/hykang/linux/include/linux/cpuhplock.h \
+  /home/hykang/linux/include/linux/rcuwait.h \
+  /home/hykang/linux/include/linux/sched/signal.h \
+    $(wildcard include/config/SCHED_AUTOGROUP) \
+    $(wildcard include/config/BSD_PROCESS_ACCT) \
+    $(wildcard include/config/TASKSTATS) \
+  /home/hykang/linux/include/linux/rculist.h \
+    $(wildcard include/config/PROVE_RCU_LIST) \
+  /home/hykang/linux/include/linux/signal.h \
+    $(wildcard include/config/DYNAMIC_SIGFRAME) \
     $(wildcard include/config/PROC_FS) \
-  /home/hykang/linux/arch/riscv/include/generated/uapi/asm/socket.h \
-  /home/hykang/linux/include/uapi/asm-generic/socket.h \
-  /home/hykang/linux/arch/riscv/include/generated/uapi/asm/sockios.h \
-  /home/hykang/linux/include/uapi/asm-generic/sockios.h \
-  /home/hykang/linux/include/uapi/linux/sockios.h \
-  /home/hykang/linux/include/linux/uio.h \
-    $(wildcard include/config/ARCH_HAS_UACCESS_FLUSHCACHE) \
-    $(wildcard include/config/ARCH_HAS_COPY_MC) \
+  /home/hykang/linux/include/linux/sched/jobctl.h \
+  /home/hykang/linux/include/linux/sched/task.h \
+    $(wildcard include/config/HAVE_EXIT_THREAD) \
+    $(wildcard include/config/ARCH_WANTS_DYNAMIC_TASK_STRUCT) \
+    $(wildcard include/config/HAVE_ARCH_THREAD_STRUCT_WHITELIST) \
+  /home/hykang/linux/include/linux/uaccess.h \
+    $(wildcard include/config/ARCH_HAS_SUBPAGE_FAULTS) \
+    $(wildcard include/config/HARDENED_USERCOPY) \
+  /home/hykang/linux/include/linux/fault-inject-usercopy.h \
+    $(wildcard include/config/FAULT_INJECTION_USERCOPY) \
+  /home/hykang/linux/include/linux/nospec.h \
   /home/hykang/linux/include/linux/ucopysize.h \
     $(wildcard include/config/HARDENED_USERCOPY_DEFAULT_ON) \
-  /home/hykang/linux/include/uapi/linux/uio.h \
-  /home/hykang/linux/include/uapi/linux/socket.h \
-  /home/hykang/linux/include/uapi/linux/if.h \
-  /home/hykang/linux/include/uapi/linux/libc-compat.h \
-  /home/hykang/linux/include/uapi/linux/hdlc/ioctl.h \
+  /home/hykang/linux/arch/riscv/include/asm/uaccess.h \
+    $(wildcard include/config/CC_HAS_ASM_GOTO_OUTPUT) \
+  /home/hykang/linux/arch/riscv/include/asm/asm-extable.h \
+  /home/hykang/linux/arch/riscv/include/asm/gpr-num.h \
+  /home/hykang/linux/arch/riscv/include/asm/extable.h \
+    $(wildcard include/config/BPF_JIT) \
+    $(wildcard include/config/ARCH_RV64I) \
+  /home/hykang/linux/include/asm-generic/access_ok.h \
+    $(wildcard include/config/ALTERNATE_USER_ADDRESS_SPACE) \
+  /home/hykang/linux/include/linux/cred.h \
+    $(wildcard include/config/MULTIUSER) \
+    $(wildcard include/config/USER_NS) \
+  /home/hykang/linux/include/linux/capability.h \
+  /home/hykang/linux/include/uapi/linux/capability.h \
+  /home/hykang/linux/include/linux/uidgid.h \
+  /home/hykang/linux/include/linux/highuid.h \
+  /home/hykang/linux/include/linux/key.h \
+    $(wildcard include/config/KEY_NOTIFICATIONS) \
+    $(wildcard include/config/NET) \
+  /home/hykang/linux/include/linux/sysctl.h \
+  /home/hykang/linux/include/uapi/linux/sysctl.h \
+  /home/hykang/linux/include/linux/assoc_array.h \
+    $(wildcard include/config/ASSOCIATIVE_ARRAY) \
+  /home/hykang/linux/include/linux/sched/user.h \
+    $(wildcard include/config/EPOLL) \
+    $(wildcard include/config/VFIO_PCI_ZDEV_KVM) \
+    $(wildcard include/config/IOMMUFD) \
+    $(wildcard include/config/WATCH_QUEUE) \
+  /home/hykang/linux/include/linux/ratelimit.h \
+  /home/hykang/linux/include/linux/pid.h \
+  /home/hykang/linux/include/linux/posix-timers.h \
+  /home/hykang/linux/include/linux/alarmtimer.h \
+    $(wildcard include/config/RTC_CLASS) \
+  /home/hykang/linux/include/linux/hrtimer.h \
+    $(wildcard include/config/HIGH_RES_TIMERS) \
+    $(wildcard include/config/TIME_LOW_RES) \
+    $(wildcard include/config/TIMERFD) \
+  /home/hykang/linux/include/linux/hrtimer_defs.h \
+  /home/hykang/linux/include/linux/timerqueue.h \
+  /home/hykang/linux/include/linux/rcuref.h \
+  /home/hykang/linux/include/linux/huge_mm.h \
+    $(wildcard include/config/PGTABLE_HAS_HUGE_LEAVES) \
+    $(wildcard include/config/PERSISTENT_HUGE_ZERO_FOLIO) \
   /home/hykang/linux/include/linux/fs.h \
     $(wildcard include/config/FANOTIFY_ACCESS_PERMISSIONS) \
     $(wildcard include/config/READ_ONLY_THP_FOR_FS) \
@@ -830,7 +942,6 @@ deps_keystone-page.o := \
     $(wildcard include/config/IMA) \
     $(wildcard include/config/FILE_LOCKING) \
     $(wildcard include/config/FSNOTIFY) \
-    $(wildcard include/config/EPOLL) \
     $(wildcard include/config/UNICODE) \
     $(wildcard include/config/FS_ENCRYPTION) \
     $(wildcard include/config/FS_VERITY) \
@@ -843,34 +954,21 @@ deps_keystone-page.o := \
   /home/hykang/linux/include/linux/kdev_t.h \
   /home/hykang/linux/include/uapi/linux/kdev_t.h \
   /home/hykang/linux/include/linux/dcache.h \
-  /home/hykang/linux/include/linux/rculist.h \
-    $(wildcard include/config/PROVE_RCU_LIST) \
   /home/hykang/linux/include/linux/rculist_bl.h \
   /home/hykang/linux/include/linux/list_bl.h \
-  /home/hykang/linux/include/linux/bit_spinlock.h \
   /home/hykang/linux/include/linux/lockref.h \
     $(wildcard include/config/ARCH_USE_CMPXCHG_LOCKREF) \
   /home/hykang/linux/include/linux/stringhash.h \
     $(wildcard include/config/DCACHE_WORD_ACCESS) \
   /home/hykang/linux/include/linux/path.h \
+  /home/hykang/linux/include/linux/stat.h \
+  /home/hykang/linux/arch/riscv/include/generated/uapi/asm/stat.h \
+  /home/hykang/linux/include/uapi/asm-generic/stat.h \
+  /home/hykang/linux/include/uapi/linux/stat.h \
   /home/hykang/linux/include/linux/list_lru.h \
-  /home/hykang/linux/include/linux/shrinker.h \
-    $(wildcard include/config/SHRINKER_DEBUG) \
   /home/hykang/linux/include/linux/xarray.h \
     $(wildcard include/config/XARRAY_MULTI) \
-  /home/hykang/linux/include/linux/sched/mm.h \
-    $(wildcard include/config/MMU_LAZY_TLB_REFCOUNT) \
-    $(wildcard include/config/ARCH_HAS_MEMBARRIER_CALLBACKS) \
-    $(wildcard include/config/ARCH_HAS_SYNC_CORE_BEFORE_USERMODE) \
-  /home/hykang/linux/include/linux/sync_core.h \
-    $(wildcard include/config/ARCH_HAS_PREPARE_SYNC_CORE_CMD) \
-  /home/hykang/linux/arch/riscv/include/asm/sync_core.h \
-  /home/hykang/linux/include/linux/sched/coredump.h \
-  /home/hykang/linux/arch/riscv/include/asm/membarrier.h \
   /home/hykang/linux/include/linux/radix-tree.h \
-  /home/hykang/linux/include/linux/pid.h \
-  /home/hykang/linux/include/linux/capability.h \
-  /home/hykang/linux/include/uapi/linux/capability.h \
   /home/hykang/linux/include/linux/semaphore.h \
   /home/hykang/linux/include/linux/fcntl.h \
     $(wildcard include/config/ARCH_32BIT_OFF_T) \
@@ -880,76 +978,6 @@ deps_keystone-page.o := \
   /home/hykang/linux/include/uapi/linux/openat2.h \
   /home/hykang/linux/include/linux/migrate_mode.h \
   /home/hykang/linux/include/linux/percpu-rwsem.h \
-  /home/hykang/linux/include/linux/rcuwait.h \
-  /home/hykang/linux/include/linux/sched/signal.h \
-    $(wildcard include/config/SCHED_AUTOGROUP) \
-    $(wildcard include/config/BSD_PROCESS_ACCT) \
-    $(wildcard include/config/TASKSTATS) \
-    $(wildcard include/config/STACK_GROWSUP) \
-  /home/hykang/linux/include/linux/signal.h \
-    $(wildcard include/config/DYNAMIC_SIGFRAME) \
-  /home/hykang/linux/include/linux/sched/jobctl.h \
-  /home/hykang/linux/include/linux/sched/task.h \
-    $(wildcard include/config/HAVE_EXIT_THREAD) \
-    $(wildcard include/config/ARCH_WANTS_DYNAMIC_TASK_STRUCT) \
-    $(wildcard include/config/HAVE_ARCH_THREAD_STRUCT_WHITELIST) \
-  /home/hykang/linux/include/linux/uaccess.h \
-    $(wildcard include/config/ARCH_HAS_SUBPAGE_FAULTS) \
-  /home/hykang/linux/include/linux/fault-inject-usercopy.h \
-    $(wildcard include/config/FAULT_INJECTION_USERCOPY) \
-  /home/hykang/linux/include/linux/nospec.h \
-  /home/hykang/linux/arch/riscv/include/asm/uaccess.h \
-    $(wildcard include/config/CC_HAS_ASM_GOTO_OUTPUT) \
-    $(wildcard include/config/HAVE_EFFICIENT_UNALIGNED_ACCESS) \
-  /home/hykang/linux/arch/riscv/include/asm/asm-extable.h \
-  /home/hykang/linux/arch/riscv/include/asm/gpr-num.h \
-  /home/hykang/linux/arch/riscv/include/asm/cpufeature.h \
-    $(wildcard include/config/RISCV_SCALAR_MISALIGNED) \
-    $(wildcard include/config/RISCV_MISALIGNED) \
-    $(wildcard include/config/RISCV_VECTOR_MISALIGNED) \
-    $(wildcard include/config/RISCV_PROBE_UNALIGNED_ACCESS) \
-  /home/hykang/linux/arch/riscv/include/asm/pgtable.h \
-    $(wildcard include/config/RELOCATABLE) \
-    $(wildcard include/config/PHYS_RAM_BASE) \
-    $(wildcard include/config/XIP_PHYS_ADDR) \
-    $(wildcard include/config/RISCV_ISA_SVNAPOT) \
-    $(wildcard include/config/ARCH_SUPPORTS_PMD_PFNMAP) \
-    $(wildcard include/config/ARCH_SUPPORTS_PUD_PFNMAP) \
-    $(wildcard include/config/PAGE_TABLE_CHECK) \
-    $(wildcard include/config/ARCH_ENABLE_THP_MIGRATION) \
-  /home/hykang/linux/arch/riscv/include/asm/pgtable-bits.h \
-  /home/hykang/linux/arch/riscv/include/asm/tlbflush.h \
-  /home/hykang/linux/arch/riscv/include/asm/compat.h \
-  /home/hykang/linux/include/asm-generic/compat.h \
-    $(wildcard include/config/COMPAT_FOR_U64_ALIGNMENT) \
-  /home/hykang/linux/arch/riscv/include/asm/pgtable-64.h \
-  /home/hykang/linux/include/linux/page_table_check.h \
-  /home/hykang/linux/arch/riscv/include/asm/extable.h \
-    $(wildcard include/config/BPF_JIT) \
-    $(wildcard include/config/ARCH_RV64I) \
-  /home/hykang/linux/include/asm-generic/access_ok.h \
-    $(wildcard include/config/ALTERNATE_USER_ADDRESS_SPACE) \
-  /home/hykang/linux/include/linux/cred.h \
-  /home/hykang/linux/include/linux/key.h \
-    $(wildcard include/config/KEY_NOTIFICATIONS) \
-    $(wildcard include/config/NET) \
-  /home/hykang/linux/include/linux/assoc_array.h \
-    $(wildcard include/config/ASSOCIATIVE_ARRAY) \
-  /home/hykang/linux/include/linux/sched/user.h \
-    $(wildcard include/config/VFIO_PCI_ZDEV_KVM) \
-    $(wildcard include/config/IOMMUFD) \
-    $(wildcard include/config/WATCH_QUEUE) \
-  /home/hykang/linux/include/linux/ratelimit.h \
-  /home/hykang/linux/include/linux/posix-timers.h \
-  /home/hykang/linux/include/linux/alarmtimer.h \
-    $(wildcard include/config/RTC_CLASS) \
-  /home/hykang/linux/include/linux/hrtimer.h \
-    $(wildcard include/config/HIGH_RES_TIMERS) \
-    $(wildcard include/config/TIME_LOW_RES) \
-    $(wildcard include/config/TIMERFD) \
-  /home/hykang/linux/include/linux/hrtimer_defs.h \
-  /home/hykang/linux/include/linux/timerqueue.h \
-  /home/hykang/linux/include/linux/rcuref.h \
   /home/hykang/linux/include/linux/rcu_sync.h \
   /home/hykang/linux/include/linux/delayed_call.h \
   /home/hykang/linux/include/linux/uuid.h \
@@ -974,19 +1002,6 @@ deps_keystone-page.o := \
   /home/hykang/linux/include/linux/dqblk_qtree.h \
   /home/hykang/linux/include/linux/projid.h \
   /home/hykang/linux/include/uapi/linux/quota.h \
-  /home/hykang/linux/include/uapi/linux/aio_abi.h \
-  /home/hykang/linux/include/uapi/linux/unistd.h \
-  /home/hykang/linux/arch/riscv/include/asm/unistd.h \
-  /home/hykang/linux/arch/riscv/include/uapi/asm/unistd.h \
-  /home/hykang/linux/arch/riscv/include/generated/uapi/asm/unistd_64.h \
-  /home/hykang/linux/arch/riscv/include/asm/syscall_wrapper.h \
-  /home/hykang/linux/arch/riscv/include/uapi/asm/elf.h \
-  /home/hykang/linux/arch/riscv/include/asm/cacheinfo.h \
-  /home/hykang/linux/include/linux/cacheinfo.h \
-    $(wildcard include/config/ACPI_PPTT) \
-    $(wildcard include/config/ARM) \
-    $(wildcard include/config/ARCH_HAS_CPU_CACHE_ALIASING) \
-  /home/hykang/linux/include/linux/cpuhplock.h \
   /home/hykang/linux/include/linux/kobject.h \
     $(wildcard include/config/UEVENT_HELPER) \
     $(wildcard include/config/DEBUG_KOBJECT_RELEASE) \
@@ -995,9 +1010,81 @@ deps_keystone-page.o := \
     $(wildcard include/config/KERNFS) \
   /home/hykang/linux/include/linux/idr.h \
   /home/hykang/linux/include/linux/kobject_ns.h \
+  /home/hykang/linux/include/linux/vmstat.h \
+    $(wildcard include/config/VM_EVENT_COUNTERS) \
+    $(wildcard include/config/DEBUG_TLBFLUSH) \
+    $(wildcard include/config/PER_VMA_LOCK_STATS) \
+  /home/hykang/linux/include/linux/vm_event_item.h \
+    $(wildcard include/config/MEMORY_BALLOON) \
+    $(wildcard include/config/BALLOON_COMPACTION) \
+    $(wildcard include/config/X86) \
+    $(wildcard include/config/DEBUG_STACK_USAGE) \
+  keystone.h \
+  /home/hykang/linux/arch/riscv/include/asm/sbi.h \
+    $(wildcard include/config/RISCV_SBI) \
+    $(wildcard include/config/RISCV_SBI_V01) \
+  /home/hykang/linux/include/linux/module.h \
+    $(wildcard include/config/MODULES_TREE_LOOKUP) \
+    $(wildcard include/config/STACKTRACE_BUILD_ID) \
+    $(wildcard include/config/ARCH_USES_CFI_TRAPS) \
+    $(wildcard include/config/MODULE_SIG) \
+    $(wildcard include/config/KALLSYMS) \
+    $(wildcard include/config/BPF_EVENTS) \
+    $(wildcard include/config/DEBUG_INFO_BTF_MODULES) \
+    $(wildcard include/config/EVENT_TRACING) \
+    $(wildcard include/config/MODULE_UNLOAD) \
+    $(wildcard include/config/CONSTRUCTORS) \
+    $(wildcard include/config/FUNCTION_ERROR_INJECTION) \
+    $(wildcard include/config/MITIGATION_RETPOLINE) \
+  /home/hykang/linux/include/linux/buildid.h \
+    $(wildcard include/config/VMCORE_INFO) \
+  /home/hykang/linux/include/linux/kmod.h \
+  /home/hykang/linux/include/linux/umh.h \
+  /home/hykang/linux/include/linux/elf.h \
+    $(wildcard include/config/ARCH_HAVE_EXTRA_ELF_NOTES) \
+    $(wildcard include/config/ARCH_USE_GNU_PROPERTY) \
+    $(wildcard include/config/ARCH_HAVE_ELF_PROT) \
+  /home/hykang/linux/arch/riscv/include/asm/elf.h \
+  /home/hykang/linux/include/uapi/linux/elf.h \
+  /home/hykang/linux/include/uapi/linux/elf-em.h \
+  /home/hykang/linux/include/linux/compat.h \
+    $(wildcard include/config/ARCH_HAS_SYSCALL_WRAPPER) \
+    $(wildcard include/config/X86_X32_ABI) \
+    $(wildcard include/config/COMPAT_OLD_SIGACTION) \
+    $(wildcard include/config/ODD_RT_SIGACTION) \
+  /home/hykang/linux/include/linux/sem.h \
+  /home/hykang/linux/include/uapi/linux/sem.h \
+  /home/hykang/linux/include/linux/ipc.h \
+  /home/hykang/linux/include/linux/rhashtable-types.h \
+  /home/hykang/linux/include/uapi/linux/ipc.h \
+  /home/hykang/linux/arch/riscv/include/generated/uapi/asm/ipcbuf.h \
+  /home/hykang/linux/include/uapi/asm-generic/ipcbuf.h \
+  /home/hykang/linux/arch/riscv/include/generated/uapi/asm/sembuf.h \
+  /home/hykang/linux/include/uapi/asm-generic/sembuf.h \
+  /home/hykang/linux/include/linux/socket.h \
+  /home/hykang/linux/arch/riscv/include/generated/uapi/asm/socket.h \
+  /home/hykang/linux/include/uapi/asm-generic/socket.h \
+  /home/hykang/linux/arch/riscv/include/generated/uapi/asm/sockios.h \
+  /home/hykang/linux/include/uapi/asm-generic/sockios.h \
+  /home/hykang/linux/include/uapi/linux/sockios.h \
+  /home/hykang/linux/include/linux/uio.h \
+    $(wildcard include/config/ARCH_HAS_UACCESS_FLUSHCACHE) \
+    $(wildcard include/config/ARCH_HAS_COPY_MC) \
+  /home/hykang/linux/include/uapi/linux/uio.h \
+  /home/hykang/linux/include/uapi/linux/socket.h \
+  /home/hykang/linux/include/uapi/linux/if.h \
+  /home/hykang/linux/include/uapi/linux/libc-compat.h \
+  /home/hykang/linux/include/uapi/linux/hdlc/ioctl.h \
+  /home/hykang/linux/include/uapi/linux/aio_abi.h \
+  /home/hykang/linux/include/uapi/linux/unistd.h \
+  /home/hykang/linux/arch/riscv/include/asm/unistd.h \
+  /home/hykang/linux/arch/riscv/include/uapi/asm/unistd.h \
+  /home/hykang/linux/arch/riscv/include/generated/uapi/asm/unistd_64.h \
+  /home/hykang/linux/arch/riscv/include/asm/syscall_wrapper.h \
+  /home/hykang/linux/arch/riscv/include/uapi/asm/elf.h \
+  /home/hykang/linux/arch/riscv/include/asm/cacheinfo.h \
   /home/hykang/linux/include/linux/moduleparam.h \
     $(wildcard include/config/ALPHA) \
-    $(wildcard include/config/PPC64) \
   /home/hykang/linux/include/linux/rbtree_latch.h \
   /home/hykang/linux/include/linux/error-injection.h \
   /home/hykang/linux/include/asm-generic/error-injection.h \
@@ -1036,7 +1123,6 @@ deps_keystone-page.o := \
     $(wildcard include/config/CPU_FREQ_GOV_SCHEDUTIL) \
   /home/hykang/linux/include/linux/sched/idle.h \
   /home/hykang/linux/include/linux/sched/sd_flags.h \
-  /home/hykang/linux/include/linux/ioport.h \
   /home/hykang/linux/include/linux/klist.h \
   /home/hykang/linux/include/linux/pm.h \
     $(wildcard include/config/VT_CONSOLE_SLEEP) \
@@ -1053,10 +1139,8 @@ deps_keystone-page.o := \
   /home/hykang/linux/include/asm-generic/device.h \
   /home/hykang/linux/include/linux/pm_wakeup.h \
   /home/hykang/linux/include/linux/file.h \
-  keystone-sbi.h \
-  /home/hykang/Vyond/tee/sdk/include/shared/keystone_user.h \
-  /home/hykang/Vyond/tee/sdk/include/shared/sm_call.h \
+  riscv64.h \
 
-keystone-page.o: $(deps_keystone-page.o)
+enclave-pool.o: $(deps_enclave-pool.o)
 
-$(deps_keystone-page.o):
+$(deps_enclave-pool.o):

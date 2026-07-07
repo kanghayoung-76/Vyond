@@ -274,6 +274,10 @@ impl Enclave {
 
         switch_vector_enclave();
 
+        // WGC: UTM/SHM slots are written at creation and persist until destroy.
+        // No need to re-install on every context switch (unlike PMP which required reprogramming).
+        // SHM perm after WID eviction is updated lazily by load_enclave_slot.
+        #[cfg(not(any(feature = "isolator_wg", feature = "isolator_hybrid")))]
         (0..MAX_ENCLAVE_REGIONS).for_each(|memid| {
             if let Some(ref region) = self.regions[memid] {
                 if region.r_type != RegionType::RegionEPM {
@@ -292,6 +296,9 @@ impl Enclave {
     /// M-mode SHM IPIs can be caught directly without a host round-trip (wait_shm path).
     /// All other callers pass false to restore the standard OpenSBI `_trap_handler`.
     pub fn switch_to_host(&mut self, regs: &mut TrapFrame, keep_vec: bool) {
+        // WGC: OS TOR slot is written once at boot by osm_init and persists in hardware.
+        // No need to re-install on every context switch (unlike PMP which required reprogramming).
+        #[cfg(not(any(feature = "isolator_wg", feature = "isolator_hybrid")))]
         let _ = isolator::set_isolator(isolator::os_region_id(), false);
 
         let interrupts = MIP_SSIP | MIP_STIP | MIP_SEIP;
@@ -349,6 +356,29 @@ static mut SHARED_MEM: [Option<Region>; MAX_SHARED_REGIONS] = [INIT_SHM; MAX_SHA
  *
  * This may fail if: it cannot allocate PMP regions, EIDs, etc
  */
+
+/// Installs a temporary OS_WID=30 WGC slot for an EPM PA range in the enclave pool.
+/// Called before the host writes the enclave binary; removed by create_enclave() at finalize.
+pub fn prepare_epm_slot(pa: usize, size: usize) -> Result<(), Error> {
+    #[cfg(not(any(feature = "isolator_wg", feature = "isolator_hybrid")))]
+    { return Ok(()); }
+
+    #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+    {
+        let epm_end = pa.checked_add(size).ok_or(Error::IllegalArgument)?;
+        if pa < crate::wg::ENCLAVE_POOL_BASE
+            || epm_end > crate::wg::ENCLAVE_POOL_BASE + crate::wg::ENCLAVE_POOL_SIZE
+        {
+            return Err(Error::IllegalArgument);
+        }
+        // allow_overlap=true: the setup slot will overlap the lazy enclave slot registered later
+        let region_idx = crate::wg::region_init(pa, size, 3u64 << (crate::wg::OS_WID * 2), true)?;
+        crate::wg::set_wg_for_host_shm(region_idx)?;
+        heprintln!("[PREPARE_EPM] pa=0x{:x} size=0x{:x} region={}", pa, size, region_idx);
+        Ok(())
+    }
+}
+
 pub fn create_enclave<'a>(create_args: &KeystoneSBICreate) -> Result<&'a Enclave, Error> {
     let pa_params = RuntimePAParams {
         dram_base: create_args.epm_region.paddr,
@@ -362,7 +392,21 @@ pub fn create_enclave<'a>(create_args: &KeystoneSBICreate) -> Result<&'a Enclave
     };
     let enclave: &mut Enclave = Enclave::allocate(pa_params)?;
 
-    // TODO: Check if create_args is valid
+    // Verify EPM lies entirely within the enclave pool.
+    #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+    {
+        let epm_base = create_args.epm_region.paddr;
+        let epm_end  = epm_base + create_args.epm_region.size;
+        if epm_base < crate::wg::ENCLAVE_POOL_BASE
+            || epm_end > crate::wg::ENCLAVE_POOL_BASE + crate::wg::ENCLAVE_POOL_SIZE
+        {
+            return Err(Error::IllegalArgument);
+        }
+    }
+
+    // NOTE: The OS_WID setup slot (installed by prepare_epm_slot) is NOT removed here.
+    // It must remain until enter_enclave() runs compute_hash(), which reads the EPM with
+    // mlwid=OS_WID.  The slot is removed in enter_enclave() just before switch_to_enclave().
 
     // create a PMP region bound to the enclave
     if let Ok(region) = isolator::region_init(
@@ -371,7 +415,6 @@ pub fn create_enclave<'a>(create_args: &KeystoneSBICreate) -> Result<&'a Enclave
         enclave.id(),
         false,
     ) {
-        //hprintln!("Found unused pmp slot: {}", region);
         enclave.regions[0] = Some(Region {
             id: region,
             r_type: RegionType::RegionEPM,
@@ -692,6 +735,20 @@ pub fn enter_enclave(tf: &mut TrapFrame, eid: usize) -> Result<(), Error> {
         }
 
         enclave.compute_hash();
+
+        // Now remove the OS_WID setup slot installed by prepare_epm_slot.
+        // compute_hash() needed it (SM reads EPM with mlwid=OS_WID); the enclave
+        // must not inherit OS-world access when it starts executing.
+        #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+        {
+            let epa = enclave.pa_params.dram_base;
+            let esz = enclave.pa_params.dram_size;
+            match crate::wg::remove_setup_slot_for_pa(epa, esz) {
+                Ok(_) => heprintln!("[ENTER_ENCLAVE] removed setup slot for pa=0x{:x}", epa),
+                Err(_) => heprintln!("[ENTER_ENCLAVE] no setup slot for pa=0x{:x} (ok)", epa),
+            }
+        }
+
         enclave.switch_to_enclave(tf, true);
 
         return Ok(());
@@ -1286,7 +1343,6 @@ extern "C" {
 /// A `usize` value that identification for the created sharhed memory
 ///
 ///
-//pub fn create_shared_mem(eid: usize, paddr: usize, size: usize) -> Result<usize, Error> {
 // device_wid: 0 = host-SHM (eager OS_WID slot), non-zero = dev-SHM (lazy, device_wid | enclave_wid)
 pub fn create_shared_mem(paddr: usize, size: usize, device_wid: u32) -> Result<usize, Error> {
     if let Ok(region_idx) = isolator::region_init(paddr, size, 11, true) {
@@ -1517,6 +1573,15 @@ pub fn share_shm_region(rid: usize, eid2share: usize, st_perm: shm::Perm) -> Res
 /// Unlike create_shared_mem, this does NOT add host EID 11 to perm_conf,
 /// so enclaves can verify that the host has no access to the channel.
 pub fn create_enclave_shm(paddr: usize, size: usize) -> Result<usize, Error> {
+    #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+    {
+        let shm_end = paddr + size;
+        if paddr < crate::wg::ENCLAVE_POOL_BASE
+            || shm_end > crate::wg::ENCLAVE_POOL_BASE + crate::wg::ENCLAVE_POOL_SIZE
+        {
+            return Err(Error::IllegalArgument);
+        }
+    }
     if let Ok(region_idx) = isolator::region_init(paddr, size, 11, true) {
         for i in 0..MAX_SHARED_REGIONS {
             if unsafe { SHARED_MEM[i].is_none() } {
@@ -1747,17 +1812,6 @@ pub fn get_shm_region_by_rid(rid: usize) -> Option<&'static mut Region> {
     }
     None
 }
-
-pub fn get_shm_region_by_idx(idx: usize) -> Option<&'static mut Region> {
-    unsafe {
-        if idx < MAX_SHARED_REGIONS {
-            SHARED_MEM[idx].as_mut()
-        } else {
-            None
-        }
-    }
-}
-
 
 #[cfg(feature = "dbg")]
 pub fn display() {

@@ -417,6 +417,21 @@ pub extern "C" fn sbi_sm_find_dev_shm(rid_out_pa: usize) -> isize {
     ret as isize
 }
 
+/// Installs a temporary OS_WID=30 WGC slot for a pool EPM PA range.
+/// Called by the host driver at CREATE time (before writeMem) so the kernel can write
+/// the enclave binary into the EPM. The slot is removed by SM during FINALIZE (create_enclave).
+/// SBI call 4009 (host-callable).
+#[no_mangle]
+pub extern "C" fn sbi_sm_prepare_epm(pa: usize, size: usize) -> isize {
+    match enclave::prepare_epm_slot(pa, size) {
+        Ok(_) => 0,
+        Err(err) => {
+            dbg!("sbi_sm_prepare_epm failed {:?}", err);
+            -1
+        }
+    }
+}
+
 /// Called by enclave to ask SM to write CMD=1 to the device's MMIO register (SBI 3015).
 #[no_mangle]
 pub extern "C" fn sbi_sm_trigger_dev(device_wid: u32) -> isize {

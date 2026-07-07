@@ -45,6 +45,7 @@
 #define SBI_SM_CREATE_DEV_SHM        4006  /* host: create device-enclave SHM (device_wid, lazy WGC) */
 #define SBI_SM_CREATE_ENCLAVE_SHM    4007  /* host: create enclave-channel SHM (no host EID in perm_conf) */
 #define SBI_SM_GET_SHM_EIDS          4008  /* enclave: query EID list of a channel before mapping */
+#define SBI_SM_PREPARE_EPM           4009  /* host: install OS_WID setup slot for pool EPM PA */
 #define SBI_SM_REGISTER_ENC_CHANNEL  3011  /* enc: bind creator+allowed hash to an enc-enc SHM rid */
 #define SBI_SM_FIND_SHM_BY_HASH      3012  /* enc: find enc-enc rid by creator hash */
 #define SBI_SM_GET_MY_HASH           3013  /* enc: retrieve own measurement hash (64 bytes) */

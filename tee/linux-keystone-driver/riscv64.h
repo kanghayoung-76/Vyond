@@ -53,20 +53,4 @@
 #define SATP_MODE_CHOICE INSERT_FIELD(0, SATP64_MODE, SATP_MODE_SV39)
 #define GIGAPAGE_SIZE (MEGAPAGE_SIZE << RISCV_PGLEVEL_BITS)
 
-//extern pte_t* root_page_table;
-
-static inline void flush_tlb(void)
-{
-  asm volatile ("sfence.vma");
-}
-
-static inline pte_t pte_create(unsigned long ppn, int type)
-{ 
-  return __pte( (ppn << PTE_PPN_SHIFT) | PTE_V | type );
-}
-
-static inline pte_t ptd_create(unsigned long ppn)
-{
-  return pte_create(ppn, PTE_V);
-}
 #endif

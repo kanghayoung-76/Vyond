@@ -1,8 +1,8 @@
 # Compiler flags
 platform-cppflags-y =
-platform-cflags-y = -I../src -DED25519_NO_SEED -std=gnu11
+platform-cflags-y = -I../src -DED25519_NO_SEED -std=gnu11 -mno-relax
 platform-asflags-y =
-platform-ldflags-y = -L../../monitor/target/riscv64gc-unknown-linux-gnu/debug -lvyond build/platform/generic/lib/libplatsbi.a
+platform-ldflags-y = -Wl,--no-relax -L../../monitor/target/riscv64gc-unknown-linux-gnu/debug -lvyond build/platform/generic/lib/libplatsbi.a
 
 # Command for platform specific "make run"
 platform-runcmd = qemu-system-riscv$(PLATFORM_RISCV_XLEN) -M virt -m 256M \

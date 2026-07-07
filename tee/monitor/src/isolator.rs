@@ -61,7 +61,9 @@ pub fn smm_init<'a>() -> Result<(), Error> {
     {
         init_peripheral_wgc();
         let region = wg::region_init(SMM_BASE, SMM_SIZE, 3 << (wg::TRUSTED_WID * 2), false)?;
-        wg::set_wg(region)?;
+        // Install as TOR anchor at SMM_END (perm=0): hw_bypass handles WID31 SM DRAM access.
+        // Slot is required so OS TOR (next slot) derives the correct start address = SMM_END.
+        wg::set_wg_smm_anchor(region)?;
         SM_REGION_ID.set(region);
         Ok(())
     }
@@ -84,18 +86,24 @@ pub fn osm_init<'a>() -> Result<(), Error> {
 
     #[cfg(feature = "isolator_wg")]
     {
-        // Register the OS region in software for tracking, but do NOT write it to hardware.
-        // Writing a catch-all TOR slot covering all DRAM would inject OS_WID into every
-        // EPM and SHM slot via WGC OR semantics, breaking enclave isolation.
-        // Bounded OS-only hardware slots must be programmed explicitly after this call.
+        // OS region: SMM_BASE+SMM_SIZE .. ENCLAVE_POOL_BASE.
+        // This bounded TOR slot gives WID=30 (OS) access to its own DRAM without
+        // covering the enclave pool, so OR semantics cannot leak OS_WID into EPM slots.
+        let os_size = wg::ENCLAVE_POOL_BASE - (SMM_BASE + SMM_SIZE);
         let region = wg::region_init(
             SMM_BASE + SMM_SIZE,
-            usize::MAX,
-            (3 << (wg::OS_WID * 2)) | 3,
+            os_size,
+            3 << (wg::OS_WID * 2),  // WID30 only; WID31 is covered by hw_bypass
             false,
         )?;
-        wg::set_wg(region);
+        wg::set_wg(region)?;
         OS_REGION_ID.set(region);
+
+        // Disable hw_bypass (slot[nslots]) so unmatched accesses are not silently swallowed.
+        // Set slot-0 ER/EW so unmatched pool accesses generate a bus error trap to SM,
+        // enabling lazy EPM slot installation on CAUSE_FETCH_ACCESS.
+        wg::arm_hw_bypass_for_lazy_load();
+
         Ok(())
     }
     #[cfg(feature = "isolator_hybrid")]
@@ -127,9 +135,7 @@ pub fn region_init(start: usize, size: usize, eid: usize, shared: bool) -> Resul
             assert!(eid + 1 < wg::DEV_WID as usize, "enclave WID would collide with DEV_WID");
         }
         let region_idx = wg::region_init(start, size, 3 << ((eid + 1) * 2), true)?;
-        // WGC slot virtualization: do NOT write EPM slot to hardware at create time.
-        // The ACCESS FAULT handler loads it on-demand when the enclave first accesses EPM.
-        // wg::set_wg(region_idx)?;
+        // EPM slot is loaded on-demand by the ACCESS FAULT handler (lazy load).
         Ok(region_idx)
     }
     #[cfg(feature = "isolator_hybrid")]
@@ -161,21 +167,6 @@ pub fn set_isolator(region_idx: usize, destroy: bool) -> Result<(), Error> {
     }
 }
 
-// pub fn set_isolator(region_idx: usize, perm_conf: PermConfig) Result<(), Error> {
-//     #[cfg(feature = "isolator_pmp")]
-//     {
-//         pmp::set_keystone(region_idx, pmp::PMP_ALL_PERM)
-//     }
-//     #[cfg(feature = "isolator_wg")]
-//     {
-//         Ok(())
-//         //wg::set_wg(region_idx)
-//     }
-//     #[cfg(feature = "isolator_hybrid")]
-//     {
-//         pmp::set_keystone(region_idx, pmp::PMP_ALL_PERM)
-//     }
-// }
 
 /// Sets a WGC slot for an enclave EPM region using a dynamically assigned WID.
 /// Only available with the `isolator_wg` or `isolator_hybrid` features.
@@ -243,13 +234,7 @@ pub fn display_isolator() {
     }
     #[cfg(feature = "isolator_wg")]
     {
-        //enclave::display();
-        //wg::display_regions();
-    }
-    #[cfg(feature = "isolator_hybrid")]
-    {
-        //pmp::display();
-        //wg::display()
+        wg::display();
     }
 }
 

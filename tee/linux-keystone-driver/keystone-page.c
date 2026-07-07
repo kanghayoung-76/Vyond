@@ -5,8 +5,7 @@
 #include "riscv64.h"
 #include <linux/kernel.h>
 #include "keystone.h"
-#include <linux/dma-mapping.h>
-#include <linux/version.h>
+#include "keystone-sbi.h"
 
 /* Destroy all memory associated with an EPM */
 int epm_destroy(struct epm *epm)
@@ -15,13 +14,9 @@ int epm_destroy(struct epm *epm)
   if (!epm->ptr || !epm->size)
     return 0;
 
-  /* free the EPM hold by the enclave */
-  if (epm->is_cma)
+  if (epm->is_pool)
   {
-    dma_free_coherent(keystone_dev.this_device,
-                      epm->size,
-                      (void *)epm->ptr,
-                      epm->pa);
+    enclave_pool_free(epm->pa, epm->size >> PAGE_SHIFT);
   }
   else
   {
@@ -34,73 +29,43 @@ int epm_destroy(struct epm *epm)
 /* Create an EPM and initialize the free list */
 int epm_init(struct epm *epm, unsigned int min_pages)
 {
-  vaddr_t epm_vaddr = 0;
-  unsigned long order = 0;
-  unsigned long count = min_pages;
-  phys_addr_t device_phys_addr = 0;
+  unsigned long order = ilog2(min_pages - 1) + 1;
+  unsigned long count = 0x1 << order;
+  phys_addr_t pa;
+  void *vaddr;
 
-  /* try to allocate contiguous memory */
-  epm->is_cma = 0;
-  order = ilog2(min_pages - 1) + 1;
-  count = 0x1 << order;
-
-  keystone_info("epm_init - min_pages: %d order: %lu MAX_PAGE_ORDER: %d\n", min_pages, order, MAX_PAGE_ORDER);
-
-  /* prevent kernel from complaining about an invalid argument */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 8, 0)
-  if (order < 15 /*MAX_PAGE_ORDER*/)
+  /* Allocate from the enclave pool (physical above mem= boundary).
+   * This ensures the SM's WGC pool-range check passes. */
+  pa = enclave_pool_alloc(count);
+  if (!pa)
   {
-#else
-  if (order < MAX_ORDER)
-  {
-#endif
-    epm_vaddr = (vaddr_t)__get_free_pages(GFP_HIGHUSER, order);
-    keystone_info("epm_vaddr : %#lx (paddr: %#lx) by buddy allocator\n", epm_vaddr, __pa(epm_vaddr));
-  }
-
-#ifndef CONFIG_CMA
-  keystone_info("CONFIG_CMA is not enabled\n");
-#endif
-
-#ifdef CONFIG_CMA
-  /* If buddy allocator fails, we fall back to the CMA */
-  if (!epm_vaddr)
-  {
-    epm->is_cma = 1;
-    count = min_pages;
-
-    epm_vaddr = (vaddr_t)dma_alloc_coherent(keystone_dev.this_device,
-                                            count << PAGE_SHIFT,
-                                            &device_phys_addr,
-                                            GFP_KERNEL);
-    // GFP_KERNEL | __GFP_DMA32);
-
-    keystone_info("epm_vaddr : %#lx (paddr: %#lx) by dma_alloc_coherent\n", epm_vaddr, __pa(epm_vaddr));
-    if (!device_phys_addr)
-      epm_vaddr = 0;
-  }
-#endif
-
-  if (!epm_vaddr)
-  {
-    keystone_err("failed to allocate %lu page(s)\n", count);
+    keystone_err("failed to allocate %lu page(s) from enclave pool\n", count);
     return -ENOMEM;
   }
 
-  /* zero out */
-  memset((void *)epm_vaddr, 0, PAGE_SIZE * count);
+  /* Install OS_WID setup slot before zeroing pool pages so WGC allows S-mode stores. */
+  {
+    struct sbiret sret = sbi_sm_prepare_epm(pa, count << PAGE_SHIFT);
+    if (sret.error) {
+      keystone_err("sbi_sm_prepare_epm failed: %ld\n", sret.error);
+      enclave_pool_free(pa, count);
+      return -EINVAL;
+    }
+  }
 
-  epm->root_page_table = (void *)epm_vaddr;
-  epm->pa = (epm->is_cma) ? device_phys_addr : __pa(epm_vaddr);
+  vaddr = enclave_pool_phys_to_virt(pa);
+  memset(vaddr, 0, count << PAGE_SHIFT);
+
+  epm->root_page_table = (pte_t *)vaddr;
+  epm->pa    = pa;
   epm->order = order;
-  epm->size = count << PAGE_SHIFT;
-  epm->ptr = epm_vaddr;
+  epm->size  = count << PAGE_SHIFT;
+  epm->ptr   = (vaddr_t)vaddr;
+  epm->is_cma  = 0;
+  epm->is_pool = 1;
 
-  keystone_info("epm_vaddr : %#lx epm_paddr: %#lx (%lu pages)\n",
-                (uintptr_t)epm->root_page_table,
-                (uintptr_t)epm->pa,
-                count);
-
+  keystone_info("epm: pa=%#llx virt=%p (%lu pages) [pool]\n",
+                (unsigned long long)pa, vaddr, count);
   return 0;
 }
 
@@ -147,44 +112,28 @@ int utm_init(struct utm *utm, size_t untrusted_size)
 
 int shm_init(struct shm *shm, size_t shared_size)
 {
-  unsigned long order = 0;
-  unsigned long count;
-  unsigned long req_pages = PAGE_UP(shared_size) / PAGE_SIZE;
-  order = ilog2(req_pages - 1) + 1;
-  count = 0x1 << order;
+  unsigned long count = PAGE_UP(shared_size) / PAGE_SIZE;
+  phys_addr_t pa;
+  void *vaddr;
 
-  shm->order = order;
   INIT_LIST_HEAD(&shm->list);
 
-  int is_cma = 0;
-  void *ptr = NULL;
-
-  /* If buddy allocator fails, we fall back to the CMA */
-  phys_addr_t device_phys_addr = 0;
-  count = req_pages;
-  is_cma = 1;
-  ptr = (void *)dma_alloc_coherent(keystone_dev.this_device,
-                                   count << PAGE_SHIFT,
-                                   &device_phys_addr,
-                                   GFP_KERNEL | __GFP_DMA32);
-
-  if (!device_phys_addr)
-    ptr = NULL;
-  if (!ptr)
+  /* All SHM (enclave-to-enclave and enclave SHM) comes from the pool so
+   * the OS WGC slot cannot reach it.  Only UTM stays in OS memory. */
+  pa = enclave_pool_alloc(count);
+  if (!pa)
   {
-    keystone_err("failed to allocate %lu page(s)\n", count);
+    keystone_err("failed to allocate %lu page(s) from enclave pool\n", count);
     return -ENOMEM;
   }
 
-  shm->ptr = ptr;
-  shm->pa = __pa((paddr_t)ptr);
-  shm->size = count * PAGE_SIZE;
-  shm->is_cma = is_cma;
+  vaddr = enclave_pool_phys_to_virt(pa);
 
-  if (shm->size != shared_size)
-  {
-    keystone_warn("bad! shared size is not good! %lx %lx\n", shm->size, shared_size);
-  }
+  shm->ptr     = vaddr;
+  shm->pa      = pa;
+  shm->size    = count * PAGE_SIZE;
+  shm->is_cma  = 0;
+  shm->is_pool = 1;
 
   return 0;
 }
@@ -194,12 +143,9 @@ int shm_destroy(struct shm *shm)
   if (!shm->ptr || !shm->size)
     return 0;
 
-  if (shm->is_cma)
+  if (shm->is_pool)
   {
-    dma_free_coherent(keystone_dev.this_device,
-                      shm->size,
-                      (void *)shm->ptr,
-                      shm->pa);
+    enclave_pool_free(shm->pa, shm->size >> PAGE_SHIFT);
   }
   else
   {

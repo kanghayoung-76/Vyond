@@ -13,7 +13,6 @@
 #include "eyrie_call.h"
 
 void handle_syscall(struct encl_ctx* ctx);
-void init_edge_internals(void);
 uintptr_t dispatch_edgecall_syscall(struct edge_syscall* syscall_data_ptr,
                                     size_t data_len);
 

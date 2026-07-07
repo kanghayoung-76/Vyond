@@ -131,9 +131,6 @@ eyrie_boot(uintptr_t dummy, // $a0 contains the return value from the SBI
   /* initialize user stack */
   init_user_stack_and_env((ELF(Ehdr) *) __va(user_paddr));
 
-  /* prepare edge & system calls */
-  init_edge_internals();
-
   /* set timer */
   init_timer();
 

@@ -42,16 +42,6 @@ pub fn wid_init() {
     state.clock = 0;
 }
 
-pub fn get_assigned_wid(eid: usize) -> Option<usize> {
-    let state = unsafe { &WID_STATE };
-    for i in 0..NUM_ENCLAVE_WIDS {
-        if state.slots[i].valid != 0 && state.slots[i].eid == eid {
-            return Some(i + ENCLAVE_WID_MIN);
-        }
-    }
-    None
-}
-
 pub fn assign_wid(eid: usize, region_id: usize) -> (usize, WIDAction) {
     let state = unsafe { &mut WID_STATE };
     state.clock += 1;
@@ -71,7 +61,6 @@ pub fn assign_wid(eid: usize, region_id: usize) -> (usize, WIDAction) {
         if state.slots[i].valid == 0 {
             state.slots[i] = WIDEntry { valid: 1, eid, region_id, last_used: now };
             let wid = i + ENCLAVE_WID_MIN;
-            heprintln!("[WID] new slot={} wid={}", i, wid);
             return (wid, WIDAction::Assigned { slot: i });
         }
     }

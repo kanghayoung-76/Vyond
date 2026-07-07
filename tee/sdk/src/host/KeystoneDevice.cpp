@@ -76,7 +76,6 @@ KeystoneDevice::destroy() {
 
 Error
 KeystoneDevice::__run(bool resume, uintptr_t* ret) {
-  //printf("[SDK] __run resume: %d\n", resume);
   struct keystone_ioctl_run_enclave encl;
   encl.eid = eid;
 
@@ -94,8 +93,6 @@ KeystoneDevice::__run(bool resume, uintptr_t* ret) {
   if (ioctl(fd, request, &encl)) {
     return error;
   }
-  //printf("[SDK] __run done ioctl result: %d\n", encl.error);
-
   switch (encl.error) {
     case SBI_ERR_SM_ENCLAVE_EDGE_CALL_HOST:
       return Error::EdgeCallHost;
@@ -135,6 +132,20 @@ KeystoneDevice::map(uintptr_t addr, size_t size) {
   ret = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, addr);
   assert(ret != MAP_FAILED);
   return ret;
+}
+
+Error
+KeystoneDevice::writeEPM(uintptr_t offset, uintptr_t src, size_t size) {
+  struct keystone_ioctl_write_epm params;
+  params.eid    = (uintptr_t)eid;
+  params.offset = offset;
+  params.size   = (uintptr_t)size;
+  params.src    = src;
+  if (ioctl(fd, KEYSTONE_IOC_WRITE_EPM, &params)) {
+    perror("KEYSTONE_IOC_WRITE_EPM ioctl error");
+    return Error::IoctlErrorCreate;
+  }
+  return Error::Success;
 }
 
 bool
@@ -195,6 +206,12 @@ void*
 MockKeystoneDevice::map(uintptr_t addr, size_t size) {
   sharedBuffer = malloc(size);
   return sharedBuffer;
+}
+
+Error
+MockKeystoneDevice::writeEPM(uintptr_t offset, uintptr_t src, size_t size) {
+  (void)offset; (void)src; (void)size;
+  return Error::Success;
 }
 
 MockKeystoneDevice::~MockKeystoneDevice() {

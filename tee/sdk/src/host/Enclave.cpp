@@ -56,7 +56,6 @@ Enclave::prepareEnclaveMemory(size_t requiredPages, uintptr_t alternatePhysAddr)
   uint64_t minPages;
   minPages = ROUND_UP(params.getFreeMemSize(), PAGE_BITS) / PAGE_SIZE; 
   minPages += requiredPages;
-  //printf("[SDK] prepareEnclaveMemory freeMem: %#lx requiredPages: %#x\n", minPages - requiredPages, requiredPages);
 
   /* Call Enclave Driver */
   if (pDevice->create(minPages) != Error::Success) {

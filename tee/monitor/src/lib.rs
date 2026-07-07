@@ -110,7 +110,6 @@ pub extern "C" fn sm_init(cold_boot: bool) -> isize {
 
         isolator::sm_init_done();
 
-        //isolator::display_isolator();
         compiler_fence(Ordering::Release);
     }
 

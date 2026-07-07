@@ -12,7 +12,6 @@
 #include <linux/uaccess.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
-#include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/miscdevice.h>
 #include <linux/idr.h>
@@ -43,6 +42,7 @@ struct epm {
   unsigned long order;
   paddr_t pa;
   bool is_cma;
+  bool is_pool;
 };
 
 struct utm {
@@ -61,6 +61,7 @@ struct shm
   size_t size;
   unsigned long order;
   int is_cma;
+  int is_pool;
 };
 
 struct mem_mapping
@@ -80,27 +81,10 @@ struct enclave
   int close_on_pexit;
   struct utm* utm;
   struct epm* epm;
-  struct shm *recent_shm;
   bool is_init;
-  bool epm_mapped;
 };
 
 extern struct enclave host_enclave;
-extern int map_pending;
-extern rid_t map_rid;
-extern uintptr_t map_pa;
-extern unsigned long map_size;
-
-// global debug functions
-void debug_dump(char* ptr, unsigned long size);
-
-// runtime/app loader
-int keystone_rtld_init_runtime(struct enclave* enclave, void* __user rt_ptr, size_t rt_sz, unsigned long rt_stack_sz, unsigned long* rt_offset);
-
-int keystone_rtld_init_app(struct enclave* enclave, void* __user app_ptr, size_t app_sz, size_t app_stack_sz, unsigned long stack_offset);
-
-// untrusted memory mapper
-int keystone_rtld_init_untrusted(struct enclave* enclave, void* untrusted_ptr, size_t untrusted_size);
 
 struct enclave* get_enclave_by_id(unsigned int ueid);
 struct enclave* create_enclave(unsigned long min_pages);
@@ -108,22 +92,23 @@ int destroy_enclave(struct enclave* enclave);
 
 unsigned int enclave_idr_alloc(struct enclave* enclave);
 struct enclave* enclave_idr_remove(unsigned int ueid);
-struct enclave* get_enclave_by_id(unsigned int ueid);
-
-static inline uintptr_t  epm_satp(struct epm* epm) {
-  return ((uintptr_t)epm->root_page_table >> RISCV_PGSHIFT | SATP_MODE_CHOICE);
-}
 
 int epm_destroy(struct epm* epm);
 int epm_init(struct epm* epm, unsigned int count);
 int utm_destroy(struct utm* utm);
 int utm_init(struct utm* utm, size_t untrusted_size);
-paddr_t epm_va_to_pa(struct epm* epm, vaddr_t addr);
 
 uintptr_t allocate_shm(struct enclave *enclave, uintptr_t size);
 int destroy_shm_by_pa(uintptr_t pa);
 int shm_destroy(struct shm *shm);
 int shm_init(struct shm *shm, size_t shared_size);
+
+/* Enclave pool allocator (pool region excluded from Linux via mem=) */
+int enclave_pool_init(void);
+void enclave_pool_exit(void);
+phys_addr_t enclave_pool_alloc(unsigned long count);
+void enclave_pool_free(phys_addr_t pa, unsigned long count);
+void *enclave_pool_phys_to_virt(phys_addr_t pa);
 
 #define keystone_info(fmt, ...) \
   pr_info("keystone_enclave: " fmt, ##__VA_ARGS__)

@@ -2,8 +2,6 @@
 // Copyright (c) 2018, The Regents of the University of California (Regents).
 // All Rights Reserved. See LICENSE for license details.
 //------------------------------------------------------------------------------
-//#include <asm/io.h>
-//#include <asm/page.h>
 #include "keystone.h"
 #include "keystone-sbi.h"
 #include <linux/kprobes.h>
@@ -26,10 +24,6 @@ MODULE_VERSION(DRV_VERSION);
 MODULE_LICENSE("Dual BSD/GPL");
 
 struct enclave host_enclave;
-int map_pending;
-rid_t map_rid;
-uintptr_t map_pa;
-unsigned long map_size;
 
 #define MAX_MEM_MAPPINGS (16)
 
@@ -95,10 +89,16 @@ static int __init keystone_dev_init(void)
 
   INIT_LIST_HEAD(&shm_list);
 
+  ret = enclave_pool_init();
+  if (ret < 0)
+    return ret;
+
   ret = misc_register(&keystone_dev);
   if (ret < 0)
   {
     pr_err("keystone_enclave: misc_register() failed\n");
+    enclave_pool_exit();
+    return ret;
   }
 
   keystone_dev.this_device->coherent_dma_mask = DMA_BIT_MASK(32);
@@ -115,6 +115,7 @@ static void __exit keystone_dev_exit(void)
   pr_info("keystone_enclave: keystone_dev_exit()\n");
   unregister_kprobe(&keystone_sbi_ipi_kp);
   misc_deregister(&keystone_dev);
+  enclave_pool_exit();
   return;
 }
 

@@ -7,22 +7,12 @@ use volatile_register::{RO, RW};
 pub const WGC_SLOT_OFFSET: usize = 0x20;
 pub const WGC_SLOT_SIZE: usize = 0x20;
 
-pub const WGC_CFG_A_OFF: u32 = 0x0;
 pub const WGC_CFG_A_TOR: u32 = 0x1;
-pub const WGC_CFG_A_NA4: u32 = 0x2;
 pub const WGC_CFG_A_NAPOT: u32 = 0x3;
 pub const WGC_CFG_ER: u32 = 1 << 8;
 pub const WGC_CFG_EW: u32 = 1 << 9;
 pub const WGC_CFG_IR: u32 = 1 << 10;
 pub const WGC_CFG_IW: u32 = 1 << 11;
-pub const WGC_CFG_L: u32 = 1 << 31;
-
-pub const WGC_ERRCAUSE_R_SHIFT: u8 = 8;
-pub const WGC_ERRCAUSE_W_SHIFT: u8 = 9;
-pub const WGC_ERRCAUSE_BE_SHIFT: u8 = 62;
-pub const WGC_ERRCAUSE_IP_SHIFT: u8 = 63;
-
-pub const WGC_ALL_PERM: usize = usize::MAX; // 2 bits per world * 32 worlds = 64 bits = all set
 
 // TODO: read platform specific configs from dtb
 pub const WGC_DRAM_BASE: usize = 0x600_0000;
@@ -31,6 +21,12 @@ pub const WGC_UART_BASE: usize = 0x600_2000;
 pub const WGC_MYDEV_BASE: usize = 0x600_5000;
 
 const DRAM_BASE: usize = 0x8000_0000;
+// Enclave pool: upper half of DRAM, reserved exclusively for EPM/SHM.
+// OS region covers DRAM_BASE..ENCLAVE_POOL_BASE (via a single bounded WGC TOR slot).
+// To adjust the split, change ENCLAVE_POOL_BASE and rebuild; the pool boundary
+// can also be made runtime-configurable via a DTB property in future work.
+pub const ENCLAVE_POOL_BASE: usize = 0x1_8000_0000; // 6 GiB physical (4 GiB into DRAM, -m 8192 split)
+pub const ENCLAVE_POOL_SIZE: usize = 0x1_0000_0000; // 4 GiB pool
 const FLASH_BASE: usize = 0x20000000;
 const FLASH_SIZE: usize = 0x4000000;
 const UART_BASE: usize = 0x10000000;
@@ -47,7 +43,6 @@ pub struct WGCRegisterBlock {
     reserved: RO<u32>,
     pub errcause: RW<u64>,
     pub erraddr: RW<u64>,
-    //pub slots: [WGCSlot; NUM_N_SLOTS + 1],     // FIXME: this does not work.. why?
 }
 
 #[repr(C)]
@@ -72,30 +67,6 @@ impl WGChecker {
         }
     }
 
-    pub fn from(base: usize, size: usize) -> Result<WGChecker, Error> {
-        if FLASH_BASE <= base && base + size < FLASH_BASE + FLASH_SIZE {
-            Ok(WGChecker::new(WGC_FLASH_BASE))
-        } else if UART_BASE <= base && base + size < UART_BASE + UART_SIZE {
-            Ok(WGChecker::new(WGC_UART_BASE))
-        } else if MYDEV_BASE <= base && base + size < MYDEV_BASE + MYDEV_SIZE {
-            Ok(WGChecker::new(WGC_MYDEV_BASE))
-        } else if DRAM_BASE <= base {
-            Ok(WGChecker::new(WGC_DRAM_BASE))
-        } else {
-            Err(Error::Invalid)
-        }
-    }
-
-    #[inline]
-    pub fn get_vendor(&self) -> u32 {
-        self.p_wgc.vendor.read()
-    }
-
-    #[inline]
-    pub fn get_impid(&self) -> u32 {
-        self.p_wgc.impid.read()
-    }
-
     #[inline]
     pub fn get_nslots(&self) -> u32 {
         self.p_wgc.nslots.read()
@@ -107,26 +78,8 @@ impl WGChecker {
     }
 
     #[inline]
-    pub fn set_errcause(&self, wid: u8, r: bool, w: bool, be: bool, ip: bool) {
-        unsafe {
-            self.p_wgc.errcause.modify(|v| {
-                v | ((wid as u64)
-                    | (r as u64) << WGC_ERRCAUSE_R_SHIFT
-                    | (w as u64) << WGC_ERRCAUSE_W_SHIFT
-                    | (be as u64) << WGC_ERRCAUSE_BE_SHIFT
-                    | (ip as u64) << WGC_ERRCAUSE_IP_SHIFT)
-            })
-        }
-    }
-
-    #[inline]
     pub fn get_erraddr(&self) -> u64 {
         self.p_wgc.erraddr.read()
-    }
-
-    #[inline]
-    pub fn set_erraddr(&self, addr: u64) {
-        unsafe { self.p_wgc.erraddr.write(addr) }
     }
 
     #[inline]
@@ -207,17 +160,10 @@ pub fn region_free(region_idx: usize) -> Result<(), Error> {
     }
 
     let region = unsafe { REGIONS[region_idx].as_ref().unwrap() };
-    let reg_idx = if region.is_tor() {
-        region.index() + 1
-    } else {
-        region.index()
-    };
+    let reg_idx = region.index();
     unsafe {
         REGION_VALID[region_idx] = false;
         REG_BITMAP &= !(1 << reg_idx);
-    }
-    if region.needs_two_entries() {
-        unsafe { REG_BITMAP &= !(1 << (reg_idx - 1)) };
     }
 
     unsafe { REGIONS[region_idx] = None }
@@ -420,18 +366,15 @@ pub fn tor_region_init<'a>(
         return Err(Error::MaxReached);
     }
 
-    let reg_idx = get_conseq_free_reg_idx().unwrap();
-    if ((unsafe { REG_BITMAP } & (1 << reg_idx)) != 0)
-        || ((unsafe { REG_BITMAP } & (1 << reg_idx + 1)) != 0)
-        || (reg_idx + 1 > WGC_HW_SLOTS)
-    {
+    let reg_idx = get_free_reg_idx().ok_or(Error::MaxReached)?;
+    if (unsafe { REG_BITMAP } & (1 << reg_idx)) != 0 || reg_idx >= WGC_HW_SLOTS {
         return Err(Error::MaxReached);
     }
 
     let region_idx = region_idx.unwrap();
 
-    // FIXME: looks incorrect logic below.
-    // initialize the region
+    // TOR end slot only; TOR start is derived implicitly from the preceding NAPOT slot
+    // (SM region NAPOT end + 1 = SMM_END), so no explicit TOR-start slot is needed.
     unsafe {
         REGIONS[region_idx] = Some(Region {
             size,
@@ -445,9 +388,6 @@ pub fn tor_region_init<'a>(
         REGION_VALID[region_idx] = true;
         REG_BITMAP |= 1 << reg_idx;
     }
-    if reg_idx > 0 {
-        unsafe { REG_BITMAP |= 1 << (reg_idx + 1) };
-    }
 
     Ok(region_idx)
 }
@@ -458,13 +398,8 @@ fn set_wg_slot(region_idx: usize, perm: u64) -> Result<(), Error> {
         return Err(Error::Invalid);
     }
     let region = unsafe { REGIONS[region_idx].as_ref().unwrap() };
-    let reg_idx = if region.is_tor() { region.index() + 1 } else { region.index() };
+    let reg_idx = region.index();
     let dram = WGChecker::new(WGC_DRAM_BASE);
-    if region.is_tor() {
-        dram.set_slot_cfg(reg_idx - 1, 0x0);
-        dram.set_slot_addr(reg_idx - 1, (region.addr() >> 2) as u64);
-        dram.set_slot_perm(reg_idx - 1, 0);
-    }
     dram.set_slot_cfg(reg_idx, WGC_CFG_ER | WGC_CFG_EW | WGC_CFG_IR | WGC_CFG_IW | region.mode);
     dram.set_slot_addr(reg_idx, region.wgaddr_val());
     dram.set_slot_perm(reg_idx, perm);
@@ -473,6 +408,11 @@ fn set_wg_slot(region_idx: usize, perm: u64) -> Result<(), Error> {
 
 /// Sets a WGC slot for an enclave EPM — grants R+W to `wid` only.
 pub fn set_wg_for_enclave(region_idx: usize, wid: usize) -> Result<(), Error> {
+    let region = unsafe { REGIONS[region_idx].as_ref() };
+    if let Some(r) = region {
+        hprintln!("[EPM] mode={} pa=0x{:x} size=0x{:x} wid={}",
+            if r.is_napot() { "NAPOT" } else { "TOR" }, r.addr(), r.size(), wid);
+    }
     set_wg_slot(region_idx, 3u64 << (wid * 2))
 }
 
@@ -514,26 +454,39 @@ pub fn set_wg(region_idx: usize) -> Result<(), Error> {
     }
 
     let region = unsafe { REGIONS[region_idx].as_ref().unwrap() };
-    let reg_idx = if region.is_tor() {
-        region.index() + 1
-    } else {
-        region.index()
-    };
+    let reg_idx = region.index();
 
     let dram = WGChecker::new(WGC_DRAM_BASE);
-    if region.is_tor() {
-        dram.set_slot_cfg(reg_idx - 1, 0x0);
-        dram.set_slot_addr(reg_idx - 1, (region.addr() >> 2) as u64);
-        dram.set_slot_perm(reg_idx - 1, 0); // RW for w3 only
-    }
     dram.set_slot_cfg(
         reg_idx,
         WGC_CFG_ER | WGC_CFG_EW | WGC_CFG_IR | WGC_CFG_IW | region.mode,
     );
     dram.set_slot_addr(reg_idx, region.wgaddr_val());
-    dram.set_slot_perm(reg_idx, region.perm); // RW for w3 only
+    dram.set_slot_perm(reg_idx, region.perm);
 
     Ok(())
+}
+
+/// Finds and removes the OS_WID setup slot installed for an EPM PA range by prepare_epm_slot.
+/// Clears hardware WGC slot and frees the region structure.
+/// Matches only regions whose perm has OS_WID bits set to avoid accidentally removing
+/// the enclave-WID lazy EPM region (same addr/size but different perm).
+pub fn remove_setup_slot_for_pa(pa: usize, size: usize) -> Result<(), Error> {
+    let os_wid_mask = 3u64 << (OS_WID * 2);
+    for i in 1..WG_MAX_N_REGION {
+        if is_wg_region_valid(i) {
+            let (raddr, rsize, rperm) = unsafe {
+                let r = REGIONS[i].as_ref().unwrap();
+                (r.addr(), r.size(), r.perm)
+            };
+            if raddr == pa && rsize == size && (rperm & os_wid_mask) != 0 {
+                reset_wg(i)?;
+                region_free(i)?;
+                return Ok(());
+            }
+        }
+    }
+    Err(Error::Invalid)
 }
 
 pub fn reset_wg(region_idx: usize) -> Result<(), Error> {
@@ -542,83 +495,96 @@ pub fn reset_wg(region_idx: usize) -> Result<(), Error> {
     }
 
     let region = unsafe { REGIONS[region_idx].as_ref().unwrap() };
-    let reg_idx = if region.is_tor() {
-        region.index() + 1
-    } else {
-        region.index()
-    };
+    let reg_idx = region.index();
 
     let dram = WGChecker::new(WGC_DRAM_BASE);
-    if region.is_tor() {
-        dram.set_slot_cfg(reg_idx - 1, 0);
-        dram.set_slot_addr(reg_idx - 1, 0);
-        dram.set_slot_perm(reg_idx - 1, 0); // RW for w3 only
-    }
     dram.set_slot_cfg(reg_idx, 0);
     dram.set_slot_addr(reg_idx, 0);
-    dram.set_slot_perm(reg_idx, 0); // RW for w3 only
+    dram.set_slot_perm(reg_idx, 0);
 
     Ok(())
 }
 
+/// Installs the SM region's HW slot as a TOR address anchor at SMM_END with perm=0.
+/// hw_bypass (TRUSTED_WID) handles all SM DRAM access; this slot's only role is to
+/// anchor the OS TOR start address so that slot[index+1] (OS TOR end) covers [SMM_END, POOL_BASE).
+pub fn set_wg_smm_anchor(region_id: usize) -> Result<(), Error> {
+    if !is_wg_region_valid(region_id) {
+        return Err(Error::Invalid);
+    }
+    let region = unsafe { REGIONS[region_id].as_ref().unwrap() };
+    let reg_idx = region.index();
+    let smm_end = (region.addr() + region.size()) as u64;
+    let dram = WGChecker::new(WGC_DRAM_BASE);
+    dram.set_slot_cfg(reg_idx, WGC_CFG_A_TOR);
+    dram.set_slot_addr(reg_idx, smm_end >> 2);
+    dram.set_slot_perm(reg_idx, 0);
+    Ok(())
+}
+
+/// Arms the hw_bypass slot (slot[nslots]) for lazy EPM slot loading.
+/// hw_bypass stays A_TOR (covers [0, DRAM_END)) with perm=TRUSTED_WID only and ER=1.
+/// - WID31 (M-mode/SM): perm match → full pool access, no bus error.
+/// - Any other WID hitting an unmatched pool address: perm miss + ER=1 →
+///   CAUSE_FETCH_ACCESS → SM lazy-installs the EPM WGC slot.
+/// Call once from osm_init after the OS region slot is installed.
+pub fn arm_hw_bypass_for_lazy_load() {
+    let dram = WGChecker::new(WGC_DRAM_BASE);
+    let nslots = dram.get_nslots() as usize;
+    // ER=1 so wrong-WID fetches to pool generate CAUSE_FETCH_ACCESS (lazy load trigger).
+    dram.set_slot_cfg(nslots, WGC_CFG_A_TOR | WGC_CFG_ER);
+    dram.set_slot_perm(nslots, 3u64 << (TRUSTED_WID * 2));
+}
+
 pub fn display() {
     let dram = WGChecker::new(WGC_DRAM_BASE);
-    let vendor = dram.get_vendor();
-    let impid = dram.get_impid();
     let nslots = dram.get_nslots();
     let errcause = dram.get_errcause();
     let erraddr = dram.get_erraddr();
 
     hprintln!(
-        "[WGCSR] mlwid: {:#x} mwiddeleg {:#x}",
+        "[WGC] mlwid={:#x} mwiddeleg={:#x} nslots={} errcause={:#x} erraddr={:#x}",
         csr_read_custom!(0x390),
-        csr_read_custom!(0x748)
-    );
-    hprintln!(
-        "[WGC][DRAM] REGs vendor: {} impid: {} nslots: {} errcause: {:#x} erraddr: {:#x}",
-        vendor,
-        impid,
+        csr_read_custom!(0x748),
         nslots,
         errcause,
         erraddr
     );
+    hprintln!("[WGC] {:>4}  {:>5}  {:>18}  {:>18}  ER EW IR IW | perm",
+        "slot", "mode", "addr(raw)", "pa");
+    hprintln!("[WGC] --------------------------------------------------------------------------------");
 
-    for idx in 0..(nslots + 1) {
-        let addr = dram.get_slot_addr(idx as usize);
-        let cfg = dram.get_slot_cfg(idx as usize);
-        let perm = dram.get_slot_perm(idx as usize);
+    for idx in 0..=(nslots as usize) {
+        let raw_addr = dram.get_slot_addr(idx);
+        let cfg = dram.get_slot_cfg(idx);
+        let perm = dram.get_slot_perm(idx);
 
-        hprintln!(
-            "[WGC][DRAM][Slot-{}] cfg: {:#x} addr: {:#x} perm: {:#x}",
-            idx as usize,
-            cfg,
-            addr,
-            perm
-        );
+        let a = cfg & 0x3;
+        let mode_str = match a {
+            0 => "OFF  ",
+            1 => "TOR  ",
+            2 => "NA4  ",
+            3 => "NAPOT",
+            _ => "?????",
+        };
+        let er = if (cfg >> 8) & 1 != 0 { 1u32 } else { 0 };
+        let ew = if (cfg >> 9) & 1 != 0 { 1u32 } else { 0 };
+        let ir = if (cfg >> 10) & 1 != 0 { 1u32 } else { 0 };
+        let iw = if (cfg >> 11) & 1 != 0 { 1u32 } else { 0 };
+
+        let pa = (raw_addr as u64) << 2;
+
+        let label = if idx == 0 {
+            " (slot0)"
+        } else if idx == nslots as usize {
+            " (hw_bypass)"
+        } else {
+            ""
+        };
+
+        hprintln!("[WGC] {:>4}  {}  {:>#18x}  {:>#18x}  {}  {}  {}  {} | {:#018x}{}",
+            idx, mode_str, raw_addr, pa, er, ew, ir, iw, perm, label);
     }
+    hprintln!("[WGC] --------------------------------------------------------------------------------");
 }
 
-pub fn display_regions() {
-    hprintln!("Display WG Regions");
-    unsafe {
-        hprintln!("REG_BITMAP: {:x}", REG_BITMAP);
-    }
-    hprintln!("+----------------+----------------+--------+--------+--------+----+");
-    hprintln!("+     address    +     size       +  mode  +  perm  + overlap+ idx+");
-    hprintln!("+----------------+----------------+--------+--------+--------+----+");
-    for rid in 0..WG_MAX_N_REGION {
-        unsafe {
-            if let Some(region) = &REGIONS[rid] {
-                hprint!("|{:>16x}", region.addr);
-                hprint!("|{:>16x}", region.size);
-                hprint!("|{:>8x}", region.mode);
-                hprint!("|{:>8x}", region.perm);
-                hprint!("|{:>8}", region.allow_overlap);
-                hprint!("|{:>4}", region.index);
-                hprintln!("|");
-                hprintln!("+----------------+----------------+--------+--------+--------+----+");
-            }
-        }
-    }
-    //display();
-}
