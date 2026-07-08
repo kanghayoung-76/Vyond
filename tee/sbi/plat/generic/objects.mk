@@ -10,7 +10,12 @@ platform-runcmd = qemu-system-riscv$(PLATFORM_RISCV_XLEN) -M virt -m 256M \
 
 # Blobs to build
 FW_TEXT_START=0x80000000
-FW_ENC_SIZE = 0x80000   # SM binary end ~0x80067000 (412KB), 512KB gives safe margin
+# FW_ENC_SIZE must be 0 on FPGA: RISC-V kernel requires a 2MB-aligned load address
+# (Image text_offset=0x200000). The old 0x80000 margin made FW_PAYLOAD_OFFSET=0x280000,
+# which is NOT 2MB-aligned -> kernel silently fails to boot on real HW (QEMU tolerated it).
+# The SM binary ends ~0x80067000 (412KB), already well below 0x80200000, so no margin is
+# needed. With 0 the payload lands at 0x80200000 and FDT at 0x82200000 (matches Vyond-main).
+FW_ENC_SIZE = 0
 FW_DYNAMIC=y
 FW_JUMP=y
 ifeq ($(PLATFORM_RISCV_XLEN), 32)

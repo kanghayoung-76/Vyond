@@ -1,1 +1,8 @@
 tee/ubuntu24/ubuntu-24.04-preinstalled-server-riscv64.img
+
+# 로컬 conda 툴체인 심링크 (머신 종속)
+chipyard-1.11.0/.conda-env
+# unpack.sh가 tracked된 -part-aa/ab/ac에서 재조립하는 산출물 (64MB, 재생성 가능)
+prebuilt/qemu-system-riscv64
+# 내부(A 리포) 비교 분석 문서
+BRANCH-DIFF-vs-Vyond-main.md

@@ -818,6 +818,11 @@ sbi_hart_switch_mode(unsigned long arg0, unsigned long arg1,
 		}
 	}
 
+	/* JARA : Debug print (localize SM-init vs kernel-handoff crash) */
+	sbi_printf("[Debug] JUMP TO LINUX: next_addr=%lx arg1=%lx next_mode=%lx\n",
+		   next_addr, arg1, next_mode);
+	/* End of JARA */
+
 	register unsigned long a0 asm("a0") = arg0;
 	register unsigned long a1 asm("a1") = arg1;
 	__asm__ __volatile__("mret" : : "r"(a0), "r"(a1));

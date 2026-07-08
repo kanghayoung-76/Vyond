@@ -41,10 +41,19 @@ pub fn sm_wait_for_completion() {
 #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
 fn init_peripheral_wgc() {
     csr_write_custom!(0x390, wg::OS_WID); // Set mlwid
-    let flash = wg::WGChecker::new(wg::WGC_FLASH_BASE);
-    flash.set_slot_perm(flash.get_nslots() as usize, u64::MAX);
-    let uart = wg::WGChecker::new(wg::WGC_UART_BASE);
-    uart.set_slot_perm(uart.get_nslots() as usize, u64::MAX);
+    // The Vyond-main WGRocket8VCU118 bitstream exposes PLIC/BOOTROM/PERIPHERY
+    // WGCheckers (0x6003000/0x6004000/0x6005000), NOT FLASH/UART (0x6001000/0x6002000).
+    // Accessing the absent FLASH/UART checker faults (observed: mtval=0x6001008).
+    // Open the present checkers NAPOT-all for all worlds (matches Vyond-main SM).
+    // Note idx off-by-one: wg.rs idx N -> HW slot (N-1); idx=1 hits HW slot0.
+    let perm_all = wg::WGC_ALL_PERM as u64;
+    let cfg_napot_all = wg::WGC_CFG_ER | wg::WGC_CFG_EW | wg::WGC_CFG_A_NAPOT;
+    for base in [wg::WGC_PLIC_BASE, wg::WGC_BOOTROM_BASE, wg::WGC_PERIPHERY_BASE] {
+        let wgc = wg::WGChecker::new(base);
+        wgc.set_slot_addr(1, !0u64 >> 1); // NAPOT, covers all
+        wgc.set_slot_perm(1, perm_all);
+        wgc.set_slot_cfg(1, cfg_napot_all);
+    }
 }
 
 pub fn smm_init<'a>() -> Result<(), Error> {
@@ -81,19 +90,31 @@ pub fn osm_init<'a>() -> Result<(), Error> {
 
     #[cfg(feature = "isolator_wg")]
     {
-        // Register the OS region in software for tracking, but do NOT write it to hardware.
-        // Writing a catch-all TOR slot covering all DRAM would inject OS_WID into every
-        // EPM and SHM slot via WGC OR semantics, breaking enclave isolation.
-        // Bounded OS-only hardware slots must be programmed explicitly after this call.
-        let region = wg::region_init(
-            SMM_BASE + SMM_SIZE,
-            usize::MAX,
-            (3 << (wg::OS_WID * 2)) | 3,
-            false,
-        )?;
-        wg::set_wg(region);
+        // FPGA milestone-1 (boot): use Vyond-main's proven NAPOT catch-all OS region.
+        //
+        // The bounded-TOR OS region below (start=0x80200000) drives set_wg's TOR path,
+        // which on the WGRocket8VCU118 bitstream disturbs the SMM slot so that the M-mode
+        // trap handler's own instruction fetch (WID7, inside SMM) gets denied right after
+        // the kernel jump -> illegal-instruction loop at _trap_handler (csrrw mscratch,
+        // observed mcause=2 mtval=0 mepc=0x800004f0). Vyond-main deliberately avoids TOR:
+        // NAPOT-all (start=0) takes the NAPOT path and does NOT clobber the SMM slot; the
+        // lower-index SMM slot wins priority so SM stays isolated, and this catch-all grants
+        // every other world access elsewhere.
+        //
+        // NOTE: this weakens enclave EPM isolation (OS_WID can reach EPM via the catch-all,
+        // and the on-demand slot-virtualization fault never triggers). Acceptable for the
+        // boot milestone; restore bounded OS slots once the TOR/SMM interaction is fixed.
+        let region = wg::region_init(0, usize::MAX, wg::WGC_ALL_PERM as u64, true)?;
+        wg::set_wg(region)?;
         OS_REGION_ID.set(region);
         Ok(())
+
+        // --- B's original bounded-TOR design (kept for restoration) ---
+        // let region = wg::region_init(
+        //     SMM_BASE + SMM_SIZE, usize::MAX, (3 << (wg::OS_WID * 2)) | 3, false)?;
+        // wg::set_wg(region);
+        // OS_REGION_ID.set(region);
+        // Ok(())
     }
     #[cfg(feature = "isolator_hybrid")]
     {

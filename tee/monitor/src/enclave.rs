@@ -254,9 +254,11 @@ impl Enclave {
 
         if load_parameters {
             regs.mepc = self.pa_params.dram_base - 4; // regs->mepc will be +4 before sbi_ecall_handler return
-            // MPIE=1 → after MRET, MIE=1 so M-mode timer can preempt loading.
-            // a0-a4 are saved by swap_prev_state, so PA params survive preemption.
-            regs.mstatus = (1 << crate::encoding::MSTATUS_MPP_SHIFT) | crate::encoding::MSTATUS_MPIE;
+            // FPGA(WG) 적응: 로딩 중 인터럽트 OFF (MPIE 제거). MPIE=1이면 loader가 부트
+            // 파라미터(a1-a7)를 저장하기 전 M-mode 타이머가 선점 → 재진입은 load_parameters=false
+            // 경로라 a1-a7을 다시 세팅하지 않고 stale thread state를 복원 → loader가 boot-param=0
+            // 수신. 인터럽트를 꺼서 mret~loader 구간 선점을 막아 a1-a7이 loader까지 온전히 전달됨.
+            regs.mstatus = 1 << crate::encoding::MSTATUS_MPP_SHIFT;
             regs.a1 = self.pa_params.dram_base; // $a1: (PA) DRAM base,
             regs.a2 = self.pa_params.dram_size; // $a2: (PA) DRAM size,
             regs.a3 = self.pa_params.runtime_base; // $a3: (PA) kernel location,
@@ -266,6 +268,30 @@ impl Enclave {
             regs.a7 = self.pa_params.untrusted_size; // $a7: (size_t) utm size
 
             csr_write!(satp, 0);
+
+            // FPGA(WG) boot-param stash: WG-aware Rocket가 mret 시 a1-a4를 클리어하므로
+            // loader가 레지스터에서 부트 파라미터를 못 읽음. 고정 EPM slot(0x83700000)에
+            // 미리 써두면 loader의 _start가 거기서 복구함. 아래 EPM flush보다 먼저 실행돼야
+            // 값이 메모리에 도달함. (SD의 .ke loader가 이 slot을 읽음 = 기존 A와 동일)
+            unsafe {
+                let p = BOOT_PARAM_SLOT as *mut usize;
+                p.add(0).write_volatile(self.pa_params.dram_base);
+                p.add(1).write_volatile(self.pa_params.dram_size);
+                p.add(2).write_volatile(self.pa_params.runtime_base);
+                p.add(3).write_volatile(self.pa_params.user_base);
+                p.add(4).write_volatile(self.pa_params.free_base);
+                p.add(5).write_volatile(self.pa_params.untrusted_base);
+                p.add(6).write_volatile(self.pa_params.untrusted_size);
+            }
+
+            // FPGA(WG) 캐시 코히런스: host(OS, host-WID)가 enclave 코드(runtime+loader+eapp)를
+            // EPM에 써넣은 것이 host-WID L1 D캐시에 갇혀 있음. enclave는 다른 WID로 실행되어 그
+            // 라인을 못 보고 메모리의 stale(0)을 읽음. 인클루시브 L2 flush 레지스터로 host-WID
+            // dirty 라인을 메모리로 내린 뒤, fence.i로 I캐시를 무효화해 갓 로드된 코드를 페치하게 함.
+            // (QEMU엔 WID-tagged 캐시가 없어 신규 코드엔 이 처리가 없었음 = 관문4)
+            flush_epm_to_memory(self.pa_params.dram_base, self.pa_params.dram_size);
+            flush_epm_to_memory(BOOT_PARAM_SLOT, CACHE_BLOCK_BYTES);
+            unsafe { core::arch::asm!("fence.i", options(nostack)); }
         }
 
         switch_vector_enclave();
@@ -332,6 +358,31 @@ impl Enclave {
 
 pub const MAX_ENCLAVES: usize = 16;
 pub const MAX_SHARED_REGIONS: usize = 8;
+
+/// SiFive InclusiveCache (L2) control register: 64-bit PA를 써넣으면 그 라인을 L2에서
+/// flush(writeback+invalidate). MMIO store는 flush 완료까지 블록됨. (기존 A와 동일)
+const L2_CTRL_FLUSH64: usize = 0x2010000 + 0x200;
+const CACHE_BLOCK_BYTES: usize = 64;
+/// loader의 _start가 부트 파라미터를 복구하는 고정 EPM scratch slot.
+/// 런타임 loader에 하드코딩된 주소와 일치해야 함. (기존 A와 동일 = 0x83700000)
+const BOOT_PARAM_SLOT: usize = 0x83700000;
+
+/// 주어진 물리범위를 캐시블록 단위로 L2 flush 레지스터에 흘려 메모리로 writeback.
+/// enclave 첫 진입 전 1회 호출 → enclave가 host-WID L1에 갇힌 stale 대신 host가 로드한
+/// EPM(코드/파라미터)을 메모리에서 올바로 읽게 함. (관문4, 기존 A에서 이식)
+fn flush_epm_to_memory(pa_start: usize, size: usize) {
+    let mut pa = pa_start & !(CACHE_BLOCK_BYTES - 1);
+    let end = pa_start + size;
+    while pa < end {
+        unsafe {
+            core::ptr::write_volatile(L2_CTRL_FLUSH64 as *mut u64, pa as u64);
+        }
+        pa += CACHE_BLOCK_BYTES;
+    }
+    unsafe {
+        core::arch::asm!("fence", options(nostack));
+    }
+}
 
 const INIT_VALUE: Option<Enclave> = None;
 static mut ENCLAVES: [Option<Enclave>; MAX_ENCLAVES] = [INIT_VALUE; MAX_ENCLAVES];

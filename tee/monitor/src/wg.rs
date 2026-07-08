@@ -27,6 +27,12 @@ pub const WGC_ALL_PERM: usize = usize::MAX; // 2 bits per world * 32 worlds = 64
 pub const WGC_DRAM_BASE: usize = 0x600_0000;
 pub const WGC_FLASH_BASE: usize = 0x600_1000;
 pub const WGC_UART_BASE: usize = 0x600_2000;
+// WGChecker MMIO layout of the Vyond-main WGRocket8VCU118 bitstream (from its .dts):
+// memport(DRAM)@0x6000000, plic@0x6003000, bootrom@0x6004000, periphery@0x6005000.
+// (No FLASH/UART checker exist in that bitstream.)
+pub const WGC_PLIC_BASE: usize = 0x600_3000;
+pub const WGC_BOOTROM_BASE: usize = 0x600_4000;
+pub const WGC_PERIPHERY_BASE: usize = 0x600_5000;
 const DRAM_BASE: usize = 0x8000_0000;
 const FLASH_BASE: usize = 0x20000000;
 const FLASH_SIZE: usize = 0x4000000;
@@ -473,7 +479,14 @@ pub fn set_wg_for_enclave(region_idx: usize, wid: usize) -> Result<(), Error> {
 /// access to every region it was mapped to (EPM, SHM, etc.).
 pub fn invalidate_wid_in_all_slots(wid: usize) {
     let dram = WGChecker::new(WGC_DRAM_BASE);
-    let nslots = dram.get_nslots() as usize;
+    // Do NOT trust get_nslots(): on the Vyond-main WGRocket8VCU118 bitstream the DRAM
+    // (memport) checker's nslots register returns a bogus large value, so an unbounded
+    // loop walks past this checker's 0x1000 MMIO page into the absent FLASH checker
+    // (0x6001000) -> load access fault (observed: mcause=5 mtval=0x6001008).
+    // Slot i lives at WGC_DRAM_BASE + 0x20 + i*0x20, so clamp to WGC_HW_SLOTS to stay
+    // inside the page. Empty/unused slots read perm=0 and are skipped, so over-scanning
+    // the real slot count is harmless.
+    let nslots = core::cmp::min(dram.get_nslots() as usize, WGC_HW_SLOTS);
     let wid_mask = 3u64 << (wid as u64 * 2);
     for slot_idx in 0..=nslots {
         if (dram.get_slot_perm(slot_idx) & wid_mask) != 0 {
@@ -557,7 +570,9 @@ pub fn display() {
     let dram = WGChecker::new(WGC_DRAM_BASE);
     let vendor = dram.get_vendor();
     let impid = dram.get_impid();
-    let nslots = dram.get_nslots();
+    // Clamp: the bitstream's DRAM checker nslots register is bogus (see
+    // invalidate_wid_in_all_slots); an unbounded scan faults off the MMIO page.
+    let nslots = core::cmp::min(dram.get_nslots() as usize, WGC_HW_SLOTS) as u32;
     let errcause = dram.get_errcause();
     let erraddr = dram.get_erraddr();
 
