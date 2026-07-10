@@ -805,6 +805,71 @@ split-bridge-host-package/fast:
 	$(MAKE) $(MAKESILENT) -f split-host-test/CMakeFiles/split-bridge-host-package.dir/build.make split-host-test/CMakeFiles/split-bridge-host-package.dir/build
 .PHONY : split-bridge-host-package/fast
 
+#=============================================================================
+# Target rules for targets named beebs-crc32
+
+# Build rule for target.
+beebs-crc32: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 beebs-crc32
+.PHONY : beebs-crc32
+
+# fast build rule for target.
+beebs-crc32/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/beebs-bench/CMakeFiles/beebs-crc32.dir/build.make paper_eval/beebs-bench/CMakeFiles/beebs-crc32.dir/build
+.PHONY : beebs-crc32/fast
+
+#=============================================================================
+# Target rules for targets named beebs-crc32-runner
+
+# Build rule for target.
+beebs-crc32-runner: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 beebs-crc32-runner
+.PHONY : beebs-crc32-runner
+
+# fast build rule for target.
+beebs-crc32-runner/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/build.make paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/build
+.PHONY : beebs-crc32-runner/fast
+
+#=============================================================================
+# Target rules for targets named eyrie-beebs-crc32-eyrie
+
+# Build rule for target.
+eyrie-beebs-crc32-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-beebs-crc32-eyrie
+.PHONY : eyrie-beebs-crc32-eyrie
+
+# fast build rule for target.
+eyrie-beebs-crc32-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/beebs-bench/CMakeFiles/eyrie-beebs-crc32-eyrie.dir/build.make paper_eval/beebs-bench/CMakeFiles/eyrie-beebs-crc32-eyrie.dir/build
+.PHONY : eyrie-beebs-crc32-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named beebs-crc32-eyrie
+
+# Build rule for target.
+beebs-crc32-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 beebs-crc32-eyrie
+.PHONY : beebs-crc32-eyrie
+
+# fast build rule for target.
+beebs-crc32-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/beebs-bench/CMakeFiles/beebs-crc32-eyrie.dir/build.make paper_eval/beebs-bench/CMakeFiles/beebs-crc32-eyrie.dir/build
+.PHONY : beebs-crc32-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named beebs-crc32-package
+
+# Build rule for target.
+beebs-crc32-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 beebs-crc32-package
+.PHONY : beebs-crc32-package
+
+# fast build rule for target.
+beebs-crc32-package/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/beebs-bench/CMakeFiles/beebs-crc32-package.dir/build.make paper_eval/beebs-bench/CMakeFiles/beebs-crc32-package.dir/build
+.PHONY : beebs-crc32-package/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -815,12 +880,15 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... attestor-eyrie"
 	@echo "... attestor-package"
+	@echo "... beebs-crc32-eyrie"
+	@echo "... beebs-crc32-package"
 	@echo "... dds-bridge-eyrie"
 	@echo "... dds-bridge-package"
 	@echo "... dev-irq-test-package"
 	@echo "... dev_irq_eapp-eyrie"
 	@echo "... examples"
 	@echo "... eyrie-attestor-eyrie"
+	@echo "... eyrie-beebs-crc32-eyrie"
 	@echo "... eyrie-dev_irq_eapp-eyrie"
 	@echo "... eyrie-hello-eyrie"
 	@echo "... eyrie-ros_e1-eyrie"
@@ -844,6 +912,8 @@ help:
 	@echo "... wg-slot-package"
 	@echo "... attestor"
 	@echo "... attestor-runner"
+	@echo "... beebs-crc32"
+	@echo "... beebs-crc32-runner"
 	@echo "... dds-bridge"
 	@echo "... dds-runner"
 	@echo "... dds-sub"

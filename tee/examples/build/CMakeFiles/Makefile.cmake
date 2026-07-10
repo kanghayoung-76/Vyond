@@ -64,6 +64,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "attestation/runtime/tmp/eyrie-attestor-eyrie-mkdirs.cmake"
   "dev-irq-test/runtime/tmp/eyrie-dev_irq_eapp-eyrie-mkdirs.cmake"
   "hello/runtime/tmp/eyrie-hello-eyrie-mkdirs.cmake"
+  "paper_eval/beebs-bench/runtime/tmp/eyrie-beebs-crc32-eyrie-mkdirs.cmake"
   "ros/runtime/tmp/eyrie-ros_e1-eyrie-mkdirs.cmake"
   "ros/runtime/tmp/eyrie-ros_e2-eyrie-mkdirs.cmake"
   "shm-ocall-test/runtime/tmp/eyrie-shm-ocall-eyrie-mkdirs.cmake"
@@ -72,6 +73,8 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/hykang/Vyond/tee/examples/dds-tdds-test/CMakeLists.txt"
   "/home/hykang/Vyond/tee/examples/dev-irq-test/CMakeLists.txt"
   "/home/hykang/Vyond/tee/examples/hello/CMakeLists.txt"
+  "/home/hykang/Vyond/tee/examples/paper_eval/CMakeLists.txt"
+  "/home/hykang/Vyond/tee/examples/paper_eval/beebs-bench/CMakeLists.txt"
   "/home/hykang/Vyond/tee/examples/ros/CMakeLists.txt"
   "/home/hykang/Vyond/tee/examples/shm-ocall-test/CMakeLists.txt"
   "/home/hykang/Vyond/tee/examples/split-host-test/CMakeLists.txt"
@@ -138,6 +141,13 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "tdds-test/CMakeFiles/CMakeDirectoryInformation.cmake"
   "dds-tdds-test/CMakeFiles/CMakeDirectoryInformation.cmake"
   "split-host-test/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "paper_eval/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "paper_eval/beebs-bench/runtime/tmp/eyrie-beebs-crc32-eyrie-mkdirs.cmake"
+  "paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie-stamp/eyrie-beebs-crc32-eyrie-custominfo.txt"
+  "paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie-stamp/eyrie-beebs-crc32-eyrie-update-info.txt"
+  "paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie-stamp/eyrie-beebs-crc32-eyrie-patch-info.txt"
+  "paper_eval/beebs-bench/runtime/tmp/eyrie-beebs-crc32-eyrie-cfgcmd.txt"
+  "paper_eval/beebs-bench/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
@@ -195,4 +205,9 @@ set(CMAKE_DEPEND_INFO_FILES
   "split-host-test/CMakeFiles/split-eyrie.dir/DependInfo.cmake"
   "split-host-test/CMakeFiles/split-sub-host-package.dir/DependInfo.cmake"
   "split-host-test/CMakeFiles/split-bridge-host-package.dir/DependInfo.cmake"
+  "paper_eval/beebs-bench/CMakeFiles/beebs-crc32.dir/DependInfo.cmake"
+  "paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/DependInfo.cmake"
+  "paper_eval/beebs-bench/CMakeFiles/eyrie-beebs-crc32-eyrie.dir/DependInfo.cmake"
+  "paper_eval/beebs-bench/CMakeFiles/beebs-crc32-eyrie.dir/DependInfo.cmake"
+  "paper_eval/beebs-bench/CMakeFiles/beebs-crc32-package.dir/DependInfo.cmake"
   )

@@ -71,3 +71,12 @@
 /home/hykang/Vyond/tee/examples/build/split-host-test/CMakeFiles/split-bridge-host-package.dir
 /home/hykang/Vyond/tee/examples/build/split-host-test/CMakeFiles/edit_cache.dir
 /home/hykang/Vyond/tee/examples/build/split-host-test/CMakeFiles/rebuild_cache.dir
+/home/hykang/Vyond/tee/examples/build/paper_eval/CMakeFiles/edit_cache.dir
+/home/hykang/Vyond/tee/examples/build/paper_eval/CMakeFiles/rebuild_cache.dir
+/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/CMakeFiles/beebs-crc32.dir
+/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir
+/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/CMakeFiles/eyrie-beebs-crc32-eyrie.dir
+/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/CMakeFiles/beebs-crc32-eyrie.dir
+/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/CMakeFiles/beebs-crc32-package.dir
+/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/CMakeFiles/edit_cache.dir
+/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/CMakeFiles/rebuild_cache.dir
