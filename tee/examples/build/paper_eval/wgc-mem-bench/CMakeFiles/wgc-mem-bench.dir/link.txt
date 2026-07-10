@@ -1,0 +1,1 @@
+/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc -Wall -Wl,--dependency-file=CMakeFiles/wgc-mem-bench.dir/link.d "CMakeFiles/wgc-mem-bench.dir/eapp/wgc_mem_bench.c.o" -o wgc-mem-bench  -nostdlib -static /home/hykang/Vyond/tee/sdk/install/lib/libkeystone-eapp.a /home/hykang/Vyond/tee/sdk/install/lib/libkeystone-edge.a

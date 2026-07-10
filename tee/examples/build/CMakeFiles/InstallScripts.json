@@ -10,7 +10,11 @@
 		"/home/hykang/Vyond/tee/examples/build/dev-irq-test/cmake_install.cmake",
 		"/home/hykang/Vyond/tee/examples/build/tdds-test/cmake_install.cmake",
 		"/home/hykang/Vyond/tee/examples/build/dds-tdds-test/cmake_install.cmake",
-		"/home/hykang/Vyond/tee/examples/build/split-host-test/cmake_install.cmake"
+		"/home/hykang/Vyond/tee/examples/build/split-host-test/cmake_install.cmake",
+		"/home/hykang/Vyond/tee/examples/build/paper_eval/cmake_install.cmake",
+		"/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/cmake_install.cmake",
+		"/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/cmake_install.cmake",
+		"/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/cmake_install.cmake"
 	],
 	"Parallel" : false
 }

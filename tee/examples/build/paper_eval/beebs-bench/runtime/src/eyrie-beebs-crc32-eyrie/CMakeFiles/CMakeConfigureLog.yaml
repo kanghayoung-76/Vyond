@@ -1,0 +1,1419 @@
+
+---
+events:
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineSystem.cmake:12 (find_program)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_UNAME"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "uname"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    searched_directories:
+      - "/home/hykang/riscv/riscv/bin/uname"
+      - "/home/hykang/.local/bin/uname"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/uname"
+      - "/usr/local/sbin/uname"
+      - "/usr/local/bin/uname"
+      - "/usr/sbin/uname"
+    found: "/usr/bin/uname"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineSystem.cmake:212 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Linux - 6.8.0-134-generic - x86_64
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeUnixFindMake.cmake:5 (find_program)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_MAKE_PROGRAM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gmake"
+      - "make"
+      - "smake"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    searched_directories:
+      - "/home/hykang/riscv/riscv/bin/gmake"
+      - "/home/hykang/.local/bin/gmake"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/gmake"
+      - "/usr/local/sbin/gmake"
+      - "/usr/local/bin/gmake"
+      - "/usr/sbin/gmake"
+    found: "/usr/bin/gmake"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:468 (find_file)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:506 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCCompilerId.c.in"
+    candidate_directories:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/"
+    found: "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeCCompilerId.c.in"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: /home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc 
+      Build flags: -Wall
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+      
+      The C compiler identification is GNU, found in:
+        /home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie/CMakeFiles/4.3.4/CompilerIdC/a.out
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_AR"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "riscv64-unknown-linux-gnu-ar"
+      - "ar"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    found: "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-ar"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_RANLIB"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "riscv64-unknown-linux-gnu-ranlib"
+      - "ranlib"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    found: "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-ranlib"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_STRIP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "riscv64-unknown-linux-gnu-strip"
+      - "strip"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    found: "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-strip"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_LINKER"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "riscv64-unknown-linux-gnu-ld"
+      - "ld"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    found: "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-ld"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_NM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "riscv64-unknown-linux-gnu-nm"
+      - "nm"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    found: "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-nm"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJDUMP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "riscv64-unknown-linux-gnu-objdump"
+      - "objdump"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    found: "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-objdump"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_READELF"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "riscv64-unknown-linux-gnu-readelf"
+      - "readelf"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    found: "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-readelf"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_DLLTOOL"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "riscv64-unknown-linux-gnu-dlltool"
+      - "dlltool"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    searched_directories:
+      - "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-dlltool"
+      - "/home/hykang/.local/bin/riscv64-unknown-linux-gnu-dlltool"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/riscv64-unknown-linux-gnu-dlltool"
+      - "/usr/local/sbin/riscv64-unknown-linux-gnu-dlltool"
+      - "/usr/local/bin/riscv64-unknown-linux-gnu-dlltool"
+      - "/usr/sbin/riscv64-unknown-linux-gnu-dlltool"
+      - "/usr/bin/riscv64-unknown-linux-gnu-dlltool"
+      - "/sbin/riscv64-unknown-linux-gnu-dlltool"
+      - "/bin/riscv64-unknown-linux-gnu-dlltool"
+      - "/usr/games/riscv64-unknown-linux-gnu-dlltool"
+      - "/usr/local/games/riscv64-unknown-linux-gnu-dlltool"
+      - "/snap/bin/riscv64-unknown-linux-gnu-dlltool"
+      - "/home/hykang/riscv/riscv/bin/dlltool"
+      - "/home/hykang/.local/bin/dlltool"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/dlltool"
+      - "/usr/local/sbin/dlltool"
+      - "/usr/local/bin/dlltool"
+      - "/usr/sbin/dlltool"
+      - "/usr/bin/dlltool"
+      - "/sbin/dlltool"
+      - "/bin/dlltool"
+      - "/usr/games/dlltool"
+      - "/usr/local/games/dlltool"
+      - "/snap/bin/dlltool"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_ADDR2LINE"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "riscv64-unknown-linux-gnu-addr2line"
+      - "addr2line"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    found: "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-addr2line"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_TAPI"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "riscv64-unknown-linux-gnu-tapi"
+      - "tapi"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    searched_directories:
+      - "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-tapi"
+      - "/home/hykang/.local/bin/riscv64-unknown-linux-gnu-tapi"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/riscv64-unknown-linux-gnu-tapi"
+      - "/usr/local/sbin/riscv64-unknown-linux-gnu-tapi"
+      - "/usr/local/bin/riscv64-unknown-linux-gnu-tapi"
+      - "/usr/sbin/riscv64-unknown-linux-gnu-tapi"
+      - "/usr/bin/riscv64-unknown-linux-gnu-tapi"
+      - "/sbin/riscv64-unknown-linux-gnu-tapi"
+      - "/bin/riscv64-unknown-linux-gnu-tapi"
+      - "/usr/games/riscv64-unknown-linux-gnu-tapi"
+      - "/usr/local/games/riscv64-unknown-linux-gnu-tapi"
+      - "/snap/bin/riscv64-unknown-linux-gnu-tapi"
+      - "/home/hykang/riscv/riscv/bin/tapi"
+      - "/home/hykang/.local/bin/tapi"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/tapi"
+      - "/usr/local/sbin/tapi"
+      - "/usr/local/bin/tapi"
+      - "/usr/sbin/tapi"
+      - "/usr/bin/tapi"
+      - "/sbin/tapi"
+      - "/bin/tapi"
+      - "/usr/games/tapi"
+      - "/usr/local/games/tapi"
+      - "/snap/bin/tapi"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/Compiler/GNU-FindBinUtils.cmake:18 (find_program)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCCompiler.cmake:201 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_C_COMPILER_AR"
+    description: "A wrapper around 'ar' adding the appropriate '--plugin' option for the GCC compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "riscv64-unknown-linux-gnu-gcc-ar-16.1"
+      - "riscv64-unknown-linux-gnu-gcc-ar-16"
+      - "riscv64-unknown-linux-gnu-gcc-ar16"
+      - "riscv64-unknown-linux-gnu-gcc-ar"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    searched_directories:
+      - "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc-ar-16.1"
+      - "/home/hykang/.local/bin/riscv64-unknown-linux-gnu-gcc-ar-16.1"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/riscv64-unknown-linux-gnu-gcc-ar-16.1"
+      - "/usr/local/sbin/riscv64-unknown-linux-gnu-gcc-ar-16.1"
+      - "/usr/local/bin/riscv64-unknown-linux-gnu-gcc-ar-16.1"
+      - "/usr/sbin/riscv64-unknown-linux-gnu-gcc-ar-16.1"
+      - "/usr/bin/riscv64-unknown-linux-gnu-gcc-ar-16.1"
+      - "/sbin/riscv64-unknown-linux-gnu-gcc-ar-16.1"
+      - "/bin/riscv64-unknown-linux-gnu-gcc-ar-16.1"
+      - "/usr/games/riscv64-unknown-linux-gnu-gcc-ar-16.1"
+      - "/usr/local/games/riscv64-unknown-linux-gnu-gcc-ar-16.1"
+      - "/snap/bin/riscv64-unknown-linux-gnu-gcc-ar-16.1"
+      - "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc-ar-16"
+      - "/home/hykang/.local/bin/riscv64-unknown-linux-gnu-gcc-ar-16"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/riscv64-unknown-linux-gnu-gcc-ar-16"
+      - "/usr/local/sbin/riscv64-unknown-linux-gnu-gcc-ar-16"
+      - "/usr/local/bin/riscv64-unknown-linux-gnu-gcc-ar-16"
+      - "/usr/sbin/riscv64-unknown-linux-gnu-gcc-ar-16"
+      - "/usr/bin/riscv64-unknown-linux-gnu-gcc-ar-16"
+      - "/sbin/riscv64-unknown-linux-gnu-gcc-ar-16"
+      - "/bin/riscv64-unknown-linux-gnu-gcc-ar-16"
+      - "/usr/games/riscv64-unknown-linux-gnu-gcc-ar-16"
+      - "/usr/local/games/riscv64-unknown-linux-gnu-gcc-ar-16"
+      - "/snap/bin/riscv64-unknown-linux-gnu-gcc-ar-16"
+      - "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc-ar16"
+      - "/home/hykang/.local/bin/riscv64-unknown-linux-gnu-gcc-ar16"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/riscv64-unknown-linux-gnu-gcc-ar16"
+      - "/usr/local/sbin/riscv64-unknown-linux-gnu-gcc-ar16"
+      - "/usr/local/bin/riscv64-unknown-linux-gnu-gcc-ar16"
+      - "/usr/sbin/riscv64-unknown-linux-gnu-gcc-ar16"
+      - "/usr/bin/riscv64-unknown-linux-gnu-gcc-ar16"
+      - "/sbin/riscv64-unknown-linux-gnu-gcc-ar16"
+      - "/bin/riscv64-unknown-linux-gnu-gcc-ar16"
+      - "/usr/games/riscv64-unknown-linux-gnu-gcc-ar16"
+      - "/usr/local/games/riscv64-unknown-linux-gnu-gcc-ar16"
+      - "/snap/bin/riscv64-unknown-linux-gnu-gcc-ar16"
+    found: "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc-ar"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/Compiler/GNU-FindBinUtils.cmake:30 (find_program)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCCompiler.cmake:201 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_C_COMPILER_RANLIB"
+    description: "A wrapper around 'ranlib' adding the appropriate '--plugin' option for the GCC compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "riscv64-unknown-linux-gnu-gcc-ranlib-16.1"
+      - "riscv64-unknown-linux-gnu-gcc-ranlib-16"
+      - "riscv64-unknown-linux-gnu-gcc-ranlib16"
+      - "riscv64-unknown-linux-gnu-gcc-ranlib"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    searched_directories:
+      - "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc-ranlib-16.1"
+      - "/home/hykang/.local/bin/riscv64-unknown-linux-gnu-gcc-ranlib-16.1"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/riscv64-unknown-linux-gnu-gcc-ranlib-16.1"
+      - "/usr/local/sbin/riscv64-unknown-linux-gnu-gcc-ranlib-16.1"
+      - "/usr/local/bin/riscv64-unknown-linux-gnu-gcc-ranlib-16.1"
+      - "/usr/sbin/riscv64-unknown-linux-gnu-gcc-ranlib-16.1"
+      - "/usr/bin/riscv64-unknown-linux-gnu-gcc-ranlib-16.1"
+      - "/sbin/riscv64-unknown-linux-gnu-gcc-ranlib-16.1"
+      - "/bin/riscv64-unknown-linux-gnu-gcc-ranlib-16.1"
+      - "/usr/games/riscv64-unknown-linux-gnu-gcc-ranlib-16.1"
+      - "/usr/local/games/riscv64-unknown-linux-gnu-gcc-ranlib-16.1"
+      - "/snap/bin/riscv64-unknown-linux-gnu-gcc-ranlib-16.1"
+      - "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc-ranlib-16"
+      - "/home/hykang/.local/bin/riscv64-unknown-linux-gnu-gcc-ranlib-16"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/riscv64-unknown-linux-gnu-gcc-ranlib-16"
+      - "/usr/local/sbin/riscv64-unknown-linux-gnu-gcc-ranlib-16"
+      - "/usr/local/bin/riscv64-unknown-linux-gnu-gcc-ranlib-16"
+      - "/usr/sbin/riscv64-unknown-linux-gnu-gcc-ranlib-16"
+      - "/usr/bin/riscv64-unknown-linux-gnu-gcc-ranlib-16"
+      - "/sbin/riscv64-unknown-linux-gnu-gcc-ranlib-16"
+      - "/bin/riscv64-unknown-linux-gnu-gcc-ranlib-16"
+      - "/usr/games/riscv64-unknown-linux-gnu-gcc-ranlib-16"
+      - "/usr/local/games/riscv64-unknown-linux-gnu-gcc-ranlib-16"
+      - "/snap/bin/riscv64-unknown-linux-gnu-gcc-ranlib-16"
+      - "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc-ranlib16"
+      - "/home/hykang/.local/bin/riscv64-unknown-linux-gnu-gcc-ranlib16"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/riscv64-unknown-linux-gnu-gcc-ranlib16"
+      - "/usr/local/sbin/riscv64-unknown-linux-gnu-gcc-ranlib16"
+      - "/usr/local/bin/riscv64-unknown-linux-gnu-gcc-ranlib16"
+      - "/usr/sbin/riscv64-unknown-linux-gnu-gcc-ranlib16"
+      - "/usr/bin/riscv64-unknown-linux-gnu-gcc-ranlib16"
+      - "/sbin/riscv64-unknown-linux-gnu-gcc-ranlib16"
+      - "/bin/riscv64-unknown-linux-gnu-gcc-ranlib16"
+      - "/usr/games/riscv64-unknown-linux-gnu-gcc-ranlib16"
+      - "/usr/local/games/riscv64-unknown-linux-gnu-gcc-ranlib16"
+      - "/snap/bin/riscv64-unknown-linux-gnu-gcc-ranlib16"
+    found: "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc-ranlib"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompiler.cmake:54 (find_program)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineASMCompiler.cmake:61 (_cmake_find_compiler)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_ASM_COMPILER"
+    description: "ASM compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+    found: "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:1296 (message)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineASMCompiler.cmake:170 (CMAKE_DETERMINE_COMPILER_ID_VENDOR)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Checking whether the ASM compiler is GNU using "--version" matched "(GNU assembler)|(GCC)|(Free Software Foundation)":
+      riscv64-unknown-linux-gnu-gcc (g6afcc4f6d) 16.1.0
+      Copyright (C) 2026 Free Software Foundation, Inc.
+      This is free software; see the source for copying conditions.  There is NO
+      warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/Compiler/GNU-FindBinUtils.cmake:18 (find_program)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineASMCompiler.cmake:268 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_ASM_COMPILER_AR"
+    description: "A wrapper around 'ar' adding the appropriate '--plugin' option for the GCC compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "riscv64-unknown-linux-gnu-gcc-ar-"
+      - "riscv64-unknown-linux-gnu-gcc-ar-"
+      - "riscv64-unknown-linux-gnu-gcc-ar"
+      - "riscv64-unknown-linux-gnu-gcc-ar"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    searched_directories:
+      - "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/home/hykang/.local/bin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/usr/local/sbin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/usr/local/bin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/usr/sbin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/usr/bin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/sbin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/bin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/usr/games/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/usr/local/games/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/snap/bin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/home/hykang/.local/bin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/usr/local/sbin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/usr/local/bin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/usr/sbin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/usr/bin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/sbin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/bin/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/usr/games/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/usr/local/games/riscv64-unknown-linux-gnu-gcc-ar-"
+      - "/snap/bin/riscv64-unknown-linux-gnu-gcc-ar-"
+    found: "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc-ar"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/Compiler/GNU-FindBinUtils.cmake:30 (find_program)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineASMCompiler.cmake:268 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_ASM_COMPILER_RANLIB"
+    description: "A wrapper around 'ranlib' adding the appropriate '--plugin' option for the GCC compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "riscv64-unknown-linux-gnu-gcc-ranlib"
+      - "riscv64-unknown-linux-gnu-gcc-ranlib"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+    searched_directories:
+      - "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/home/hykang/.local/bin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/usr/local/sbin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/usr/local/bin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/usr/sbin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/usr/bin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/sbin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/bin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/usr/games/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/usr/local/games/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/snap/bin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/home/hykang/.local/bin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/usr/local/sbin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/usr/local/bin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/usr/sbin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/usr/bin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/sbin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/bin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/usr/games/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/usr/local/games/riscv64-unknown-linux-gnu-gcc-ranlib-"
+      - "/snap/bin/riscv64-unknown-linux-gnu-gcc-ranlib-"
+    found: "/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc-ranlib"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie/CMakeFiles/CMakeScratch/TryCompile-HzzyKp"
+      binary: "/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie/CMakeFiles/CMakeScratch/TryCompile-HzzyKp"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "\"-Wall\""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie/CMakeFiles/CMakeScratch/TryCompile-HzzyKp'
+        
+        Run Build Command(s): /home/hykang/.local/lib/python3.12/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_a37ef/fast
+        gmake[4]: Entering directory '/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie/CMakeFiles/CMakeScratch/TryCompile-HzzyKp'
+        /usr/bin/gmake  -f CMakeFiles/cmTC_a37ef.dir/build.make CMakeFiles/cmTC_a37ef.dir/build
+        gmake[5]: Entering directory '/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie/CMakeFiles/CMakeScratch/TryCompile-HzzyKp'
+        Building C object CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o
+        /home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc   "-Wall"    -v -o CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o -c /home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeCCompilerABI.c
+        Using built-in specs.
+        COLLECT_GCC=/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc
+        Target: riscv64-unknown-linux-gnu
+        Configured with: /home/runner/work/riscv-gnu-toolchain/riscv-gnu-toolchain/gcc/configure --target=riscv64-unknown-linux-gnu --prefix=/mnt/riscv --with-sysroot=/mnt/riscv/sysroot --with-pkgversion=g6afcc4f6d --with-system-zlib --enable-shared --enable-tls --enable-languages=c,c++,fortran --disable-libmudflap --disable-libssp --disable-libquadmath --disable-libsanitizer --disable-nls --disable-bootstrap --src=.././gcc --disable-default-pie --disable-multilib --with-abi=lp64d --with-arch=rv64gc --with-isa-spec=20191213 --with-specs='%{!mcmodel*:-mcmodel=medlow}' 'CFLAGS_FOR_TARGET=-O2    -mcmodel=medlow' 'CXXFLAGS_FOR_TARGET=-O2    -mcmodel=medlow'
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 16.1.0 (g6afcc4f6d) 
+        COLLECT_GCC_OPTIONS='-Wall' '-v' '-o' 'CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o' '-c' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mabi=lp64d' '-misa-spec=20191213' '-mtls-dialect=trad' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mcmodel=medlow' '-dumpdir' 'CMakeFiles/cmTC_a37ef.dir/'
+         /home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/cc1 -quiet -v -imultilib . -iprefix /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/ -isysroot /home/hykang/riscv/riscv/bin/../sysroot /home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_a37ef.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd -mabi=lp64d -misa-spec=20191213 -mtls-dialect=trad -march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd -mcmodel=medlow -Wall -version -o /tmp/ccPCs5OH.s
+        GNU C23 (g6afcc4f6d) version 16.1.0 (riscv64-unknown-linux-gnu)
+        	compiled by GNU C version 13.3.0, GMP version 6.3.0, MPFR version 4.2.1, MPC version 1.3.1, isl version none
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        ignoring duplicate directory "/home/hykang/riscv/riscv/bin/../lib/gcc/../../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include"
+        ignoring nonexistent directory "/home/hykang/riscv/riscv/bin/../sysroot/usr/local/include"
+        ignoring duplicate directory "/home/hykang/riscv/riscv/bin/../lib/gcc/../../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include-fixed"
+        ignoring duplicate directory "/home/hykang/riscv/riscv/bin/../lib/gcc/../../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include
+         /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include-fixed
+         /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/include
+         /home/hykang/riscv/riscv/bin/../sysroot/usr/include
+        End of search list.
+        Compiler executable checksum: ad62368b60960288f6c7a65ebe910264
+        COLLECT_GCC_OPTIONS='-Wall' '-v' '-o' 'CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o' '-c' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mabi=lp64d' '-misa-spec=20191213' '-mtls-dialect=trad' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mcmodel=medlow' '-dumpdir' 'CMakeFiles/cmTC_a37ef.dir/'
+         /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/bin/as -v --traditional-format -march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd -march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd -mabi=lp64d -misa-spec=20191213 -o CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o /tmp/ccPCs5OH.s
+        GNU assembler version 2.46 (riscv64-unknown-linux-gnu) using BFD version (GNU Binutils) 2.46
+        COMPILER_PATH=/home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/:/home/hykang/riscv/riscv/bin/../libexec/gcc/:/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/bin/
+        LIBRARY_PATH=/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/:/home/hykang/riscv/riscv/bin/../lib/gcc/:/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/lib/:/home/hykang/riscv/riscv/bin/../sysroot/lib/:/home/hykang/riscv/riscv/bin/../sysroot/usr/lib/
+        COLLECT_GCC_OPTIONS='-Wall' '-v' '-o' 'CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o' '-c' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mabi=lp64d' '-misa-spec=20191213' '-mtls-dialect=trad' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mcmodel=medlow' '-dumpdir' 'CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.'
+        Linking C executable cmTC_a37ef
+        /home/hykang/.local/lib/python3.12/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a37ef.dir/link.txt --verbose=1
+        Using built-in specs.
+        COLLECT_GCC=/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc
+        COLLECT_LTO_WRAPPER=/home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/lto-wrapper
+        Target: riscv64-unknown-linux-gnu
+        Configured with: /home/runner/work/riscv-gnu-toolchain/riscv-gnu-toolchain/gcc/configure --target=riscv64-unknown-linux-gnu --prefix=/mnt/riscv --with-sysroot=/mnt/riscv/sysroot --with-pkgversion=g6afcc4f6d --with-system-zlib --enable-shared --enable-tls --enable-languages=c,c++,fortran --disable-libmudflap --disable-libssp --disable-libquadmath --disable-libsanitizer --disable-nls --disable-bootstrap --src=.././gcc --disable-default-pie --disable-multilib --with-abi=lp64d --with-arch=rv64gc --with-isa-spec=20191213 --with-specs='%{!mcmodel*:-mcmodel=medlow}' 'CFLAGS_FOR_TARGET=-O2    -mcmodel=medlow' 'CXXFLAGS_FOR_TARGET=-O2    -mcmodel=medlow'
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 16.1.0 (g6afcc4f6d) 
+        COMPILER_PATH=/home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/:/home/hykang/riscv/riscv/bin/../libexec/gcc/:/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/bin/
+        LIBRARY_PATH=/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/:/home/hykang/riscv/riscv/bin/../lib/gcc/:/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/lib/:/home/hykang/riscv/riscv/bin/../sysroot/lib/:/home/hykang/riscv/riscv/bin/../sysroot/usr/lib/
+        COLLECT_GCC_OPTIONS='-Wall' '-v' '-o' 'cmTC_a37ef' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mabi=lp64d' '-misa-spec=20191213' '-mtls-dialect=trad' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mcmodel=medlow' '-dumpdir' 'cmTC_a37ef.'
+         /home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/collect2 -plugin /home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/liblto_plugin.so -plugin-opt=/home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccyvDKXl.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded --sysroot=/home/hykang/riscv/riscv/bin/../sysroot --eh-frame-hdr -melf64lriscv -X -dynamic-linker /lib/ld-linux-riscv64-lp64d.so.1 -o cmTC_a37ef /home/hykang/riscv/riscv/bin/../sysroot/usr/lib/crt1.o /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crti.o /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtbegin.o -L/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0 -L/home/hykang/riscv/riscv/bin/../lib/gcc -L/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/lib -L/home/hykang/riscv/riscv/bin/../sysroot/lib -L/home/hykang/riscv/riscv/bin/../sysroot/usr/lib -v CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o -lgcc -lgcc_s_asneeded -latomic_asneeded -lc -lgcc -lgcc_s_asneeded /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtend.o /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtn.o
+        collect2 version 16.1.0
+        /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/bin/ld -plugin /home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/liblto_plugin.so -plugin-opt=/home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccyvDKXl.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded --sysroot=/home/hykang/riscv/riscv/bin/../sysroot --eh-frame-hdr -melf64lriscv -X -dynamic-linker /lib/ld-linux-riscv64-lp64d.so.1 -o cmTC_a37ef /home/hykang/riscv/riscv/bin/../sysroot/usr/lib/crt1.o /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crti.o /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtbegin.o -L/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0 -L/home/hykang/riscv/riscv/bin/../lib/gcc -L/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/lib -L/home/hykang/riscv/riscv/bin/../sysroot/lib -L/home/hykang/riscv/riscv/bin/../sysroot/usr/lib -v CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o -lgcc -lgcc_s_asneeded -latomic_asneeded -lc -lgcc -lgcc_s_asneeded /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtend.o /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtn.o
+        GNU ld (GNU Binutils) 2.46
+        COLLECT_GCC_OPTIONS='-Wall' '-v' '-o' 'cmTC_a37ef' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mabi=lp64d' '-misa-spec=20191213' '-mtls-dialect=trad' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mcmodel=medlow' '-dumpdir' 'cmTC_a37ef.'
+        /home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc "-Wall"   -v -Wl,-v CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o -o cmTC_a37ef
+        gmake[5]: Leaving directory '/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie/CMakeFiles/CMakeScratch/TryCompile-HzzyKp'
+        gmake[4]: Leaving directory '/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie/CMakeFiles/CMakeScratch/TryCompile-HzzyKp'
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed C implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include]
+          add: [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include-fixed]
+          add: [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/include]
+          add: [/home/hykang/riscv/riscv/bin/../sysroot/usr/include]
+        end of search list found
+        collapse include dir [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include] ==> [/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include]
+        collapse include dir [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include-fixed] ==> [/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include-fixed]
+        collapse include dir [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/include] ==> [/home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/include]
+        collapse include dir [/home/hykang/riscv/riscv/bin/../sysroot/usr/include] ==> [/home/hykang/riscv/riscv/sysroot/usr/include]
+        implicit include dirs: [/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include;/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include-fixed;/home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/include;/home/hykang/riscv/riscv/sysroot/usr/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed C implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
+        ignore line: [Change Dir: '/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie/CMakeFiles/CMakeScratch/TryCompile-HzzyKp']
+        ignore line: []
+        ignore line: [Run Build Command(s): /home/hykang/.local/lib/python3.12/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_a37ef/fast]
+        ignore line: [gmake[4]: Entering directory '/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie/CMakeFiles/CMakeScratch/TryCompile-HzzyKp']
+        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_a37ef.dir/build.make CMakeFiles/cmTC_a37ef.dir/build]
+        ignore line: [gmake[5]: Entering directory '/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie/CMakeFiles/CMakeScratch/TryCompile-HzzyKp']
+        ignore line: [Building C object CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o]
+        ignore line: [/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc   "-Wall"    -v -o CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o -c /home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeCCompilerABI.c]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc]
+        ignore line: [Target: riscv64-unknown-linux-gnu]
+        ignore line: [Configured with: /home/runner/work/riscv-gnu-toolchain/riscv-gnu-toolchain/gcc/configure --target=riscv64-unknown-linux-gnu --prefix=/mnt/riscv --with-sysroot=/mnt/riscv/sysroot --with-pkgversion=g6afcc4f6d --with-system-zlib --enable-shared --enable-tls --enable-languages=c c++ fortran --disable-libmudflap --disable-libssp --disable-libquadmath --disable-libsanitizer --disable-nls --disable-bootstrap --src=.././gcc --disable-default-pie --disable-multilib --with-abi=lp64d --with-arch=rv64gc --with-isa-spec=20191213 --with-specs='%{!mcmodel*:-mcmodel=medlow}' 'CFLAGS_FOR_TARGET=-O2    -mcmodel=medlow' 'CXXFLAGS_FOR_TARGET=-O2    -mcmodel=medlow']
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 16.1.0 (g6afcc4f6d) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-Wall' '-v' '-o' 'CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o' '-c' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mabi=lp64d' '-misa-spec=20191213' '-mtls-dialect=trad' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mcmodel=medlow' '-dumpdir' 'CMakeFiles/cmTC_a37ef.dir/']
+        ignore line: [ /home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/cc1 -quiet -v -imultilib . -iprefix /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/ -isysroot /home/hykang/riscv/riscv/bin/../sysroot /home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_a37ef.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd -mabi=lp64d -misa-spec=20191213 -mtls-dialect=trad -march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd -mcmodel=medlow -Wall -version -o /tmp/ccPCs5OH.s]
+        ignore line: [GNU C23 (g6afcc4f6d) version 16.1.0 (riscv64-unknown-linux-gnu)]
+        ignore line: [	compiled by GNU C version 13.3.0  GMP version 6.3.0  MPFR version 4.2.1  MPC version 1.3.1  isl version none]
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [ignoring duplicate directory "/home/hykang/riscv/riscv/bin/../lib/gcc/../../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include"]
+        ignore line: [ignoring nonexistent directory "/home/hykang/riscv/riscv/bin/../sysroot/usr/local/include"]
+        ignore line: [ignoring duplicate directory "/home/hykang/riscv/riscv/bin/../lib/gcc/../../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include-fixed"]
+        ignore line: [ignoring duplicate directory "/home/hykang/riscv/riscv/bin/../lib/gcc/../../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include]
+        ignore line: [ /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/include-fixed]
+        ignore line: [ /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/include]
+        ignore line: [ /home/hykang/riscv/riscv/bin/../sysroot/usr/include]
+        ignore line: [End of search list.]
+        ignore line: [Compiler executable checksum: ad62368b60960288f6c7a65ebe910264]
+        ignore line: [COLLECT_GCC_OPTIONS='-Wall' '-v' '-o' 'CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o' '-c' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mabi=lp64d' '-misa-spec=20191213' '-mtls-dialect=trad' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mcmodel=medlow' '-dumpdir' 'CMakeFiles/cmTC_a37ef.dir/']
+        ignore line: [ /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/bin/as -v --traditional-format -march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd -march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd -mabi=lp64d -misa-spec=20191213 -o CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o /tmp/ccPCs5OH.s]
+        ignore line: [GNU assembler version 2.46 (riscv64-unknown-linux-gnu) using BFD version (GNU Binutils) 2.46]
+        ignore line: [COMPILER_PATH=/home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/:/home/hykang/riscv/riscv/bin/../libexec/gcc/:/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/bin/]
+        ignore line: [LIBRARY_PATH=/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/:/home/hykang/riscv/riscv/bin/../lib/gcc/:/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/lib/:/home/hykang/riscv/riscv/bin/../sysroot/lib/:/home/hykang/riscv/riscv/bin/../sysroot/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-Wall' '-v' '-o' 'CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o' '-c' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mabi=lp64d' '-misa-spec=20191213' '-mtls-dialect=trad' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mcmodel=medlow' '-dumpdir' 'CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.']
+        ignore line: [Linking C executable cmTC_a37ef]
+        ignore line: [/home/hykang/.local/lib/python3.12/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a37ef.dir/link.txt --verbose=1]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc]
+        ignore line: [COLLECT_LTO_WRAPPER=/home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/lto-wrapper]
+        ignore line: [Target: riscv64-unknown-linux-gnu]
+        ignore line: [Configured with: /home/runner/work/riscv-gnu-toolchain/riscv-gnu-toolchain/gcc/configure --target=riscv64-unknown-linux-gnu --prefix=/mnt/riscv --with-sysroot=/mnt/riscv/sysroot --with-pkgversion=g6afcc4f6d --with-system-zlib --enable-shared --enable-tls --enable-languages=c c++ fortran --disable-libmudflap --disable-libssp --disable-libquadmath --disable-libsanitizer --disable-nls --disable-bootstrap --src=.././gcc --disable-default-pie --disable-multilib --with-abi=lp64d --with-arch=rv64gc --with-isa-spec=20191213 --with-specs='%{!mcmodel*:-mcmodel=medlow}' 'CFLAGS_FOR_TARGET=-O2    -mcmodel=medlow' 'CXXFLAGS_FOR_TARGET=-O2    -mcmodel=medlow']
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 16.1.0 (g6afcc4f6d) ]
+        ignore line: [COMPILER_PATH=/home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/:/home/hykang/riscv/riscv/bin/../libexec/gcc/:/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/bin/]
+        ignore line: [LIBRARY_PATH=/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/:/home/hykang/riscv/riscv/bin/../lib/gcc/:/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/lib/:/home/hykang/riscv/riscv/bin/../sysroot/lib/:/home/hykang/riscv/riscv/bin/../sysroot/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-Wall' '-v' '-o' 'cmTC_a37ef' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mabi=lp64d' '-misa-spec=20191213' '-mtls-dialect=trad' '-march=rv64imafdc_zicsr_zifencei_zmmul_zaamo_zalrsc_zca_zcd' '-mcmodel=medlow' '-dumpdir' 'cmTC_a37ef.']
+        link line: [ /home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/collect2 -plugin /home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/liblto_plugin.so -plugin-opt=/home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccyvDKXl.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded --sysroot=/home/hykang/riscv/riscv/bin/../sysroot --eh-frame-hdr -melf64lriscv -X -dynamic-linker /lib/ld-linux-riscv64-lp64d.so.1 -o cmTC_a37ef /home/hykang/riscv/riscv/bin/../sysroot/usr/lib/crt1.o /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crti.o /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtbegin.o -L/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0 -L/home/hykang/riscv/riscv/bin/../lib/gcc -L/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/lib -L/home/hykang/riscv/riscv/bin/../sysroot/lib -L/home/hykang/riscv/riscv/bin/../sysroot/usr/lib -v CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o -lgcc -lgcc_s_asneeded -latomic_asneeded -lc -lgcc -lgcc_s_asneeded /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtend.o /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtn.o]
+          arg [/home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/collect2] ==> ignore
+          arg [-plugin] ==> ignore
+          arg [/home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/liblto_plugin.so] ==> ignore
+          arg [-plugin-opt=/home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/lto-wrapper] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/ccyvDKXl.res] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s_asneeded] ==> ignore
+          arg [-plugin-opt=-pass-through=-latomic_asneeded] ==> ignore
+          arg [-plugin-opt=-pass-through=-lc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s_asneeded] ==> ignore
+          arg [--sysroot=/home/hykang/riscv/riscv/bin/../sysroot] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [-melf64lriscv] ==> ignore
+          arg [-X] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib/ld-linux-riscv64-lp64d.so.1] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_a37ef] ==> ignore
+          arg [/home/hykang/riscv/riscv/bin/../sysroot/usr/lib/crt1.o] ==> obj [/home/hykang/riscv/riscv/bin/../sysroot/usr/lib/crt1.o]
+          arg [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crti.o] ==> obj [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crti.o]
+          arg [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtbegin.o] ==> obj [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtbegin.o]
+          arg [-L/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0] ==> dir [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0]
+          arg [-L/home/hykang/riscv/riscv/bin/../lib/gcc] ==> dir [/home/hykang/riscv/riscv/bin/../lib/gcc]
+          arg [-L/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/lib] ==> dir [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/lib]
+          arg [-L/home/hykang/riscv/riscv/bin/../sysroot/lib] ==> dir [/home/hykang/riscv/riscv/bin/../sysroot/lib]
+          arg [-L/home/hykang/riscv/riscv/bin/../sysroot/usr/lib] ==> dir [/home/hykang/riscv/riscv/bin/../sysroot/usr/lib]
+          arg [-v] ==> ignore
+          arg [CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o] ==> ignore
+          arg [-lgcc] ==> lib [gcc]
+          arg [-lgcc_s_asneeded] ==> lib [gcc_s_asneeded]
+          arg [-latomic_asneeded] ==> lib [atomic_asneeded]
+          arg [-lc] ==> lib [c]
+          arg [-lgcc] ==> lib [gcc]
+          arg [-lgcc_s_asneeded] ==> lib [gcc_s_asneeded]
+          arg [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtend.o] ==> obj [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtend.o]
+          arg [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtn.o] ==> obj [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtn.o]
+        ignore line: [collect2 version 16.1.0]
+        ignore line: [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/bin/ld -plugin /home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/liblto_plugin.so -plugin-opt=/home/hykang/riscv/riscv/bin/../libexec/gcc/riscv64-unknown-linux-gnu/16.1.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccyvDKXl.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded --sysroot=/home/hykang/riscv/riscv/bin/../sysroot --eh-frame-hdr -melf64lriscv -X -dynamic-linker /lib/ld-linux-riscv64-lp64d.so.1 -o cmTC_a37ef /home/hykang/riscv/riscv/bin/../sysroot/usr/lib/crt1.o /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crti.o /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtbegin.o -L/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0 -L/home/hykang/riscv/riscv/bin/../lib/gcc -L/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/lib -L/home/hykang/riscv/riscv/bin/../sysroot/lib -L/home/hykang/riscv/riscv/bin/../sysroot/usr/lib -v CMakeFiles/cmTC_a37ef.dir/CMakeCCompilerABI.c.o -lgcc -lgcc_s_asneeded -latomic_asneeded -lc -lgcc -lgcc_s_asneeded /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtend.o /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtn.o]
+        linker tool for 'C': /home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/bin/ld
+        collapse obj [/home/hykang/riscv/riscv/bin/../sysroot/usr/lib/crt1.o] ==> [/home/hykang/riscv/riscv/sysroot/usr/lib/crt1.o]
+        collapse obj [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crti.o] ==> [/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crti.o]
+        collapse obj [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtbegin.o] ==> [/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtbegin.o]
+        collapse obj [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtend.o] ==> [/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtend.o]
+        collapse obj [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtn.o] ==> [/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtn.o]
+        collapse library dir [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0] ==> [/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0]
+        collapse library dir [/home/hykang/riscv/riscv/bin/../lib/gcc] ==> [/home/hykang/riscv/riscv/lib/gcc]
+        collapse library dir [/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/lib] ==> [/home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/lib]
+        collapse library dir [/home/hykang/riscv/riscv/bin/../sysroot/lib] ==> [/home/hykang/riscv/riscv/sysroot/lib]
+        collapse library dir [/home/hykang/riscv/riscv/bin/../sysroot/usr/lib] ==> [/home/hykang/riscv/riscv/sysroot/usr/lib]
+        implicit libs: [gcc;gcc_s_asneeded;atomic_asneeded;c;gcc;gcc_s_asneeded]
+        implicit objs: [/home/hykang/riscv/riscv/sysroot/usr/lib/crt1.o;/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crti.o;/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtbegin.o;/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtend.o;/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtn.o]
+        implicit dirs: [/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0;/home/hykang/riscv/riscv/lib/gcc;/home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/lib;/home/hykang/riscv/riscv/sysroot/lib;/home/hykang/riscv/riscv/sysroot/usr/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the C compiler's linker: "/home/hykang/riscv/riscv/bin/../lib/gcc/riscv64-unknown-linux-gnu/16.1.0/../../../../riscv64-unknown-linux-gnu/bin/ld" "-v"
+      GNU ld (GNU Binutils) 2.46
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/hykang/Vyond/tee/sdk/macros.cmake:5 (find_program)"
+      - "CMakeLists.txt:3 (include)"
+    mode: "program"
+    variable: "MAKESELF"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "makeself"
+    candidate_directories:
+      - "/home/hykang/riscv/riscv/bin/"
+      - "/home/hykang/.local/bin/"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/usr/bin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/hykang/riscv/riscv/sysroot/usr/bin/"
+      - "/home/hykang/riscv/riscv/sysroot/usr/sbin/"
+      - "/home/hykang/riscv/riscv/sysroot/usr/"
+      - "/usr/local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/"
+      - "/usr/bin/"
+      - "/usr/sbin/"
+      - "/usr/"
+      - "/bin/"
+      - "/sbin/"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/bin/"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/sbin/"
+      - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data/"
+      - "/usr/X11R6/bin/"
+      - "/usr/X11R6/sbin/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/bin/"
+      - "/usr/pkg/sbin/"
+      - "/usr/pkg/"
+      - "/opt/bin/"
+      - "/opt/sbin/"
+      - "/opt/"
+    searched_directories:
+      - "/home/hykang/riscv/riscv/bin/makeself"
+      - "/home/hykang/.local/bin/makeself"
+      - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli/makeself"
+      - "/usr/local/sbin/makeself"
+      - "/usr/local/bin/makeself"
+      - "/usr/sbin/makeself"
+    found: "/usr/bin/makeself"
+    search_context:
+      ENV{PATH}:
+        - "/home/hykang/riscv/riscv/bin"
+        - "/home/hykang/.local/bin"
+        - "/home/hykang/.vscode-server/cli/servers/Stable-4fe60c8b1cdac1c4c174f2fb180d0d758272d713/server/bin/remote-cli"
+        - "/home/hykang/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/home/hykang/riscv/riscv/bin/../sysroot/usr"
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/home/hykang/.local/lib/python3.12/site-packages/cmake/data"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+...

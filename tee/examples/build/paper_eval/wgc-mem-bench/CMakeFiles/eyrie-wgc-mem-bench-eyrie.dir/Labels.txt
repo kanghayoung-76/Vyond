@@ -1,0 +1,13 @@
+# Target labels
+ eyrie-wgc-mem-bench-eyrie
+# Source files and their labels
+/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/CMakeFiles/eyrie-wgc-mem-bench-eyrie
+/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/CMakeFiles/eyrie-wgc-mem-bench-eyrie.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/CMakeFiles/eyrie-wgc-mem-bench-eyrie-complete.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/runtime/src/eyrie-wgc-mem-bench-eyrie-stamp/eyrie-wgc-mem-bench-eyrie-build.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/runtime/src/eyrie-wgc-mem-bench-eyrie-stamp/eyrie-wgc-mem-bench-eyrie-configure.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/runtime/src/eyrie-wgc-mem-bench-eyrie-stamp/eyrie-wgc-mem-bench-eyrie-download.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/runtime/src/eyrie-wgc-mem-bench-eyrie-stamp/eyrie-wgc-mem-bench-eyrie-install.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/runtime/src/eyrie-wgc-mem-bench-eyrie-stamp/eyrie-wgc-mem-bench-eyrie-mkdir.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/runtime/src/eyrie-wgc-mem-bench-eyrie-stamp/eyrie-wgc-mem-bench-eyrie-patch.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/runtime/src/eyrie-wgc-mem-bench-eyrie-stamp/eyrie-wgc-mem-bench-eyrie-update.rule

@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/CMakeFiles/eyrie-beebs-crc32-eyrie"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/CMakeFiles/eyrie-beebs-crc32-eyrie.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/CMakeFiles/eyrie-beebs-crc32-eyrie-complete.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie-stamp/eyrie-beebs-crc32-eyrie-build.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie-stamp/eyrie-beebs-crc32-eyrie-configure.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie-stamp/eyrie-beebs-crc32-eyrie-download.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie-stamp/eyrie-beebs-crc32-eyrie-install.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie-stamp/eyrie-beebs-crc32-eyrie-mkdir.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie-stamp/eyrie-beebs-crc32-eyrie-patch.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie-stamp/eyrie-beebs-crc32-eyrie-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"eyrie-beebs-crc32-eyrie"
+		],
+		"name" : "eyrie-beebs-crc32-eyrie"
+	}
+}

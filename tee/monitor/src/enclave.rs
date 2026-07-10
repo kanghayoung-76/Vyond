@@ -384,6 +384,22 @@ fn flush_epm_to_memory(pa_start: usize, size: usize) {
     }
 }
 
+/// Scrub an EPM region on destroy. With WID-tagged caches a plain memset is not
+/// enough: enclave-WID dirty secret lines could survive (and write back later),
+/// and once the WGC slot is cleared the freed pool pages become host-accessible.
+/// So: (1) flush+invalidate any lingering lines to DRAM, (2) zero the DRAM,
+/// (3) flush the zeros back. After this the physical pages hold no secrets.
+/// (upstream Keystone does sbi_memset on destroy; the PMP path here does it in
+/// pmp::region_free, but the WG reset_wg only clears the slot, not the RAM.)
+#[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+fn scrub_epm(pa_start: usize, size: usize) {
+    flush_epm_to_memory(pa_start, size);
+    unsafe {
+        core::ptr::write_bytes(pa_start as *mut u8, 0, size);
+    }
+    flush_epm_to_memory(pa_start, size);
+}
+
 const INIT_VALUE: Option<Enclave> = None;
 static mut ENCLAVES: [Option<Enclave>; MAX_ENCLAVES] = [INIT_VALUE; MAX_ENCLAVES];
 
@@ -452,6 +468,15 @@ pub fn create_enclave<'a>(create_args: &KeystoneSBICreate) -> Result<&'a Enclave
                 }
             }
         }
+
+        // Measure at create (like upstream Keystone): the host has finished
+        // copying loader+runtime+eapp into the EPM before it calls finalize, so
+        // the image is present now. WID-tagged caches are not coherent across
+        // WIDs, so first flush the host-WID-loaded image down to DRAM, then hash
+        // the coherent image. (First-entry re-flushes for boot-param stash +
+        // fence.i; the measurement itself no longer happens on the entry path.)
+        flush_epm_to_memory(create_args.epm_region.paddr, create_args.epm_region.size);
+        enclave.compute_hash();
 
         return Ok(enclave);
     }
@@ -655,6 +680,10 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
                     continue;
                 }
                 let rid = region.id;
+                // Scrub EPM DRAM before releasing so the freed pool pages carry
+                // no enclave secrets (WG reset_wg only clears the slot, not RAM).
+                #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+                scrub_epm(region.paddr, region.size);
                 let _ = isolator::set_isolator(rid, true);
                 let _ = isolator::region_free(rid);
             }
@@ -693,7 +722,9 @@ pub fn enter_enclave(tf: &mut TrapFrame, eid: usize) -> Result<(), Error> {
             return Err(Error::NotRunnable);
         }
 
-        enclave.compute_hash();
+        // Measurement was already computed at create_enclave (fair with
+        // Keystone). switch_to_enclave still flushes the EPM so the enclave (its
+        // own WID) reads the loaded code from DRAM and stashes boot params.
         enclave.switch_to_enclave(tf, true);
 
         return Ok(());

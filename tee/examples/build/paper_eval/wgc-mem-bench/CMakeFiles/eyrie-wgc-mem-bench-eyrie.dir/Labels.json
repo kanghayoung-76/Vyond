@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/CMakeFiles/eyrie-wgc-mem-bench-eyrie"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/CMakeFiles/eyrie-wgc-mem-bench-eyrie.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/CMakeFiles/eyrie-wgc-mem-bench-eyrie-complete.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/runtime/src/eyrie-wgc-mem-bench-eyrie-stamp/eyrie-wgc-mem-bench-eyrie-build.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/runtime/src/eyrie-wgc-mem-bench-eyrie-stamp/eyrie-wgc-mem-bench-eyrie-configure.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/runtime/src/eyrie-wgc-mem-bench-eyrie-stamp/eyrie-wgc-mem-bench-eyrie-download.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/runtime/src/eyrie-wgc-mem-bench-eyrie-stamp/eyrie-wgc-mem-bench-eyrie-install.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/runtime/src/eyrie-wgc-mem-bench-eyrie-stamp/eyrie-wgc-mem-bench-eyrie-mkdir.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/runtime/src/eyrie-wgc-mem-bench-eyrie-stamp/eyrie-wgc-mem-bench-eyrie-patch.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/wgc-mem-bench/runtime/src/eyrie-wgc-mem-bench-eyrie-stamp/eyrie-wgc-mem-bench-eyrie-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"eyrie-wgc-mem-bench-eyrie"
+		],
+		"name" : "eyrie-wgc-mem-bench-eyrie"
+	}
+}

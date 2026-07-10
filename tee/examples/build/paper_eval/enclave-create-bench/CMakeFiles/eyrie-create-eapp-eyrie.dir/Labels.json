@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/CMakeFiles/eyrie-create-eapp-eyrie"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/CMakeFiles/eyrie-create-eapp-eyrie.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/CMakeFiles/eyrie-create-eapp-eyrie-complete.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/runtime/src/eyrie-create-eapp-eyrie-stamp/eyrie-create-eapp-eyrie-build.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/runtime/src/eyrie-create-eapp-eyrie-stamp/eyrie-create-eapp-eyrie-configure.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/runtime/src/eyrie-create-eapp-eyrie-stamp/eyrie-create-eapp-eyrie-download.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/runtime/src/eyrie-create-eapp-eyrie-stamp/eyrie-create-eapp-eyrie-install.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/runtime/src/eyrie-create-eapp-eyrie-stamp/eyrie-create-eapp-eyrie-mkdir.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/runtime/src/eyrie-create-eapp-eyrie-stamp/eyrie-create-eapp-eyrie-patch.rule"
+		},
+		{
+			"file" : "/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/runtime/src/eyrie-create-eapp-eyrie-stamp/eyrie-create-eapp-eyrie-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"eyrie-create-eapp-eyrie"
+		],
+		"name" : "eyrie-create-eapp-eyrie"
+	}
+}

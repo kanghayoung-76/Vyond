@@ -1,0 +1,1 @@
+/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc -Wall -Wl,--dependency-file=CMakeFiles/create-eapp.dir/link.d "CMakeFiles/create-eapp.dir/eapp/create_eapp.c.o" -o create-eapp  -nostdlib -static /home/hykang/Vyond/tee/sdk/install/lib/libkeystone-eapp.a /home/hykang/Vyond/tee/sdk/install/lib/libkeystone-edge.a

@@ -1,0 +1,1 @@
+/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-gcc -Wall -Wl,--dependency-file=CMakeFiles/beebs-crc32.dir/link.d "CMakeFiles/beebs-crc32.dir/main.c.o" "CMakeFiles/beebs-crc32.dir/crc_32.c.o" -o beebs-crc32  -static

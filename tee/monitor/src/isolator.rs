@@ -104,7 +104,19 @@ pub fn osm_init<'a>() -> Result<(), Error> {
         // NOTE: this weakens enclave EPM isolation (OS_WID can reach EPM via the catch-all,
         // and the on-demand slot-virtualization fault never triggers). Acceptable for the
         // boot milestone; restore bounded OS slots once the TOR/SMM interaction is fixed.
-        let region = wg::region_init(0, usize::MAX, wg::WGC_ALL_PERM as u64, true)?;
+        // Restrict the catch-all to OS_WID + TRUSTED_WID only (was WGC_ALL_PERM
+        // = every world, which let enclave WIDs reach EPM through the catch-all
+        // and suppressed the on-demand slot-virtualization fault -> no EPM
+        // isolation). With only OS/SM granted here, an enclave WID's first EPM
+        // access misses this slot -> CAUSE_*_ACCESS -> load_enclave_slot installs
+        // the enclave-WID-only EPM slot. Stays on the NAPOT-all path (start=0),
+        // so the SMM slot is left untouched (the reason TOR was avoided).
+        let region = wg::region_init(
+            0,
+            usize::MAX,
+            (3u64 << (wg::OS_WID * 2)) | (3u64 << (wg::TRUSTED_WID * 2)),
+            true,
+        )?;
         wg::set_wg(region)?;
         OS_REGION_ID.set(region);
         Ok(())

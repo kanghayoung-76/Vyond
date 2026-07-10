@@ -1,0 +1,13 @@
+# Target labels
+ eyrie-create-eapp-eyrie
+# Source files and their labels
+/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/CMakeFiles/eyrie-create-eapp-eyrie
+/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/CMakeFiles/eyrie-create-eapp-eyrie.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/CMakeFiles/eyrie-create-eapp-eyrie-complete.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/runtime/src/eyrie-create-eapp-eyrie-stamp/eyrie-create-eapp-eyrie-build.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/runtime/src/eyrie-create-eapp-eyrie-stamp/eyrie-create-eapp-eyrie-configure.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/runtime/src/eyrie-create-eapp-eyrie-stamp/eyrie-create-eapp-eyrie-download.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/runtime/src/eyrie-create-eapp-eyrie-stamp/eyrie-create-eapp-eyrie-install.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/runtime/src/eyrie-create-eapp-eyrie-stamp/eyrie-create-eapp-eyrie-mkdir.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/runtime/src/eyrie-create-eapp-eyrie-stamp/eyrie-create-eapp-eyrie-patch.rule
+/home/hykang/Vyond/tee/examples/build/paper_eval/enclave-create-bench/runtime/src/eyrie-create-eapp-eyrie-stamp/eyrie-create-eapp-eyrie-update.rule

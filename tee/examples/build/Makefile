@@ -805,6 +805,201 @@ split-bridge-host-package/fast:
 	$(MAKE) $(MAKESILENT) -f split-host-test/CMakeFiles/split-bridge-host-package.dir/build.make split-host-test/CMakeFiles/split-bridge-host-package.dir/build
 .PHONY : split-bridge-host-package/fast
 
+#=============================================================================
+# Target rules for targets named wgc-mem-bench
+
+# Build rule for target.
+wgc-mem-bench: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wgc-mem-bench
+.PHONY : wgc-mem-bench
+
+# fast build rule for target.
+wgc-mem-bench/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/wgc-mem-bench/CMakeFiles/wgc-mem-bench.dir/build.make paper_eval/wgc-mem-bench/CMakeFiles/wgc-mem-bench.dir/build
+.PHONY : wgc-mem-bench/fast
+
+#=============================================================================
+# Target rules for targets named wgc-mem-bench-runner
+
+# Build rule for target.
+wgc-mem-bench-runner: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wgc-mem-bench-runner
+.PHONY : wgc-mem-bench-runner
+
+# fast build rule for target.
+wgc-mem-bench-runner/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/wgc-mem-bench/CMakeFiles/wgc-mem-bench-runner.dir/build.make paper_eval/wgc-mem-bench/CMakeFiles/wgc-mem-bench-runner.dir/build
+.PHONY : wgc-mem-bench-runner/fast
+
+#=============================================================================
+# Target rules for targets named eyrie-wgc-mem-bench-eyrie
+
+# Build rule for target.
+eyrie-wgc-mem-bench-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-wgc-mem-bench-eyrie
+.PHONY : eyrie-wgc-mem-bench-eyrie
+
+# fast build rule for target.
+eyrie-wgc-mem-bench-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/wgc-mem-bench/CMakeFiles/eyrie-wgc-mem-bench-eyrie.dir/build.make paper_eval/wgc-mem-bench/CMakeFiles/eyrie-wgc-mem-bench-eyrie.dir/build
+.PHONY : eyrie-wgc-mem-bench-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named wgc-mem-bench-eyrie
+
+# Build rule for target.
+wgc-mem-bench-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wgc-mem-bench-eyrie
+.PHONY : wgc-mem-bench-eyrie
+
+# fast build rule for target.
+wgc-mem-bench-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/wgc-mem-bench/CMakeFiles/wgc-mem-bench-eyrie.dir/build.make paper_eval/wgc-mem-bench/CMakeFiles/wgc-mem-bench-eyrie.dir/build
+.PHONY : wgc-mem-bench-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named wgc-mem-bench-package
+
+# Build rule for target.
+wgc-mem-bench-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 wgc-mem-bench-package
+.PHONY : wgc-mem-bench-package
+
+# fast build rule for target.
+wgc-mem-bench-package/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/wgc-mem-bench/CMakeFiles/wgc-mem-bench-package.dir/build.make paper_eval/wgc-mem-bench/CMakeFiles/wgc-mem-bench-package.dir/build
+.PHONY : wgc-mem-bench-package/fast
+
+#=============================================================================
+# Target rules for targets named create-eapp
+
+# Build rule for target.
+create-eapp: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 create-eapp
+.PHONY : create-eapp
+
+# fast build rule for target.
+create-eapp/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/enclave-create-bench/CMakeFiles/create-eapp.dir/build.make paper_eval/enclave-create-bench/CMakeFiles/create-eapp.dir/build
+.PHONY : create-eapp/fast
+
+#=============================================================================
+# Target rules for targets named create-bench-runner
+
+# Build rule for target.
+create-bench-runner: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 create-bench-runner
+.PHONY : create-bench-runner
+
+# fast build rule for target.
+create-bench-runner/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/enclave-create-bench/CMakeFiles/create-bench-runner.dir/build.make paper_eval/enclave-create-bench/CMakeFiles/create-bench-runner.dir/build
+.PHONY : create-bench-runner/fast
+
+#=============================================================================
+# Target rules for targets named eyrie-create-eapp-eyrie
+
+# Build rule for target.
+eyrie-create-eapp-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-create-eapp-eyrie
+.PHONY : eyrie-create-eapp-eyrie
+
+# fast build rule for target.
+eyrie-create-eapp-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/enclave-create-bench/CMakeFiles/eyrie-create-eapp-eyrie.dir/build.make paper_eval/enclave-create-bench/CMakeFiles/eyrie-create-eapp-eyrie.dir/build
+.PHONY : eyrie-create-eapp-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named create-eapp-eyrie
+
+# Build rule for target.
+create-eapp-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 create-eapp-eyrie
+.PHONY : create-eapp-eyrie
+
+# fast build rule for target.
+create-eapp-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/enclave-create-bench/CMakeFiles/create-eapp-eyrie.dir/build.make paper_eval/enclave-create-bench/CMakeFiles/create-eapp-eyrie.dir/build
+.PHONY : create-eapp-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named create-eapp-package
+
+# Build rule for target.
+create-eapp-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 create-eapp-package
+.PHONY : create-eapp-package
+
+# fast build rule for target.
+create-eapp-package/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/enclave-create-bench/CMakeFiles/create-eapp-package.dir/build.make paper_eval/enclave-create-bench/CMakeFiles/create-eapp-package.dir/build
+.PHONY : create-eapp-package/fast
+
+#=============================================================================
+# Target rules for targets named beebs-crc32
+
+# Build rule for target.
+beebs-crc32: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 beebs-crc32
+.PHONY : beebs-crc32
+
+# fast build rule for target.
+beebs-crc32/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/beebs-bench/CMakeFiles/beebs-crc32.dir/build.make paper_eval/beebs-bench/CMakeFiles/beebs-crc32.dir/build
+.PHONY : beebs-crc32/fast
+
+#=============================================================================
+# Target rules for targets named beebs-crc32-runner
+
+# Build rule for target.
+beebs-crc32-runner: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 beebs-crc32-runner
+.PHONY : beebs-crc32-runner
+
+# fast build rule for target.
+beebs-crc32-runner/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/build.make paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/build
+.PHONY : beebs-crc32-runner/fast
+
+#=============================================================================
+# Target rules for targets named eyrie-beebs-crc32-eyrie
+
+# Build rule for target.
+eyrie-beebs-crc32-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 eyrie-beebs-crc32-eyrie
+.PHONY : eyrie-beebs-crc32-eyrie
+
+# fast build rule for target.
+eyrie-beebs-crc32-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/beebs-bench/CMakeFiles/eyrie-beebs-crc32-eyrie.dir/build.make paper_eval/beebs-bench/CMakeFiles/eyrie-beebs-crc32-eyrie.dir/build
+.PHONY : eyrie-beebs-crc32-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named beebs-crc32-eyrie
+
+# Build rule for target.
+beebs-crc32-eyrie: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 beebs-crc32-eyrie
+.PHONY : beebs-crc32-eyrie
+
+# fast build rule for target.
+beebs-crc32-eyrie/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/beebs-bench/CMakeFiles/beebs-crc32-eyrie.dir/build.make paper_eval/beebs-bench/CMakeFiles/beebs-crc32-eyrie.dir/build
+.PHONY : beebs-crc32-eyrie/fast
+
+#=============================================================================
+# Target rules for targets named beebs-crc32-package
+
+# Build rule for target.
+beebs-crc32-package: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 beebs-crc32-package
+.PHONY : beebs-crc32-package
+
+# fast build rule for target.
+beebs-crc32-package/fast:
+	$(MAKE) $(MAKESILENT) -f paper_eval/beebs-bench/CMakeFiles/beebs-crc32-package.dir/build.make paper_eval/beebs-bench/CMakeFiles/beebs-crc32-package.dir/build
+.PHONY : beebs-crc32-package/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -815,12 +1010,18 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... attestor-eyrie"
 	@echo "... attestor-package"
+	@echo "... beebs-crc32-eyrie"
+	@echo "... beebs-crc32-package"
+	@echo "... create-eapp-eyrie"
+	@echo "... create-eapp-package"
 	@echo "... dds-bridge-eyrie"
 	@echo "... dds-bridge-package"
 	@echo "... dev-irq-test-package"
 	@echo "... dev_irq_eapp-eyrie"
 	@echo "... examples"
 	@echo "... eyrie-attestor-eyrie"
+	@echo "... eyrie-beebs-crc32-eyrie"
+	@echo "... eyrie-create-eapp-eyrie"
 	@echo "... eyrie-dev_irq_eapp-eyrie"
 	@echo "... eyrie-hello-eyrie"
 	@echo "... eyrie-ros_e1-eyrie"
@@ -828,6 +1029,7 @@ help:
 	@echo "... eyrie-shm-ocall-eyrie"
 	@echo "... eyrie-tdds-pub-eyrie"
 	@echo "... eyrie-wg-slot-eyrie"
+	@echo "... eyrie-wgc-mem-bench-eyrie"
 	@echo "... hello-eyrie"
 	@echo "... hello-package"
 	@echo "... ros-package"
@@ -842,8 +1044,14 @@ help:
 	@echo "... tdds-pub-package"
 	@echo "... wg-slot-eyrie"
 	@echo "... wg-slot-package"
+	@echo "... wgc-mem-bench-eyrie"
+	@echo "... wgc-mem-bench-package"
 	@echo "... attestor"
 	@echo "... attestor-runner"
+	@echo "... beebs-crc32"
+	@echo "... beebs-crc32-runner"
+	@echo "... create-bench-runner"
+	@echo "... create-eapp"
 	@echo "... dds-bridge"
 	@echo "... dds-runner"
 	@echo "... dds-sub"
@@ -866,6 +1074,8 @@ help:
 	@echo "... tdds-sub"
 	@echo "... wg-slot"
 	@echo "... wg-slot-runner"
+	@echo "... wgc-mem-bench"
+	@echo "... wgc-mem-bench-runner"
 .PHONY : help
 
 

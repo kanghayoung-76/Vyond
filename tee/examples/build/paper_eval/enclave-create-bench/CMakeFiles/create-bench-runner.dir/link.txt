@@ -1,0 +1,1 @@
+/home/hykang/riscv/riscv/bin/riscv64-unknown-linux-gnu-g++ -Wl,--dependency-file=CMakeFiles/create-bench-runner.dir/link.d "CMakeFiles/create-bench-runner.dir/host/host.cpp.o" -o create-bench-runner  /home/hykang/Vyond/tee/sdk/install/lib/libkeystone-host.a /home/hykang/Vyond/tee/sdk/install/lib/libkeystone-edge.a -lm

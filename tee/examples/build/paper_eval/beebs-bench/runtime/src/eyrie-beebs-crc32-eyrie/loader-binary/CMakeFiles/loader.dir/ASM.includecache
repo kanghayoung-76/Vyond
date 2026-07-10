@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie/loader-binary/loader.S
+mm/vm_defs.h
+/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie/loader-binary/mm/vm_defs.h
+asm/csr.h
+-
+util/asm_helpers.h
+/home/hykang/Vyond/tee/examples/build/paper_eval/beebs-bench/runtime/src/eyrie-beebs-crc32-eyrie/loader-binary/util/asm_helpers.h
+
+include/mm/vm_defs.h
+
+include/util/asm_helpers.h
+
+tmplib/asm/csr.h
+linux/const.h
+-
+
+tmplib/linux/const.h
+

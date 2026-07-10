@@ -53,6 +53,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/hykang/Vyond/tee/examples/build/tdds-test/cmake_install.cmake")
   include("/home/hykang/Vyond/tee/examples/build/dds-tdds-test/cmake_install.cmake")
   include("/home/hykang/Vyond/tee/examples/build/split-host-test/cmake_install.cmake")
+  include("/home/hykang/Vyond/tee/examples/build/paper_eval/cmake_install.cmake")
 
 endif()
 
