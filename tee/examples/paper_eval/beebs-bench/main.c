@@ -7,24 +7,30 @@
 // and prints the verify result, to confirm the workload runs in the enclave.
 // (rdcycle timing is added once this boots cleanly.)
 //******************************************************************************
-#include <stdio.h>
 #include "support.h"
 
 extern void initialise_benchmark(void);
 extern int  benchmark(void);
 extern int  verify_benchmark(int result);
 
+// No printf: avoid the io_syscall/UTM path (which faults on this SM). Result is
+// returned as the exit code: 0 = correct, 1 = wrong. The host prints it via
+// run(&retval). No page fault + exit=0 => workload ran & verified in-enclave.
 int main(void) {
     volatile int result = 0;
+    unsigned long t0, t1;
 
+    // No warmup: crc32's rand seed carries across calls, so verify passes only
+    // after EXACTLY REPEAT_FACTOR calls — so we time those calls directly.
     initialise_benchmark();
+    asm volatile("rdcycle %0" : "=r"(t0));   // rdtime for latency
     for (int i = 0; i < REPEAT_FACTOR; i++) {
         initialise_benchmark();
         result = benchmark();
     }
+    asm volatile("rdcycle %0" : "=r"(t1));
     int correct = verify_benchmark((int)result);
 
-    printf("[beebs crc32] result=%d correct=%d REPEAT=%d\n",
-           (int)result, correct, REPEAT_FACTOR);
-    return correct ? 0 : 1;
+    // return the measured cycles (host reads via run(&retval)); -1 if verify failed
+    return correct ? (int)(t1 - t0) : -1;
 }
