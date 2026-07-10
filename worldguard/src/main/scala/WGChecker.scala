@@ -127,7 +127,7 @@ with HasInterruptSources with HasTLControlRegMap
     val impidReg                  = RegInit(0.U(16.W))
     val nSlotsReg                 = RegInit(params.nSlots.U(32.W))
     val errorCauseSlotWidRWReg    = RegInit({
-      val w = Wire(new WGCErrorCauseSlotWidRW)
+      val w = Wire(new WGCErrorCauseSlotWidRW(params.widWidth))
       w.res15_10  := 0.U
       w.at        := 0.U
       w.res7_2    := 0.U
@@ -284,11 +284,11 @@ with HasInterruptSources with HasTLControlRegMap
         //------------------------------------------------------------------------------------
         when (in.a.valid && !allow && a_first) {
           errorAddrReg            := in.a.bits.address
-          errorCauseSlotWidRWReg  := Cat(0.U(6.W), w, r, 0.U(6.W), wid).asTypeOf(new WGCErrorCauseSlotWidRW)
+          errorCauseSlotWidRWReg  := Cat(0.U(6.W), w, r, 0.U((8 - params.widWidth).W), wid).asTypeOf(new WGCErrorCauseSlotWidRW(params.widWidth))
           errorCauseSlotBeIpReg   := Cat(ir | iw, er | ew, 0.U(30.W)).asTypeOf(new WGCErrorCauseSlotBeIp)
         } .elsewhen (in.a.valid && allow) {
           errorAddrReg            := 0.U(errorAddrReg.getWidth.W)
-          errorCauseSlotWidRWReg  := 0.U.asTypeOf(new WGCErrorCauseSlotWidRW)
+          errorCauseSlotWidRWReg  := 0.U.asTypeOf(new WGCErrorCauseSlotWidRW(params.widWidth))
           errorCauseSlotBeIpReg   := 0.U.asTypeOf(new WGCErrorCauseSlotBeIp)
         }
 

@@ -318,7 +318,14 @@ class WGMSHR(params: InclusiveCacheParameters, widBits: Int) extends Module
   io.schedule.bits.dir.bits.set   := request.set
   io.schedule.bits.dir.bits.way   := meta.way
   io.schedule.bits.dir.bits.wid   := request.wid
-  io.schedule.bits.dir.bits.data  := Mux(!s_release && s_release_wid, invalid, WireInit(new WGDirectoryEntry(params, widBits), init = final_meta_writeback))
+  // For a cross-WID eviction (onlyTagHit && !hit) s_release_wid is cleared, so the
+  // original `!s_release && s_release_wid` left the directory advertising the NEW wid
+  // (final_meta_writeback) during the release phase -- before the OLD wid's line was
+  // released/acked. That early re-tag opened a cross-WID coherence window (the
+  // release-before-acquire intent of s_release_wid only gated a.valid, not the dir write).
+  // Write `invalid` during ANY release and defer the new entry to the writeback phase,
+  // so cross-WID eviction matches the well-tested normal-eviction ordering.
+  io.schedule.bits.dir.bits.data  := Mux(!s_release, invalid, WireInit(new WGDirectoryEntry(params, widBits), init = final_meta_writeback))
 
   // Coverage of state transitions
   def cacheState(entry: WGDirectoryEntry, hit: Bool) = {

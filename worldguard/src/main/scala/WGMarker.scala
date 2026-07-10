@@ -46,8 +46,8 @@ case class WGMarkerParams(
   val address: BigInt,
   val size: Int
 ) extends DeviceParams {
-  require (widWidth == 2, "Current version supports only 4 world ids")
-  require (wid < 4, "wid cannot be greater than 3")
+  require (widWidth >= 1 && widWidth <= 5, "widWidth must be in [1,5] (up to 32 world ids)")
+  require (wid < (1 << widWidth), "wid must be representable in widWidth bits")
 }
 
 case class WGMarkerAttachParams(

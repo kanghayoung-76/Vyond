@@ -118,7 +118,7 @@ class WGCSRFile(
   require(nWorlds > 0)
   val widWidth      = log2Ceil(nWorlds)
   val reg_mwid      = RegInit((nWorlds-1).U(widWidth.W))          // mwid = nWorld - 1
-  val reg_mwidlist  = RegInit(~(1 << (nWorlds-1)).U(nWorlds.W))  // mwidlist = { x in Z || 0 <= x < mwid}   
+  val reg_mwidlist  = RegInit(~((BigInt(1) << (nWorlds-1)).U(nWorlds.W)))  // mwidlist = { x in Z || 0 <= x < mwid}; BigInt avoids Int overflow at nWorlds=32
   val reg_mlwid     = RegInit(~0.U(widWidth.W))                   // mlwid in mwidlist
   val reg_mwiddeleg = RegInit(0.U(nWorlds.W))                     // mwiddeleg in mwidlist \ {mlwid}
   val reg_slwid     = RegInit(~0.U(widWidth.W))                   // slwid in mwiddeleg

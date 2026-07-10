@@ -83,8 +83,8 @@ class WithNBigRocketCoresWithWGM(
   crossing: RocketCrossingParams,
 ) extends Config((site, here, up) => {
   case TilesLocated(`location`) => {
-    require (n <= 4)
-    val nMaxWids = 4
+    val nMaxWids = site(NWorlds)
+    require (n <= nMaxWids)
     val prev = up(TilesLocated(`location`), site)
     val idOffset = up(NumTiles)
     val big = RocketTileParams(
@@ -167,7 +167,7 @@ class WithOneWGAwareRocketOneRocketWithWGMarker(
   crossing: RocketCrossingParams,
 ) extends Config((site, here, up) => {
   case TilesLocated(`location`) => {
-    val nMaxWids = 4
+    val nMaxWids = site(NWorlds)
     val prev = up(TilesLocated(`location`), site)
     val idOffset = up(NumTiles)
 

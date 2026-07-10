@@ -22,10 +22,10 @@ import freechips.rocketchip.util._
  * Need for considerations:
  * - alignment and granularity (see PMP)
  */
-class WGCRequestIO(beatBytes: Int) extends Bundle {
+class WGCRequestIO(beatBytes: Int, widWidth: Int = 2) extends Bundle {
   val address = UInt(64.W) // TODO: parameterize it
   val size = UInt(64.W)    // TODO: check the exact width
-  val wid = UInt(2.W)     // TODO: can it be parametersized?
+  val wid = UInt(widWidth.W) // parameterized by number of worlds (log2Ceil(nWorlds))
   val r = Bool()
   val w = Bool()
 }
@@ -51,11 +51,14 @@ class WGCPerm extends Bundle {
   val r = Bool()
 }
 
-class WGCErrorCauseSlotWidRW extends Bundle {
+class WGCErrorCauseSlotWidRW(widWidth: Int = 2) extends Bundle {
+  // WID field occupies the low `widWidth` bits; the access-type (at) field is kept
+  // pinned at bits [9:8] by shrinking the reserved field below it accordingly.
+  require(widWidth >= 1 && widWidth <= 8, "widWidth must fit in the low byte of errorCauseSlotWidRW")
   val res15_10 = UInt(6.W)
   val at = UInt(2.W)
-  val res7_2 = UInt(6.W)
-  val wid = UInt(2.W)     // TODO: should be redesign to have more than 4 wids
+  val res7_2 = UInt((8 - widWidth).W)
+  val wid = UInt(widWidth.W)
 }
 
 class WGCErrorCauseSlotBeIp extends Bundle {

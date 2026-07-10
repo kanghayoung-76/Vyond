@@ -103,8 +103,8 @@ trait CanHaveWGPeripheryTLSerial { this: BaseSubsystem =>
       val wgm = WGMarkerAttachParams(
         WGMarkerParams(
           postfix = s"wgtlserdes",
-          wid = 3, // FIXME: 
-          widWidth = 2,
+          wid = p(NWorlds) - 1,             // trusted world id
+          widWidth = log2Ceil(p(NWorlds)),  // scales with number of worlds
           address = p(WGMarkerBaseAddressKey) + BigInt(0x100000 * 2), // FIXME: should be consider the number of other wgmarkers.
           size = 4096
         )

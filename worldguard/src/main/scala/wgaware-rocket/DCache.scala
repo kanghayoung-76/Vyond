@@ -266,11 +266,11 @@ class WGDCacheModule(widWidth: Int, outer: WGDCache) extends WGHellaCacheModule(
       val s1_tag = s1_paddr >> tagLSB
       // replacement of mismatched wid
       //val s1_meta_hit_way = s1_meta_uncorrected.map(r => r.coh.isValid() && r.tag === s1_tag).asUInt
-      val s1_meta_hit_way = s1_meta_uncorrected.map(r => r.coh.isValid() && r.tag === s1_tag && Mux(s1_probe, true.B, r.wid === io.cpu.req.bits.wid)).asUInt
+      val s1_meta_hit_way = s1_meta_uncorrected.map(r => r.coh.isValid() && r.tag === s1_tag && Mux(s1_probe, true.B, r.wid === s1_req.wid)).asUInt
       val s1_meta_hit_state = (
         // replacement of mismatched wid
         //s1_meta_uncorrected.map(r => Mux(r.tag === s1_tag && !s1_flush_valid, r.coh.asUInt, 0.U))
-        s1_meta_uncorrected.map(r => Mux(r.tag === s1_tag && !s1_flush_valid && Mux(s1_probe, true.B, r.wid === io.cpu.req.bits.wid), r.coh.asUInt, 0.U))
+        s1_meta_uncorrected.map(r => Mux(r.tag === s1_tag && !s1_flush_valid && Mux(s1_probe, true.B, r.wid === s1_req.wid), r.coh.asUInt, 0.U))
         .reduce (_|_)).asTypeOf(chiselTypeOf(ClientMetadata.onReset))
 
 
@@ -449,7 +449,7 @@ class WGDCacheModule(widWidth: Int, outer: WGDCache) extends WGHellaCacheModule(
   metaArb.io.in(2).bits.way_en := s2_victim_or_hit_way
   metaArb.io.in(2).bits.idx := s2_vaddr(idxMSB, idxLSB)
   metaArb.io.in(2).bits.addr := Cat(io.cpu.req.bits.addr >> untagBits, s2_vaddr(idxMSB, 0))
-  metaArb.io.in(2).bits.data := tECC.encode(WGL1Metadata(s2_req.addr >> tagLSB, s2_new_hit_state, io.cpu.req.bits.wid).asUInt)
+  metaArb.io.in(2).bits.data := tECC.encode(WGL1Metadata(s2_req.addr >> tagLSB, s2_new_hit_state, s2_req.wid).asUInt)
 
   // load reservations and TL error reporting
   val s2_lr = (usingAtomics && !usingDataScratchpad).B && s2_req.cmd === M_XLR
@@ -733,7 +733,7 @@ class WGDCacheModule(widWidth: Int, outer: WGDCache) extends WGHellaCacheModule(
   metaArb.io.in(3).bits.way_en := refill_way
   metaArb.io.in(3).bits.idx := s2_vaddr(idxMSB, idxLSB)
   metaArb.io.in(3).bits.addr := Cat(io.cpu.req.bits.addr >> untagBits, s2_vaddr(idxMSB, 0))
-  metaArb.io.in(3).bits.data := tECC.encode(WGL1Metadata(s2_req.addr >> tagLSB, s2_hit_state.onGrant(s2_req.cmd, tl_out.d.bits.param), io.cpu.req.bits.wid).asUInt)
+  metaArb.io.in(3).bits.data := tECC.encode(WGL1Metadata(s2_req.addr >> tagLSB, s2_hit_state.onGrant(s2_req.cmd, tl_out.d.bits.param), s2_req.wid).asUInt)
 
   if (!cacheParams.separateUncachedResp) {
     // don't accept uncached grants if there's a structural hazard on s2_data...
