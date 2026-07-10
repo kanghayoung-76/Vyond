@@ -290,6 +290,46 @@ paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/host/host.cpp.o: /home/
   /home/hykang/riscv/riscv/sysroot/usr/include/wchar.h \
   /home/hykang/riscv/riscv/sysroot/usr/include/wctype.h
 
+paper_eval/beebs-bench/beebs-crc32-runner: /home/hykang/Vyond/tee/sdk/install/lib/libkeystone-edge.a \
+  /home/hykang/Vyond/tee/sdk/install/lib/libkeystone-host.a \
+  /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/lib/libatomic.so \
+  /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/lib/libatomic_asneeded.so \
+  /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/lib/libgcc_s.so \
+  /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/lib/libgcc_s.so.1 \
+  /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/lib/libstdc++.so \
+  /home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtbegin.o \
+  /home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtend.o \
+  /home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crti.o \
+  /home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtn.o \
+  /home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/libgcc.a \
+  /home/hykang/riscv/riscv/sysroot/lib/ld-linux-riscv64-lp64d.so.1 \
+  /home/hykang/riscv/riscv/sysroot/lib/libc.so.6 \
+  /home/hykang/riscv/riscv/sysroot/usr/lib/crt1.o \
+  /home/hykang/riscv/riscv/sysroot/usr/lib/libc.so \
+  /home/hykang/riscv/riscv/sysroot/usr/lib/libc_nonshared.a \
+  /home/hykang/riscv/riscv/sysroot/usr/lib/libm.so \
+  paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/host/host.cpp.o
+
+
+paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/host/host.cpp.o:
+
+/home/hykang/riscv/riscv/sysroot/usr/lib/crt1.o:
+
+/home/hykang/riscv/riscv/sysroot/lib/libc.so.6:
+
+/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crti.o:
+
+/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtend.o:
+
+/home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/lib/libstdc++.so:
+
+/home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/lib/libgcc_s.so:
+
+/home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/lib/libatomic_asneeded.so:
+
+/home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/lib/libatomic.so:
+
+/home/hykang/Vyond/tee/sdk/install/lib/libkeystone-edge.a:
 
 /home/hykang/riscv/riscv/sysroot/usr/include/wctype.h:
 
@@ -298,6 +338,8 @@ paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/host/host.cpp.o: /home/
 /home/hykang/riscv/riscv/sysroot/usr/include/unistd.h:
 
 /home/hykang/riscv/riscv/sysroot/usr/include/time.h:
+
+/home/hykang/Vyond/tee/sdk/install/lib/libkeystone-host.a:
 
 /home/hykang/riscv/riscv/sysroot/usr/include/sys/types.h:
 
@@ -349,6 +391,8 @@ paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/host/host.cpp.o: /home/
 
 /home/hykang/riscv/riscv/sysroot/usr/include/bits/posix_opt.h:
 
+/home/hykang/riscv/riscv/sysroot/usr/lib/libc.so:
+
 /home/hykang/riscv/riscv/sysroot/usr/include/bits/confname.h:
 
 /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/include/c++/16.1.0/ostream:
@@ -370,6 +414,8 @@ paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/host/host.cpp.o: /home/
 /home/hykang/riscv/riscv/sysroot/usr/include/bits/waitstatus.h:
 
 /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/include/c++/16.1.0/bits/stl_vector.h:
+
+/home/hykang/riscv/riscv/sysroot/usr/lib/libc_nonshared.a:
 
 /home/hykang/riscv/riscv/sysroot/usr/include/bits/types/struct_iovec.h:
 
@@ -467,6 +513,8 @@ paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/host/host.cpp.o: /home/
 
 /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/include/c++/16.1.0/bits/vector.tcc:
 
+/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/libgcc.a:
+
 /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/include/c++/16.1.0/bits/basic_ios.tcc:
 
 /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/include/c++/16.1.0/bit:
@@ -533,6 +581,8 @@ paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/host/host.cpp.o: /home/
 
 /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/include/c++/16.1.0/bits/allocator.h:
 
+/home/hykang/riscv/riscv/sysroot/lib/ld-linux-riscv64-lp64d.so.1:
+
 /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/include/c++/16.1.0/cstdlib:
 
 /home/hykang/riscv/riscv/sysroot/usr/include/bits/timesize.h:
@@ -588,6 +638,8 @@ paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/host/host.cpp.o: /home/
 /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/include/c++/16.1.0/ext/string_conversions.h:
 
 /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/include/c++/16.1.0/bits/basic_string.tcc:
+
+/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtn.o:
 
 /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/include/c++/16.1.0/bits/streambuf_iterator.h:
 
@@ -669,6 +721,8 @@ paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/host/host.cpp.o: /home/
 
 /home/hykang/riscv/riscv/sysroot/usr/include/bits/byteswap.h:
 
+/home/hykang/riscv/riscv/lib/gcc/riscv64-unknown-linux-gnu/16.1.0/crtbegin.o:
+
 /home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/include/c++/16.1.0/riscv64-unknown-linux-gnu/bits/c++config.h:
 
 /home/hykang/riscv/riscv/sysroot/usr/include/asm-generic/errno.h:
@@ -699,6 +753,8 @@ paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/host/host.cpp.o: /home/
 
 /home/hykang/riscv/riscv/sysroot/usr/include/asm-generic/bitsperlong.h:
 
+/home/hykang/riscv/riscv/sysroot/usr/lib/libm.so:
+
 /home/hykang/riscv/riscv/sysroot/usr/include/asm-generic/posix_types.h:
 
 /home/hykang/riscv/riscv/sysroot/usr/include/bits/stat.h:
@@ -718,6 +774,8 @@ paper_eval/beebs-bench/CMakeFiles/beebs-crc32-runner.dir/host/host.cpp.o: /home/
 /home/hykang/riscv/riscv/sysroot/usr/include/asm/bitsperlong.h:
 
 /home/hykang/riscv/riscv/sysroot/usr/include/bits/types.h:
+
+/home/hykang/riscv/riscv/riscv64-unknown-linux-gnu/lib/libgcc_s.so.1:
 
 /home/hykang/riscv/riscv/sysroot/usr/include/asm/errno.h:
 
