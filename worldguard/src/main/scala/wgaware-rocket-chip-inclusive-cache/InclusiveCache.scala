@@ -183,7 +183,11 @@ class WGInclusiveCache(
 
         sched.io.req.valid := contained && ctrl.module.io.flush_req.valid
         sched.io.req.bits.address := ctrl.module.io.flush_req.bits
-        sched.io.req.bits.wid := 0.U // FIXME: Temporarily set wid to 0
+        // SW-selectable flush WID (FlushWid control reg). A flush issued under the WID that
+        // owns the dirty lines is a clean same-WID hit; wid=0 over WID-tagged lines takes the
+        // heavy cross-WID onlyTagHit path (the per-enclave EPM-flush storm).
+        sched.io.req.bits.wid := ctrl.module.io.flush_wid(widBits - 1, 0)
+        ctrl.module.io.dbg := sched.io.dbg   // WG debug counters -> control MMIO
         when (contained && sched.io.req.ready) { ctrl.module.io.flush_req.ready := true.B }
 
         when (sched.io.resp.valid) { ctrl.module.io.flush_resp := true.B }

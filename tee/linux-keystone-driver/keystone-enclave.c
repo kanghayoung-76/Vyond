@@ -26,13 +26,17 @@ int destroy_enclave(struct enclave* enclave)
 
   if (epm)
   {
+    keystone_err("[DRV] DC1 epm_destroy\n");
     epm_destroy(epm);
     kfree(epm);
+    keystone_err("[DRV] DC2 epm freed\n");
   }
   if (utm)
   {
+    keystone_err("[DRV] DC3 utm_destroy\n");
     utm_destroy(utm);
     kfree(utm);
+    keystone_err("[DRV] DC4 utm freed\n");
   }
   kfree(enclave);
   return 0;

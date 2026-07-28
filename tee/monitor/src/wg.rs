@@ -21,7 +21,9 @@ pub const WGC_ERRCAUSE_W_SHIFT: u8 = 9;
 pub const WGC_ERRCAUSE_BE_SHIFT: u8 = 62;
 pub const WGC_ERRCAUSE_IP_SHIFT: u8 = 63;
 
-pub const WGC_ALL_PERM: usize = usize::MAX; // 2 bits per world * 32 worlds = 64 bits = all set
+// 2 bits per world; mask exactly NWORLDS worlds so no reserved (nonexistent-world)
+// bits are set. At NWORLDS=8 this is 0xFFFF. Matches the HW's widWidth=log2(NWORLDS).
+pub const WGC_ALL_PERM: usize = ((1u128 << (NWORLDS * 2)) - 1) as usize;
 
 // TODO: read platform specific configs from dtb
 pub const WGC_DRAM_BASE: usize = 0x600_0000;
@@ -371,6 +373,39 @@ pub fn napot_region_init<'a>(
     Ok(region_idx)
 }
 
+/// NAPOT region at a caller-chosen HW slot (reg_idx). WGChecker priority = lowest-index
+/// hitting slot wins, so an OS catch-all placed at the HIGHEST index (lowest priority)
+/// lets a per-enclave EPM slot at a lower index override it -> isolation.
+/// Rust set_slot(idx) writes HW slot idx directly; HW nSlots=8 -> reg_idx in 0..7 valid.
+pub fn napot_region_init_at(
+    start: usize,
+    size: usize,
+    perm: u64,
+    allow_overlap: bool,
+    reg_idx: usize,
+) -> Result<usize, Error> {
+    let region_idx = match get_free_region_idx() {
+        Some(i) => i,
+        None => return Err(Error::MaxReached),
+    };
+    if ((unsafe { REG_BITMAP } & (1 << reg_idx)) != 0) || (reg_idx >= WGC_HW_SLOTS) {
+        return Err(Error::MaxReached);
+    }
+    unsafe {
+        REGIONS[region_idx] = Some(Region {
+            size,
+            mode: WGC_CFG_A_NAPOT,
+            addr: start,
+            perm,
+            allow_overlap,
+            index: reg_idx,
+        });
+        REGION_VALID[region_idx] = true;
+        REG_BITMAP |= 1 << reg_idx;
+    }
+    Ok(region_idx)
+}
+
 pub fn get_free_region_idx() -> Option<usize> {
     unsafe {
         for i in 1..WG_MAX_N_REGION {
@@ -469,10 +504,24 @@ fn set_wg_slot(region_idx: usize, perm: u64) -> Result<(), Error> {
     Ok(())
 }
 
-/// Sets a WGC slot for an enclave EPM — grants R+W to `wid` only.
+/// Sets a WGC slot for an enclave EPM — grants R+W to the owning enclave `wid` AND
+/// OS_WID (+ M-mode WID, forced on by HW). Per-enclave isolation: other enclave WIDs
+/// are denied; the OS may reach enclave memory (threat model), which also lets the host's
+/// leftover WID-tagged eapp-load lines release across the boundary (no coherence deadlock).
 pub fn set_wg_for_enclave(region_idx: usize, wid: usize) -> Result<(), Error> {
-    set_wg_slot(region_idx, 3u64 << (wid * 2))
+    // [실험 2026-07-27] EPM 슬롯을 모든 WID에 개방한다. enclave 첫 명령 fetch 정지가
+    // "체커가 어떤 WID를 거부해서"인지 확인하는 반증 실험: 다 열었는데도 멈추면 권한 계통은
+    // 원인이 아니고 코어↔L2 I-포트의 WID 처리(RTL)만 남는다. 진행되면 fetch가 제시하는 WID가
+    // 1도 OS도 아니라는 뜻 → WID를 하나씩 켜서 이분탐색. 결론 나면 이 플래그는 되돌린다.
+    if EPM_SLOT_ALL_PERM {
+        return set_wg_slot(region_idx, WGC_ALL_PERM as u64);
+    }
+    set_wg_slot(region_idx, (3u64 << (wid * 2)) | (3u64 << (OS_WID * 2)))
 }
+
+/// 위 실험 플래그. 정상 동작(격리 유지)은 false.
+/// 2026-07-27 실측: true로 열어도 enclave 정지는 그대로 → 권한 계통은 원인 아님. 원복함.
+const EPM_SLOT_ALL_PERM: bool = false;
 
 /// Clears all WGC DRAM hardware slots that carry permission bits for `wid`.
 /// Zeros cfg + addr + perm for each matching slot, so the evicted WID loses
@@ -488,8 +537,24 @@ pub fn invalidate_wid_in_all_slots(wid: usize) {
     // the real slot count is harmless.
     let nslots = core::cmp::min(dram.get_nslots() as usize, WGC_HW_SLOTS);
     let wid_mask = 3u64 << (wid as u64 * 2);
+    // NOTE: this zaps the WHOLE slot (cfg/addr/perm=0) — do NOT change to "clear only
+    // this WID's bits". FPGA 실측(2026-07-15): preserving other bits leaves the slot
+    // ACTIVE with a restricted perm, which then DENIES the host (OS_WID) for that whole
+    // address range instead of letting it fall through to the permissive catch-all (osm
+    // all-perm). Result was a ~4800-deep host ACCESS FAULT storm (eid=0, kernel VAs).
+    // Fully disabling the slot lets the range fall back to the catch-all -> host OK.
+    let all_perm = WGC_ALL_PERM as u64;
     for slot_idx in 0..=nslots {
-        if (dram.get_slot_perm(slot_idx) & wid_mask) != 0 {
+        let perm = dram.get_slot_perm(slot_idx);
+        // OS catch-all(= 모든 world 허용, boot 시 region_init(0, MAX, WGC_ALL_PERM))은 건드리지
+        // 않는다. 이 슬롯도 enclave WID 비트를 갖고 있어서 예전에는 함께 0으로 지워졌고, 그
+        // 결과 destroy 직후 호스트(OS_WID)를 커버하는 슬롯이 사라져 mret 복귀 직후 정지했다.
+        // (FPGA 실측 2026-07-27: destroy 후 슬롯 덤프에 catch-all 부재, 드라이버의 destroy
+        //  ecall이 영영 반환되지 않음 = 셸 wedge.)
+        if (perm & all_perm) == all_perm {
+            continue;
+        }
+        if (perm & wid_mask) != 0 {
             dram.set_slot_cfg(slot_idx, 0);
             dram.set_slot_addr(slot_idx, 0);
             dram.set_slot_perm(slot_idx, 0);

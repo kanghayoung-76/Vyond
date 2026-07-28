@@ -207,9 +207,11 @@ int keystone_destroy_enclave(struct file *filep, unsigned long arg)
   unsigned long ueid = enclp->eid;
 
   ret = __keystone_destroy_enclave(ueid);
+  keystone_err("[DRV] DF __destroy returned ret=%d\n", ret);
   if (!ret) {
     filep->private_data = NULL;
   }
+  keystone_err("[DRV] DG destroy ioctl -> userspace\n");
   return ret;
 }
 
@@ -238,7 +240,10 @@ int __keystone_destroy_enclave(unsigned int ueid)
   }
 
   if (enclave->eid >= 0) {
+    /* [WEDGE] destroy 이후 어디서 멈추는지 추적: SM의 D0~D6 뒤 구간은 지금까지 로그가 없었다. */
+    keystone_err("[DRV] DA sbi-destroy call\n");
     ret = sbi_sm_destroy_enclave(enclave->eid);
+    keystone_err("[DRV] DB sbi-destroy returned err=%ld\n", ret.error);
     if (ret.error) {
       keystone_err("fatal: cannot destroy enclave: SBI failed with error code %ld\n", ret.error);
       return -EINVAL;
@@ -252,8 +257,11 @@ int __keystone_destroy_enclave(unsigned int ueid)
   //   destroy_shm_by_pa(enclave_shm_list.shm[i].pa);
   // }
 
+  keystone_err("[DRV] DC free-enclave begin\n");
   destroy_enclave(enclave);
+  keystone_err("[DRV] DD free-enclave done\n");
   enclave_idr_remove(ueid);
+  keystone_err("[DRV] DE idr-remove done -> return\n");
 
   return 0;
 }
@@ -552,6 +560,7 @@ long keystone_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
 int keystone_release(struct inode *inode, struct file *file) {
   unsigned long ueid = (unsigned long)(file->private_data);
   struct enclave *enclave;
+  keystone_err("[DRV] REL-in ueid=%lu\n", ueid);
 
   /* enclave has been already destroyed */
   if (!ueid) {

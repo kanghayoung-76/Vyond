@@ -25,6 +25,21 @@ unsigned long sbi_sm_exit_enclave(struct sbi_trap_regs *regs);
 uintptr_t    sbi_sm_get_enclave_id(void);
 long         sbi_sm_handle_wgc_fault(uintptr_t eid, uintptr_t fault_addr);
 
+/* DIAGNOSTIC (called from Rust switch_to_enclave right after the boot-param stash is
+ * written + flushed): read the stash back from memory in M-mode (WID7 = the writer's own
+ * world) and dump the L2 cross-WID debug counters. If the readback here is CORRECT but the
+ * enclave (WID1) still boots with garbage params, the failure is a cross-WID READ race
+ * (enclave reads stale) rather than a bad write/flush. */
+void sm_dbg_bootparam(unsigned long stash_pa)
+{
+	volatile unsigned long *s = (volatile unsigned long *)stash_pa;
+	unsigned long oth = *(volatile unsigned int *)0x2010300UL;
+	unsigned long rel = *(volatile unsigned int *)0x2010308UL;
+	unsigned long stall = *(volatile unsigned int *)0x2010310UL;
+	sbi_printf("[SM] BP readback dram=0x%lx size=0x%lx rt=0x%lx user=0x%lx free=0x%lx utm=0x%lx utmsz=0x%lx | L2[oth=%lu rel=%lu stall=%lu]\n",
+	           s[0], s[1], s[2], s[3], s[4], s[5], s[6], oth, rel, stall);
+}
+
 /*
  * SV39 VA→PA translation executed from M-mode.
  *
@@ -138,6 +153,9 @@ static int sbi_ecall_vyond_monitor_handler(
         break;
     case SBI_SM_DESTROY_ENCLAVE:
         retval = sbi_sm_destroy_enclave(regs->a0);
+        /* [WEDGE] SM은 D6까지 찍고도 Linux로 복귀하지 못한다(드라이버의 DB 마커 미출력).
+         * 반환 경로 어디까지 살아있는지 확인한다. DX가 찍히면 Rust는 정상 복귀한 것. */
+        sbi_puts("[SM] DX destroy ecall returned -> common exit\n");
         break;
     case SBI_SM_ENTER_ENCLAVE:
         retval = sbi_sm_enter_enclave((struct sbi_trap_regs*) regs, regs->a0);
@@ -276,6 +294,11 @@ static int sbi_ecall_vyond_monitor_handler(
 
 	// sbi_printf("Retval = %lx\n", retval);
 
+    if (funcid == SBI_SM_DESTROY_ENCLAVE) {
+        /* DY까지 찍히면 SM 핸들러는 끝났고, 이후 mepc+=4 -> mret(S-mode 복귀)만 남는다.
+         * DY는 나오는데 드라이버 DB가 없으면 정지는 복귀 직후의 호스트 쪽이다. */
+        sbi_puts("[SM] DY handler end -> mret to S-mode\n");
+    }
     return retval;
 }
   
@@ -525,6 +548,16 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
 		            phys_addr = mtval;
 		        }
 		        long ret = sbi_sm_handle_wgc_fault(eid, phys_addr);
+		        {
+			        static unsigned long flt_cnt = 0, flt_tval = ~0UL, flt_cause = ~0UL;
+			        flt_cnt++;
+			        if (mtval != flt_tval || mcause != flt_cause || (flt_cnt % 100000UL) == 0) {
+				        sbi_printf("[FLT] n=%lu cause=%lu tval=0x%lx pa=0x%lx ret=%ld\n",
+					           flt_cnt, (unsigned long)mcause, (unsigned long)mtval,
+					           (unsigned long)phys_addr, ret);
+				        flt_tval = mtval; flt_cause = mcause;
+			        }
+		        }
 		        if (ret == 0) {
 		            rc = SBI_OK;
 		        } else {

@@ -42,6 +42,8 @@ class WGInclusiveCacheBankScheduler(params: InclusiveCacheParameters, widBits: I
     // Control port
     val req = Flipped(Decoupled(new WGSinkXRequest(params, widBits)))
     val resp = Decoupled(new WGSourceXRequest(params, widBits))
+    // WG debug counters (exposed via L2 control MMIO 0x300..0x378)
+    val dbg = Output(Vec(16, UInt(32.W)))
   })
   // Sinks and Sources except A don't need to have wid but they have in order to have the same WGFullRequest
   val sourceA = Module(new WGSourceA(params, widBits))
@@ -277,6 +279,8 @@ class WGInclusiveCacheBankScheduler(params: InclusiveCacheParameters, widBits: I
   request.ready := request_alloc_cases || (queue && (bypassQueue || requests.io.push.ready))
   val alloc_uses_directory = request.valid && request_alloc_cases
 
+  // [ILA debug — Release-path visibility, moved below after c_mshr allocation is defined]
+
   // When a request goes through, it will need to hit the Directory
   directory.io.read.valid := mshr_uses_directory || alloc_uses_directory
   directory.io.read.bits.set := Mux(mshr_uses_directory_for_lb, scheduleSet,          request.bits.set)
@@ -361,6 +365,56 @@ class WGInclusiveCacheBankScheduler(params: InclusiveCacheParameters, widBits: I
   sourceD.io.grant_req := sinkD  .io.grant_req
   sourceC.io.evict_safe := sourceD.io.evict_safe
   sinkD  .io.grant_safe := sourceD.io.grant_safe
+
+  // --- WG debug counters (read via L2 control MMIO; free-running, reset only on FPGA reload) ---
+  val dbg_oth   = RegInit(0.U(32.W))  // cross-WID onlyTagHit (!hit) directory results
+  val dbg_rel   = RegInit(0.U(32.W))  // outer C-channel release fires (writebacks/evictions)
+  val dbg_stall = RegInit(0.U(32.W))  // cycles a request was valid but not accepted
+  when (directory.io.result.valid && directory.io.result.bits.onlyTagHit && !directory.io.result.bits.hit) { dbg_oth := dbg_oth + 1.U }
+  when (io.out.c.fire) { dbg_rel := dbg_rel + 1.U }
+  when (request.valid && !request.ready) { dbg_stall := dbg_stall + 1.U }
+  io.dbg(0) := dbg_oth
+  io.dbg(1) := dbg_rel
+  io.dbg(2) := dbg_stall
+  // fetch-path 진단 카운터: enclave WID=1 fetch가 L2에 도달/outer Get 발행/메모리 응답을 받는지.
+  val dbg_outa  = RegInit(0.U(32.W))  // outer A (Get/Put to memory) fires
+  val dbg_outd  = RegInit(0.U(32.W))  // outer D (grant/ack from memory) fires
+  val dbg_reqw1 = RegInit(0.U(32.W))  // accepted requests tagged wid==1 (enclave fetch reaching L2)
+  when (io.out.a.fire) { dbg_outa := dbg_outa + 1.U }
+  when (io.out.d.fire) { dbg_outd := dbg_outd + 1.U }
+  when (request.valid && request.ready && request.bits.wid === 1.U) { dbg_reqw1 := dbg_reqw1 + 1.U }
+  io.dbg(3) := dbg_outa
+  io.dbg(4) := dbg_outd
+  io.dbg(5) := dbg_reqw1
+
+  // --- EPM 창(enclave 메모리 풀)에 도착하는 요청을 WID별로 센다 -------------------------
+  // 목적: enclave의 첫 명령 fetch가 L2에 "어떤 WID로" 도착하는지 확정한다. fw 프로브로
+  // WID1의 데이터/명령 경로가 모두 정상임이 확인됐으므로(2026-07-27), 남은 가설은 fetch가
+  // 기대와 다른 WID로 나가거나 grant가 코어로 안 돌아가는 것. 창 밖(커널/호스트) 트래픽을
+  // 배제하려고 EPM 풀 주소창으로 필터링한다. dbg6/7은 inner 채널 총량(요청 대 응답 비교용).
+  val EPM_LO = "h83000000".U
+  val EPM_HI = "h88000000".U
+  val reqAddr = params.expandAddress(request.bits.tag, request.bits.set, request.bits.offset)
+  val reqInEpm = reqAddr >= EPM_LO && reqAddr < EPM_HI
+  val reqFire  = request.valid && request.ready
+
+  val dbg_ind = RegInit(0.U(32.W))    // inner D fires (L2 -> 코어 grant/응답)
+  val dbg_ina = RegInit(0.U(32.W))    // inner A fires (코어 -> L2 요청)
+  when (io.in.d.fire) { dbg_ind := dbg_ind + 1.U }
+  when (io.in.a.fire) { dbg_ina := dbg_ina + 1.U }
+  io.dbg(6) := dbg_ind
+  io.dbg(7) := dbg_ina
+
+  // EPM 창 요청의 WID별 카운터. widBits가 3이면 WID 0..7이 모두 커버된다.
+  val nWidCnt = scala.math.min(8, 1 << widBits)
+  val dbg_epm_wid = Seq.tabulate(nWidCnt) { w =>
+    val r = RegInit(0.U(32.W))
+    when (reqFire && reqInEpm && request.bits.wid === w.U) { r := r + 1.U }
+    r
+  }
+  for (i <- 0 until 8) {
+    io.dbg(8 + i) := (if (i < nWidCnt) dbg_epm_wid(i) else 0.U)
+  }
 
   private def afmt(x: AddressSet) = s"""{"base":${x.base},"mask":${x.mask}}"""
   private def addresses = params.inner.manager.managers.flatMap(_.address).map(afmt _).mkString(",")

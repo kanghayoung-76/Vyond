@@ -163,6 +163,8 @@ class WGMSHR(params: InclusiveCacheParameters, widBits: Int) extends Module
   // The above rules ensure we will block and not nest an outer probe while still doing our
   // own inner probes. Thus every probe wakes exactly one MSHR.
   io.status.bits.blockC := !meta_valid
+  // [Fix A(nestC 확장) 되돌림 2026-07-22: FPGA 검증 실패(Release가 nest 안 함, dbg_cmshr_alloc=0
+  //  확증). clean baseline으로 진단 재개.]
   io.status.bits.nestC  := meta_valid && (!w_rprobeackfirst || !w_pprobeackfirst || !w_grantfirst)
   // The w_grantfirst in nestC is necessary to deal with:
   //   acquire waiting for grant, inner release gets queued, outer probe -> inner probe -> deadlock
@@ -223,7 +225,11 @@ class WGMSHR(params: InclusiveCacheParameters, widBits: Int) extends Module
     final_meta_writeback.clients := meta.clients & ~Mux(isToN(request.param), req_clientBit, 0.U)
     final_meta_writeback.hit     := true.B // chained requests are hits
   } .elsewhen (request.control && params.control.B) { // request.prio(0)
-    when (meta.hit) {
+    // Invalidate cross-WID (onlyTagHit) lines on flush too, not just exact hits, so a
+    // foreign-WID EPM line is actually cleared from the directory (paired with the
+    // s_release trigger above that writes it back). Otherwise it lingers and deadlocks
+    // the enclave's later same-address access under a WID-only WGChecker slot.
+    when (meta.hit || meta.onlyTagHit) {
       final_meta_writeback.dirty   := false.B
       final_meta_writeback.state   := INVALID
       final_meta_writeback.clients := meta.clients & ~probes_toN
@@ -298,7 +304,14 @@ class WGMSHR(params: InclusiveCacheParameters, widBits: Int) extends Module
   io.schedule.bits.c.bits.source  := 0.U
   io.schedule.bits.c.bits.tag     := meta.tag
   io.schedule.bits.c.bits.set     := request.set
-  io.schedule.bits.c.bits.wid     := meta.wid
+  // [cross-WID teardown-wedge fix 2026-07-22] For a cross-WID eviction (onlyTagHit && !hit)
+  // the victim line is tagged with the OLD (stale) wid, but the page's outer WGChecker
+  // ownership has already moved to the requester (e.g. host OS_WID reclaimed a destroyed
+  // enclave's page). Emitting the eviction Release under meta.wid gets it DENIED by the new
+  // per-page WGChecker slot -> no ReleaseAck ever returns -> w_releaseack/s_release_wid stay
+  // low forever -> a.valid gated -> permanent deadlock (the confirmed teardown wedge). Issue
+  // the writeback under the requester's wid, which the outer checker will grant.
+  io.schedule.bits.c.bits.wid     := Mux(meta.onlyTagHit && !meta.hit, request.wid, meta.wid)
   io.schedule.bits.c.bits.way     := meta.way
   io.schedule.bits.c.bits.dirty   := meta.dirty
   io.schedule.bits.d.bits.viewAsSupertype(chiselTypeOf(request)) := request
@@ -607,7 +620,13 @@ class WGMSHR(params: InclusiveCacheParameters, widBits: Int) extends Module
     .elsewhen (new_request.control && params.control.B) { // new_request.prio(0)
       s_flush := false.B
       // Do we need to actually do something?
-      when (new_meta.hit) {
+      // A cross-WID line (tag match, WID miss = onlyTagHit) is NOT `hit`, so the old
+      // `when (new_meta.hit)` made a flush of a foreign-WID line a no-op. That leaks the
+      // host's WID-tagged EPM lines in L2: when the enclave later touches them under its
+      // own WID the resulting release is denied by the per-enclave (WID-only) WGChecker
+      // slot -> coherence deadlock. Flush onlyTagHit lines too so they are written back
+      // and invalidated (matching the A-channel eviction path which handles onlyTagHit).
+      when (new_meta.hit || new_meta.onlyTagHit) {
         s_release := false.B
         w_releaseack := false.B
         // Do we need to shoot-down inner caches?
@@ -624,8 +643,15 @@ class WGMSHR(params: InclusiveCacheParameters, widBits: Int) extends Module
       // Do we need an eviction?
       when (!new_meta.hit && new_meta.state =/= INVALID) {
         s_release := false.B
-        w_releaseack := false.B
-        when (new_meta.onlyTagHit) {
+        // [clean cross-WID victim teardown-wedge fix 2026-07-22]
+        // A DIRTY victim writeback becomes an outer-A Put that the memory-side WGChecker must
+        // grant and that returns a real ReleaseAck -> wait for it. A CLEAN victim's Release is
+        // acked instantly *inside* the CacheCork and never reaches memory/WGChecker, so waiting
+        // on an outer ReleaseAck (w_releaseack) and gating a.valid on s_release_wid just
+        // deadlocks (the confirmed teardown wedge: host OS_WID reclaims a destroyed enclave's
+        // clean page). Complete a clean eviction internally: don't wait, don't arm release-wid.
+        w_releaseack := Mux(new_meta.dirty, false.B, true.B)
+        when (new_meta.onlyTagHit && new_meta.dirty) {
           s_release_wid := false.B
         }
         // Do we need to shoot-down inner caches?
