@@ -110,11 +110,16 @@ eyrie_boot(uintptr_t dummy, // $a0 contains the return value from the SBI
 
   debug("FREE: 0x%lx-0x%lx (%u KB), va 0x%lx", free_paddr, dram_base + dram_size, freemem_size/1024, freemem_va_start);
 
-  /* initialize free memory */
+  /* [TRACE] 부팅 단계 마커: memset(NULL) fault가 어느 단계에서 나는지 특정 */
+  printf("[TRACE][RT] boot: init_freemem\n");
   init_freemem();
+  printf("[TRACE][RT] boot: init_freemem done\n");
 
   /* load eapp elf */
+  printf("[TRACE][RT] boot: load eapp elf (va=0x%lx size=0x%lx)\n",
+         (unsigned long)__va(user_paddr), (unsigned long)(free_paddr-user_paddr));
   assert(!verify_and_load_elf_file(__va(user_paddr), free_paddr-user_paddr, true));
+  printf("[TRACE][RT] boot: eapp elf loaded\n");
 
   /* free leaking memory */
   // TODO: clean up after loader -- entire file no longer needed
@@ -129,10 +134,14 @@ eyrie_boot(uintptr_t dummy, // $a0 contains the return value from the SBI
   #endif /* USE_PAGING */
 
   /* initialize user stack */
+  printf("[TRACE][RT] boot: init_user_stack_and_env\n");
   init_user_stack_and_env((ELF(Ehdr) *) __va(user_paddr));
+  printf("[TRACE][RT] boot: user stack ready\n");
 
   /* prepare edge & system calls */
+  printf("[TRACE][RT] boot: init_edge_internals\n");
   init_edge_internals();
+  printf("[TRACE][RT] boot: edge internals ready\n");
 
   /* set timer */
   init_timer();

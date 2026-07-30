@@ -3,6 +3,8 @@
 // All Rights Reserved. See LICENSE for license details.
 //------------------------------------------------------------------------------
 #include "Enclave.hpp"
+
+#include <stdio.h>
 #include <math.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -72,6 +74,10 @@ Enclave::prepareEnclaveMemory(size_t requiredPages, uintptr_t alternatePhysAddr)
   }
 
   pMemory->init(pDevice, physAddr, minPages);
+  printf("[TRACE][SDK] prepareEnclaveMemory: epm_paddr=%#lx minPages=%#lx (freeMem=%#lx reqPages=%#lx)\n",
+         physAddr, (unsigned long)minPages,
+         (unsigned long)(ROUND_UP(params.getFreeMemSize(), PAGE_BITS) / PAGE_SIZE),
+         (unsigned long)requiredPages);
   return true;
 }
 
@@ -186,18 +192,28 @@ Enclave::init(
 	
   /* Copy loader into beginning of enclave memory */
   //printf("[SDK] Copy loader base: %#lx size: %#lx\n", (uintptr_t)loaderFile->getPtr(), loaderFile->getFileSize());
+  printf("[TRACE][SDK] copy loader: size=%#lx -> epm offset cursor before=%#lx\n",
+         (unsigned long)loaderFile->getFileSize(), pMemory->getCurrentEPMAddress());
   copyFile((uintptr_t) loaderFile->getPtr(), loaderFile->getFileSize());
 
   pMemory->startRuntimeMem();
+  printf("[TRACE][SDK] startRuntimeMem -> runtime_paddr=%#lx\n", pMemory->getRuntimePhysAddr());
   //printf("[SDK] Copy runtime base: %#lx size: %#lx\n", (uintptr_t)runtimeFile->getPtr(), runtimeFile->getFileSize());
+  printf("[TRACE][SDK] copy runtime: size=%#lx\n", (unsigned long)runtimeFile->getFileSize());
   copyFile((uintptr_t) runtimeFile->getPtr(), runtimeFile->getFileSize());
 
   pMemory->startEappMem();
+  printf("[TRACE][SDK] startEappMem -> user_paddr=%#lx\n", pMemory->getEappPhysAddr());
   //printf("[SDK] Copy eapp base: %#lx size: %#lx\n", (uintptr_t)enclaveFile->getPtr(), enclaveFile->getFileSize());
+  printf("[TRACE][SDK] copy eapp: size=%#lx\n", (unsigned long)enclaveFile->getFileSize());
   copyFile((uintptr_t) enclaveFile->getPtr(), enclaveFile->getFileSize());
 
   pMemory->startFreeMem();
+  printf("[TRACE][SDK] startFreeMem -> free_paddr=%#lx\n", pMemory->getFreePhysAddr());
 
+  printf("[TRACE][SDK] finalize args: runtime=%#lx user=%#lx free=%#lx free_requested=%#lx\n",
+         pMemory->getRuntimePhysAddr(), pMemory->getEappPhysAddr(),
+         pMemory->getFreePhysAddr(), (unsigned long)params.getFreeMemSize());
   if (pDevice->finalize(
           pMemory->getRuntimePhysAddr(), pMemory->getEappPhysAddr(),
           pMemory->getFreePhysAddr(), params.getFreeMemSize()) != Error::Success) {

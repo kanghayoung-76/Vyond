@@ -3,6 +3,8 @@
 // All Rights Reserved. See LICENSE for license details.
 //------------------------------------------------------------------------------
 #include "KeystoneDevice.hpp"
+
+#include <stdio.h>
 #include <sys/mman.h>
 
 namespace Keystone {
@@ -49,6 +51,9 @@ KeystoneDevice::finalize(
   encl.free_paddr     = freePhysAddr;
   encl.free_requested = freeRequested;
 
+  printf("[TRACE][DEV] ioctl FINALIZE: eid=%d runtime=%#lx user=%#lx free=%#lx free_req=%#lx\n",
+         encl.eid, (unsigned long)encl.runtime_paddr, (unsigned long)encl.user_paddr,
+         (unsigned long)encl.free_paddr, (unsigned long)encl.free_requested);
   if (ioctl(fd, KEYSTONE_IOC_FINALIZE_ENCLAVE, &encl)) {
     perror("ioctl error");
     return Error::IoctlErrorFinalize;

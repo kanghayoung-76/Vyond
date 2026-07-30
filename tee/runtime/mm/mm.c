@@ -1,5 +1,7 @@
 #include "mm/mm.h"
 
+#include "util/printf.h"
+
 #include "mm/common.h"
 #include "mm/freemem.h"
 #include "mm/paging.h"
@@ -29,6 +31,13 @@ set_program_break(uintptr_t new_break) {
 static pte*
 __continue_walk_create(pte* root, uintptr_t addr, pte* pte) {
   uintptr_t new_page = spa_get_zero();
+  if (!new_page) {
+    /* [TRACE] assert 는 릴리스 빌드에서 사라진다. 여기서 0을 그냥 쓰면 PPN=0 짜리 PTD 를
+     * 심게 되고, 재귀한 __walk_create 가 물리 0번지를 페이지테이블로 읽어 죽는다
+     * (2026-07-29 실측: loader map_page +0xa56 에서 pa=0x0 ACCESS FAULT). */
+    printf("[TRACE][RT] __continue_walk_create: spa_get_zero()=0 addr=0x%lx\n",
+           (unsigned long)addr);
+  }
   assert(new_page);
 
   unsigned long free_ppn = ppn(__pa(new_page));

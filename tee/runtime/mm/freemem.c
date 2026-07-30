@@ -1,4 +1,5 @@
 #include "util/string.h"
+#include "util/printf.h"
 #include "mm/common.h"
 #include "mm/vm.h"
 #include "mm/freemem.h"
@@ -24,6 +25,11 @@ __spa_get(bool zero)
   uintptr_t free_page;
 
   if (LIST_EMPTY(spa_free_pages)) {
+    /* [TRACE] 여기서 0을 반환하면 호출자(__continue_walk_create / spa_get_zero)가 그 0을
+     * 검사 없이 쓰기 때문에 결국 물리 0번지 접근으로 죽는다. 고갈인지 손상인지 구분용. */
+    printf("[TRACE][RT] spa_get: LIST_EMPTY count=%lu head=0x%lx tail=0x%lx\n",
+           (unsigned long)spa_free_pages.count, (unsigned long)spa_free_pages.head,
+           (unsigned long)spa_free_pages.tail);
     /* try evict a page */
 #ifdef USE_PAGING
     uintptr_t new_pa = paging_evict_and_free_one(0);
@@ -40,6 +46,12 @@ __spa_get(bool zero)
   }
 
   free_page = spa_free_pages.head;
+  if (!free_page) {
+    /* [TRACE] count>0 인데 head==0 이면 free list 손상. assert 가 컴파일 아웃된 빌드에서는
+     * 아래 memset 이 0번지를 때려 store page fault(scause 0xf)로 죽는다 — 2026-07-29 실측 증상. */
+    printf("[TRACE][RT] spa_get: NULL head! count=%lu\n", (unsigned long)spa_free_pages.count);
+    return 0;
+  }
   assert(free_page);
 
   /* update list head */
@@ -108,4 +120,7 @@ spa_init(uintptr_t base, size_t size)
       cur += RISCV_PAGE_SIZE) {
     spa_put(cur);
   }
+  printf("[TRACE][RT] spa_init done: count=%lu head=0x%lx tail=0x%lx\n",
+         (unsigned long)spa_free_pages.count, (unsigned long)spa_free_pages.head,
+         (unsigned long)spa_free_pages.tail);
 }

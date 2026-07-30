@@ -18,4 +18,10 @@ typedef struct {
     size_t    size;
 } tdds_dev_shm_t;
 
+/* Args for OCALL_TDDS_WAIT: subscriber passes the channel rid to wait on.
+ * (Was referenced by src/host/TddsBroker.cpp but never defined here.) */
+struct tdds_ocall_wait_args {
+    uint32_t rid;
+};
+
 #endif /* __TDDS_COMMON_H__ */

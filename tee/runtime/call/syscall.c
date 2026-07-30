@@ -82,21 +82,47 @@ uintptr_t dispatch_edgecall_ocall( unsigned long call_id,
    * the right place to put calls */
   struct edge_call* edge_call = (struct edge_call*)shared_buffer;
 
+  /* [TRACE] shared_buffer(UTM VA)와 인자 상태. shared_buffer가 0/이상값이면 아래 UTM 복사가
+   * 저주소를 때리게 되므로(과거 pa=0x38/0xd8 계열 fault와 같은 모양) 여기서 먼저 드러난다. */
+  printf("[TRACE][RT] ocall id=%lu data=0x%lx len=%lu shm=0x%lx/%lu\n",
+         (unsigned long)call_id, (unsigned long)data, (unsigned long)data_len,
+         (unsigned long)shared_buffer, (unsigned long)shared_buffer_size);
+
   /* We encode the call id, copy the argument data into the shared
    * region, calculate the offsets to the argument data, and then
    * dispatch the ocall to host */
 
   edge_call->call_id = call_id;
 
-  /* UTM is now PTE_U: eapp accesses EYRIE_UNTRUSTED_START directly.
-   * data must already point into the UTM — no copy needed.
-   * Skip setup_call for the no-data case (data_len==0) because ptr may be
-   * NULL, which fails the UTM range check even with size=0. */
+  /* UTM is PTE_U, so an eapp MAY hand us a pointer that already lives in the UTM —
+   * that stays zero-copy. But eapps commonly pass their own buffers (a .rodata string
+   * literal, a stack array), and those fail edge_call_setup_call's UTM range check.
+   * Before 2026-07-28 that made the ocall return 1 *without ever issuing
+   * sbi_stop_enclave*: the host never saw the call, the eapp (which ignores the return
+   * value) ran on to EAPP_RETURN, and the whole run looked like a silent success with
+   * no output. So: copy non-UTM arguments into the UTM data area behind the edge_call
+   * header, then hand that UTM address to setup_call. S-mode may read the eapp's U-mode
+   * buffer because eyrie_boot sets sstatus.SUM.
+   * NOTE: the host writes its return payload to the same area (shared_buffer +
+   * sizeof(struct edge_call)) but only after it has consumed the arguments. */
+  uintptr_t arg_ptr = (uintptr_t)data;
   if(data_len == 0){
     edge_call->call_arg_size   = 0;
     edge_call->call_arg_offset = 0;
-  } else if(edge_call_setup_call(edge_call, (void*)data, data_len, shared_buffer, shared_buffer_size) != 0){
-    goto ocall_error;
+  } else {
+    int in_utm = (arg_ptr >= shared_buffer) &&
+                 (arg_ptr + data_len <= shared_buffer + shared_buffer_size);
+    if(!in_utm){
+      uintptr_t utm_data = shared_buffer + sizeof(struct edge_call);
+      if(sizeof(struct edge_call) + data_len > shared_buffer_size){
+        goto ocall_error;   /* argument does not fit in the UTM */
+      }
+      memcpy((void*)utm_data, (void*)arg_ptr, data_len);
+      arg_ptr = utm_data;
+    }
+    if(edge_call_setup_call(edge_call, (void*)arg_ptr, data_len, shared_buffer, shared_buffer_size) != 0){
+      goto ocall_error;
+    }
   }
 
   ret = sbi_stop_enclave(STOP_EDGE_CALL_HOST);
@@ -250,6 +276,11 @@ handle_syscall(struct encl_ctx* ctx) {
   uintptr_t arg5 = ctx->regs.a5;
 #endif /* IO_SYSCALL */
   uintptr_t ret = 0, ret_val = 0;
+
+  /* [TRACE] eapp가 실제로 내는 syscall 번호. OCALL=1001, EXIT=1101.
+   * 1001이 안 보이면 eapp의 ocall()이 호출되지 않은 것이고, 보이면 그 이후 경로 문제다. */
+  printf("[TRACE][RT] syscall n=%lu a0=0x%lx a1=0x%lx a2=0x%lx\n",
+         (unsigned long)n, (unsigned long)arg0, (unsigned long)arg1, (unsigned long)arg2);
 
   ctx->regs.sepc += 4;
 

@@ -18,6 +18,11 @@ endmacro()
 
 use_riscv_toolchain(${KEYSTONE_BITS})
 
+# Newer binutils (jara toolchain, gcc 13.2) split zifencei out of the default
+# ISA (rv64imafdc_zicsr), so `fence.i` in rt_util.c fails to assemble. rv64gc
+# includes zifencei in this gcc -> restores fence.i support.
+add_compile_options(-march=rv64gc)
+
 ###########################
 ## Set up global options ##
 ###########################
