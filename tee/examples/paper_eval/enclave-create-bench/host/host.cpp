@@ -16,8 +16,8 @@
 #include <cstdlib>
 #include <cmath>
 
-#define WARMUP 5
-#define REPEAT 100
+#define WARMUP 1
+#define REPEAT 10
 
 // Timer source. Default = rdcycle (CPU cycle count). For wall-clock LATENCY
 // instead of cycles, comment the rdcycle line and uncomment the rdtime line
@@ -77,6 +77,12 @@ int main(int argc, char** argv) {
     enclave.destroy();
     uint64_t t2 = read_timer();
 
+    /* 회차별 즉시 출력: 어느 회차에서 멈추는지 보려면 누적 통계가 아니라 회차마다
+     * 흘려야 한다. 정지 시 마지막으로 찍힌 iter 가 곧 실패 지점이다. */
+    printf("[create-bench] iter %2d/%d  create=%lu  destroy=%lu  (cycles)\n",
+           i, WARMUP + REPEAT - 1, (unsigned long)(t1 - t0), (unsigned long)(t2 - t1));
+    fflush(stdout);
+
     if (err != Keystone::Error::Success) {
       printf("[create-bench] init failed (iter %d)\n", i);
       return 1;
@@ -85,7 +91,7 @@ int main(int argc, char** argv) {
       create_cyc[i - WARMUP]  = t1 - t0;
       destroy_cyc[i - WARMUP] = t2 - t1;
     }
-    // enclave destructor runs here (redundant destroy(), harmless, untimed)
+    // 소멸자의 destroy() 는 이제 no-op (SDK KeystoneDevice::destroy 가 성공 후 eid=-1)
   }
 
   printf("\n== enclave create/destroy latency  [samples=%d, freemem=%zuKB] ==\n",

@@ -42,7 +42,10 @@
 #define STRIDE (STRIDE_LINES * LINE)
 
 #define TIER_CACHE_BYTES (8UL * 1024)          /* < 16 KiB L1D, power of two */
-#define TIER_DRAM_BYTES  (4UL * 1024 * 1024)   /* > 512 KiB L2, power of two */
+/* [2026-07-30] 4 MiB -> 1 MiB. 이 보드의 WG-aware L2 는 512 KiB(8-way)라 1 MiB 로도 L2 를
+ * 넘긴다. 4 MiB 버퍼는 EPM 요구량을 order 14(32 MiB)로 밀어올려 커널 버디 상한
+ * (MAX_PAGE_ORDER=10, 4 MiB)을 초과해 __alloc_pages 가 실패했다(CONFIG_CMA 도 꺼짐). */
+#define TIER_DRAM_BYTES  (1UL * 1024 * 1024)   /* > 512 KiB L2, power of two */
 
 /* Emit `s` exactly 100 times (10 x 10). */
 #define R5(s)   s s s s s

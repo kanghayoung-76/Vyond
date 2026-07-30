@@ -17,7 +17,10 @@ done
 
 sleep 5; printf '\n' > "$SER"; sleep 3
 off=$(stat -c%s "$LOG")
-cmd='mkdir -p /mnt/sd; mount /dev/mmcblk0p2 /mnt/sd; insmod /apps/keystone-driver.ko; echo RD"Y"'
+# perf_user_access=2 (SYSCTL_LEGACY): Linux riscv PMU 드라이버가 기본값에서 scounteren=0x2 로
+# 덮어써 U-mode rdcycle/rdinstret 이 illegal instruction 이 된다(paper_eval 벤치가 전부 SIGILL).
+# 2로 두면 드라이버가 scounteren=0x7 을 쓴다. 부팅마다 초기화되므로 여기서 매번 설정한다.
+cmd='mkdir -p /mnt/sd; mount /dev/mmcblk0p2 /mnt/sd; insmod /apps/keystone-driver.ko; echo 2 > /proc/sys/kernel/perf_user_access; echo RD"Y"'
 for ((i=0; i<${#cmd}; i++)); do printf '%s' "${cmd:$i:1}" > "$SER"; sleep 0.02; done
 sleep 1.5
 if tail -c +"$off" "$LOG" | tr -d '\r\n' | grep -qF -- "$cmd"; then printf '\n' > "$SER"; else

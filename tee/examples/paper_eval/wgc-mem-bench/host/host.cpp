@@ -70,7 +70,10 @@ int main(int argc, char** argv) {
   Keystone::Enclave enclave;
   Keystone::Params params;
 
-  params.setFreeMemSize(32 * 1024 * 1024);  // > DRAM tier (4 MiB) + headroom
+  /* [2026-07-30] 32 MiB -> 2 MiB. EPM 은 loader+runtime+eapp(BSS 1 MiB 버퍼 포함)+freemem
+   * 을 모두 담아야 하고, 커널 버디 상한이 order 10(4 MiB)이다. 32 MiB 요청은 order 14 가
+   * 되어 __alloc_pages 가 WARNING 과 함께 실패했다. */
+  params.setFreeMemSize(2 * 1024 * 1024);   // > DRAM tier (1 MiB) + headroom
   params.setUntrustedSize(1 * 1024 * 1024);
 
   Keystone::Error err = enclave.init(argv[1], argv[2], argv[3], params);

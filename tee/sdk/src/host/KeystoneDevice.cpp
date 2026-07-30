@@ -76,6 +76,11 @@ KeystoneDevice::destroy() {
     return Error::IoctlErrorDestroy;
   }
 
+  /* destroy 를 idempotent 하게: 성공 후 eid 를 무효화한다. ~Enclave() 가 destroy() 를
+   * 한 번 더 부르는 구조라, 이게 없으면 낡은 eid 로 ioctl 이 재발행되어 드라이버가
+   * "invalid enclave id" 를 찍는다(create/destroy 반복 벤치에서 회차당 1건씩 쌓였다). */
+  eid = -1;
+
   return Error::Success;
 }
 
