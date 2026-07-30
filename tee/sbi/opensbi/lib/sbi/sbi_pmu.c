@@ -462,6 +462,21 @@ static int pmu_ctr_stop_hw(uint32_t cidx)
 	if (cidx >= num_hw_ctrs || cidx == 1)
 		return SBI_EINVAL;
 
+	/* [fpga] Never inhibit the fixed counters CY(0) and IR(2).
+	 *
+	 * Linux's riscv PMU driver stops every counter at probe (pmu_sbi_stop_all),
+	 * which lands here and leaves mcountinhibit = 0x5 — mcycle and minstret stop
+	 * advancing, so userspace rdcycle/rdinstret return a constant. Every paper_eval
+	 * benchmark times with rdcycle and reported 0 cycles because of this (measured
+	 * 2026-07-30: create-bench printed create=0 destroy=0 for all 11 iterations).
+	 *
+	 * Report success rather than an error so the driver's start/stop bookkeeping
+	 * stays consistent; the counters simply keep running, which is what the fixed
+	 * counters are for. TM(1) is already excluded above (its inhibit bit is tied
+	 * to zero in the RTL: wgaware-rocket/CSR.scala:1081). */
+	if (cidx == 0 || cidx == 2)
+		return 0;
+
 	if (!__test_bit(cidx, &mctr_inhbt)) {
 		__set_bit(cidx, &mctr_inhbt);
 		csr_write(CSR_MCOUNTINHIBIT, mctr_inhbt);
