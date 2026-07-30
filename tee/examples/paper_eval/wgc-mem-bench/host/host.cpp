@@ -45,47 +45,76 @@ static void print_result(const struct wgc_mem_result* r) {
   printf("========================================================================\n\n");
 }
 
+/* 2026-07-28 포팅: 구 edge_call API(edge_call_init_internals/register_call/
+ * 2-인자 edge_call_args_ptr)가 제거되어 빌드가 깨져 있었다. hello-native·shm-ocall-test와
+ * 동일한 방식으로, 공유버퍼 base/size를 로컬에 보관하고 OCALL을 switch로 디스패치한다. */
+static uintptr_t shm_base = 0;
+static size_t    shm_size = 0;
+
+static void ocall_dispatch(void* buffer, size_t /*size*/) {
+  struct edge_call* ec = (struct edge_call*)buffer;
+  switch (ec->call_id) {
+    case OCALL_PRINT_RESULT: print_result_wrapper(buffer); break;
+    default:
+      printf("[HOST] unknown OCALL id=%lu\n", (unsigned long)ec->call_id);
+      ec->return_data.call_status = CALL_STATUS_BAD_CALL_ID;
+  }
+}
+
 int main(int argc, char** argv) {
+  if (argc < 4) {
+    fprintf(stderr, "usage: %s <eapp> <runtime> <loader>\n", argv[0]);
+    return 1;
+  }
+
   Keystone::Enclave enclave;
   Keystone::Params params;
 
   params.setFreeMemSize(32 * 1024 * 1024);  // > DRAM tier (4 MiB) + headroom
   params.setUntrustedSize(1 * 1024 * 1024);
 
-  enclave.init(argv[1], argv[2], argv[3], params);
+  Keystone::Error err = enclave.init(argv[1], argv[2], argv[3], params);
+  printf("[TRACE][APP] init() -> %d (0=Success)\n", (int)err);
+  if (err != Keystone::Error::Success) return 1;
 
-  enclave.registerOcallDispatch(incoming_call_dispatch);
-  register_call(OCALL_PRINT_RESULT, print_result_wrapper);
+  shm_base = (uintptr_t)enclave.getSharedBuffer();
+  shm_size = enclave.getSharedBufferSize();
+  printf("[HOST] wgc-mem-bench: SHM base=0x%lx size=%zu\n", shm_base, shm_size);
 
-  edge_call_init_internals(
-      (uintptr_t)enclave.getSharedBuffer(), enclave.getSharedBufferSize());
+  enclave.registerOcallDispatch(
+      [](void* b, size_t s) { ocall_dispatch(b, s); });
 
+  printf("[HOST] Running enclave...\n");
   enclave.run();
+  printf("[HOST] Enclave finished.\n");
 
   return 0;
 }
 
 void print_result_wrapper(void* buffer) {
-  struct edge_call* edge_call = (struct edge_call*)buffer;
+  struct edge_call* ec = (struct edge_call*)buffer;
   uintptr_t call_args;
-  size_t arg_len;
-  if (edge_call_args_ptr(edge_call, &call_args, &arg_len) != 0) {
-    edge_call->return_data.call_status = CALL_STATUS_BAD_OFFSET;
+  size_t arg_len = ec->call_arg_size;
+  /* 현 API: 오프셋 → 포인터 변환에 공유버퍼 base/size를 명시적으로 넘긴다. */
+  if (edge_call_get_ptr_from_offset(ec->call_arg_offset, ec->call_arg_size,
+                                    &call_args, shm_base, shm_size) != 0) {
+    ec->return_data.call_status = CALL_STATUS_BAD_OFFSET;
     return;
   }
   if (arg_len < sizeof(struct wgc_mem_result)) {
-    edge_call->return_data.call_status = CALL_STATUS_BAD_PTR;
+    ec->return_data.call_status = CALL_STATUS_BAD_PTR;
     return;
   }
 
   print_result((const struct wgc_mem_result*)call_args);
 
   unsigned long ret_val = 0;
-  uintptr_t data_section = edge_call_data_ptr();
-  memcpy((void*)data_section, &ret_val, sizeof(unsigned long));
-  if (edge_call_setup_ret(edge_call, (void*)data_section, sizeof(unsigned long))) {
-    edge_call->return_data.call_status = CALL_STATUS_BAD_PTR;
+  uintptr_t ret_area = shm_base + sizeof(struct edge_call);
+  memcpy((void*)ret_area, &ret_val, sizeof(unsigned long));
+  if (edge_call_setup_ret(ec, (void*)ret_area, sizeof(unsigned long),
+                          shm_base, shm_size) != 0) {
+    ec->return_data.call_status = CALL_STATUS_BAD_PTR;
   } else {
-    edge_call->return_data.call_status = CALL_STATUS_OK;
+    ec->return_data.call_status = CALL_STATUS_OK;
   }
 }

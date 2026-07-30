@@ -14,7 +14,8 @@ set(eyrie_plugins "io_syscall linux_syscall env_setup")
 # host
 add_executable(${host_bin} ${host_src})
 find_package(Threads REQUIRED)
-target_link_libraries(${host_bin} PRIVATE ${KEYSTONE_LIB_HOST} ${KEYSTONE_LIB_EDGE} Threads::Threads)
+# static: FPGA busybox RAM rootfs에는 공유 glibc가 없다(다른 앱과 동일 설정).
+target_link_libraries(${host_bin} PRIVATE ${KEYSTONE_LIB_HOST} ${KEYSTONE_LIB_EDGE} Threads::Threads "-static")
 
 # eapp
 add_executable(${eapp1_bin} ${eapp1_src})

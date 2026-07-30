@@ -15,10 +15,10 @@ target_include_directories(${eapp_bin}
   PUBLIC ${KEYSTONE_SDK_DIR}/include/app
   PUBLIC ${KEYSTONE_SDK_DIR}/include/edge)
 
-# host
-
+# host (static — FPGA busybox RAM rootfs에는 공유 glibc가 없어 동적 링크 바이너리는
+# 타겟에서 실행되지 않는다. enter-exit-test 등 다른 앱과 동일한 설정.)
 add_executable(${host_bin} ${host_src})
-target_link_libraries(${host_bin} ${KEYSTONE_LIB_HOST} ${KEYSTONE_LIB_EDGE})
+target_link_libraries(${host_bin} ${KEYSTONE_LIB_HOST} ${KEYSTONE_LIB_EDGE} "-static")
 # add -std=c++11 flag
 set_target_properties(${host_bin}
   PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO

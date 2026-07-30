@@ -1,7 +1,19 @@
 #include <pthread.h>
+#include <cstddef>
+#include <string.h>
 #include "host/keystone.h"
 #include "host/SharedMemory.hpp"
 #include "edge_wrapper.h"
+
+// FPGA static-link workaround: glibc IFUNC memcpy (R_RISCV_IRELATIVE) is not
+// resolved in our static binary, so the PLT self-loops and crashes. Providing
+// our own memcpy makes the linker drop the IFUNC indirection entirely.
+extern "C" void* memcpy(void* dest, const void* src, size_t n) {
+  char* d = (char*)dest;
+  const char* s = (const char*)src;
+  while (n--) *d++ = *s++;
+  return dest;
+}
 
 using namespace Keystone;
 
@@ -33,6 +45,7 @@ const char *get_host_string() { return "hello"; }
 
 int main(int argc, char **argv)
 {
+    setvbuf(stdout, NULL, _IONBF, 0);
     if (argc < 5) {
         fprintf(stderr, "Usage: %s <publisher> <subscriber> <eyrie-rt> <loader>\n", argv[0]);
         return 1;
