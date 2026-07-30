@@ -7,11 +7,33 @@ prebuilt/qemu-system-riscv64
 # 내부(A 리포) 비교 분석 문서
 BRANCH-DIFF-vs-Vyond-main.md
 
-# eapp 빌드 디렉터리 (재생성 가능 — ke-rebuild-recipe 참고)
+# ── Vivado / JTAG 실행 잔여물 (어느 디렉터리에서 실행하든 생김)
+vivado*.jou
+vivado*.log
+webtalk*.jou
+webtalk*.log
+.Xil/
+usage_statistics_webtalk.*
+
+# ── 보드 작업 로그 (재생성됨, 수십 MB까지 자람)
+uart-console.log
+bitstream-build.log
+board_prog*.log
+eapp-deploy.log
+*.pyc
+__pycache__/
+
+# ── SD 준비용 스테이징 디렉터리 (로컬 전용)
+sd-p2-staging/
+sd-p2-staging-static/
+
+# ── 로컬에 보관하는 비트스트림 사본 (generated-src 에서 재생성 가능, 27MB)
+/*.bit
+
+# ── eapp 빌드 디렉터리 (재생성 가능 — auto-test/HANDOFF.md 참고)
 tee/examples/build/
 tee/examples/build_static/
 tee/examples/build_static2/
 tee/examples/build_trace/
 tee/examples/build_fresh/
-# 보드 UART 상시 로그 (수십 MB로 자람)
-uart-console.log
+build-fw-*.log
