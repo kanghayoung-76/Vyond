@@ -458,11 +458,11 @@ fn flush_epm_to_memory(pa_start: usize, size: usize, wid: usize) {
 /// pmp::region_free, but the WG reset_wg only clears the slot, not the RAM.)
 #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
 fn scrub_epm(pa_start: usize, size: usize) {
-    flush_epm_to_memory(pa_start, size);
+    flush_epm_to_memory(pa_start, size, 0);
     unsafe {
         core::ptr::write_bytes(pa_start as *mut u8, 0, size);
     }
-    flush_epm_to_memory(pa_start, size);
+    flush_epm_to_memory(pa_start, size, 0);
 }
 
 const INIT_VALUE: Option<Enclave> = None;
@@ -540,7 +540,7 @@ pub fn create_enclave<'a>(create_args: &KeystoneSBICreate) -> Result<&'a Enclave
         // WIDs, so first flush the host-WID-loaded image down to DRAM, then hash
         // the coherent image. (First-entry re-flushes for boot-param stash +
         // fence.i; the measurement itself no longer happens on the entry path.)
-        flush_epm_to_memory(create_args.epm_region.paddr, create_args.epm_region.size);
+        flush_epm_to_memory(create_args.epm_region.paddr, create_args.epm_region.size, 0);
         enclave.compute_hash();
 
         return Ok(enclave);
