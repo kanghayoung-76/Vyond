@@ -73,7 +73,11 @@ int main(int argc, char** argv) {
   /* [2026-07-30] 32 MiB -> 2 MiB. EPM 은 loader+runtime+eapp(BSS 1 MiB 버퍼 포함)+freemem
    * 을 모두 담아야 하고, 커널 버디 상한이 order 10(4 MiB)이다. 32 MiB 요청은 order 14 가
    * 되어 __alloc_pages 가 WARNING 과 함께 실패했다. */
-  params.setFreeMemSize(2 * 1024 * 1024);   // > DRAM tier (1 MiB) + headroom
+  /* [2026-07-30] 2 MiB -> 3 MiB. eyrie 가 eapp ELF(0x113000 = 1.1 MiB, BSS 1 MiB 포함)를
+   * 매핑하다 freemem 이 고갈되어 mm/mm.c:108 의 assert(page) 에서 죽었다(spa_get_zero 가 0).
+   * EPM 은 로더 40KB + 런타임 155KB + eapp 이미지 + freemem 이므로 3 MiB 로 올려도
+   * 총 ~3.2 MiB 로 order 10(4 MiB) 안에 들어간다. */
+  params.setFreeMemSize(3 * 1024 * 1024);   // eapp 매핑(1.1 MiB) + 페이지테이블 + 여유
   params.setUntrustedSize(1 * 1024 * 1024);
 
   Keystone::Error err = enclave.init(argv[1], argv[2], argv[3], params);

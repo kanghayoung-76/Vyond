@@ -100,7 +100,11 @@ alloc_page(uintptr_t vpn, int flags) {
 
   /* if the page has been already allocated, return the page */
   if (*pte & PTE_V) {
-    return __va(*pte << RISCV_PAGE_BITS);
+    /* [2026-07-30] `*pte << RISCV_PAGE_BITS` 는 플래그까지 같이 밀어올린 쓰레기 주소였다.
+     * PPN 필드를 뽑아야 한다. 이 경로는 세그먼트가 겹칠 때(loadElf BSS 루프가 이미 매핑된
+     * 페이지를 만날 때) 타는데, 그 뒤 호출자가 그 주소에 memcpy 를 하므로 엉뚱한 물리
+     * 페이지(심하면 라이브 페이지테이블)를 덮어쓸 수 있었다. */
+    return __va(pte_ppn(*pte) << RISCV_PAGE_BITS);
   }
 
   /* otherwise, allocate one from the freemem */
@@ -124,7 +128,8 @@ realloc_page(uintptr_t vpn, int flags) {
 
   if (*pte & PTE_V) {
     *pte = pte_create(pte_ppn(*pte), flags);
-    return __va(*pte << RISCV_PAGE_BITS);
+    /* [2026-07-30] alloc_page 와 같은 PPN 추출 버그였다. */
+    return __va(pte_ppn(*pte) << RISCV_PAGE_BITS);
   }
 
   return 0;

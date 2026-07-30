@@ -9,7 +9,13 @@ set(eyrie_plugins "none")
 # eapp
 
 add_executable(${eapp_bin} ${eapp_src})
-target_link_libraries(${eapp_bin} "-nostdlib -static" ${KEYSTONE_LIB_EAPP} ${KEYSTONE_LIB_EDGE})
+# [2026-07-30] -Wl,-e,main 필수. KEYSTONE_LIB_EAPP 에는 `_start` 가 없어서(nm 상 `U _start`)
+# 링커가 .text 의 첫 심볼을 ELF 엔트리로 잡는다. 다른 eapp 들은 main 이 첫 심볼이라 우연히
+# 동작했지만, 이 eapp 은 main 앞에 static 헬퍼가 있어 엔트리가 build_chase 가 됐다. eyrie 는
+# elf_getEntryPoint() 를 sepc 에 그대로 넣으므로(runtime/sys/boot.c:45) U-모드가 build_chase
+# 에서 시작해 a0=0 으로 즉시 ret → 런타임 복귀주소(ra=rt_base+0x14)로 점프 → instruction
+# page fault 무한 루프였다.
+target_link_libraries(${eapp_bin} "-nostdlib -static -Wl,-e,main" ${KEYSTONE_LIB_EAPP} ${KEYSTONE_LIB_EDGE})
 
 target_include_directories(${eapp_bin}
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}

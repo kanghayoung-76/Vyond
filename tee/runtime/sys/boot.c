@@ -55,8 +55,17 @@ init_freemem()
   spa_init(freemem_va_start, freemem_size);
 }
 
-/* initialize user stack */
-void
+/* initialize user stack
+ *
+ * [2026-07-30] sscratch 쓰기는 반드시 여기(부팅 중)에 있어야 한다. eyrie_boot 맨 끝으로
+ * 옮겨봤다가 완주율이 4/10 → 2/10 로 떨어지고 호스트 SIGSEGV 가 1→6 회로 늘어 되돌렸다.
+ * 이유는 entry.S 에 있다: `_start` 가 sscratch=0 을 sentinel 로 심어 S-모드 트랩을 구분하는데
+ * (`bnez sp, __save_context`), return_to_encl 은 복귀 시 `csrrw sp, sscratch, sp` 로 sscratch 에
+ * 핸들러 프레임 주소를 남겨 sentinel 을 파괴한다. 부팅 구간에 트랩(타이머)이 실제로 자주
+ * 들어오므로, sscratch 를 user_sp 로 미리 심어두면 그 트랩이 유저 스택 경로로 처리돼
+ * 런타임 스택과 sentinel 을 건드리지 않는다. 대신 그 컨텍스트 저장이 PTE_U 페이지를
+ * 향하므로 sstatus.SUM 이 그 시점에 이미 1이어야 한다 → eyrie_boot 에서 SUM 을 먼저 켠다. */
+static void
 init_user_stack_and_env(ELF(Ehdr) *hdr)
 {
   void* user_sp = (void*) EYRIE_USER_STACK_START;
@@ -105,6 +114,17 @@ eyrie_boot(uintptr_t dummy, // $a0 contains the return value from the SBI
 
   /* set trap vector */
   csr_write(stvec, &encl_trap_handler);
+
+  /* Enable the FPU (FS=dirty) and allow S-mode to access U-mode pages.
+   * UTM is mapped with PTE_U for zero-copy eapp access; the runtime also
+   * writes to UTM (edge_call header), so SUM must be set.
+   *
+   * [2026-07-30] 부팅 맨 끝(init_timer 뒤)에 있던 것을 트랩 벡터 설정 직후로 올렸다.
+   * init_edge_internals 는 PTE_U 로 매핑된 UTM 에 쓰고, 트랩 핸들러도 PTE_U 인 유저
+   * 스택을 건드릴 수 있는데 SUM=0 인 채로 그 구간을 지나면 S-모드 store 가 곧바로
+   * page fault 가 된다. SUM 은 S-모드 권한을 넓히기만 하므로 먼저 켜도 안전하다. */
+  csr_write(sstatus, csr_read(sstatus) | 0x6000 | 0x40000);
+
   freemem_va_start = __va(free_paddr);
   freemem_size = dram_base + dram_size - free_paddr;
 
@@ -145,11 +165,6 @@ eyrie_boot(uintptr_t dummy, // $a0 contains the return value from the SBI
 
   /* set timer */
   init_timer();
-
-  /* Enable the FPU (FS=dirty) and allow S-mode to access U-mode pages.
-   * UTM is mapped with PTE_U for zero-copy eapp access; the runtime also
-   * writes to UTM (edge_call header), so SUM must be set. */
-  csr_write(sstatus, csr_read(sstatus) | 0x6000 | 0x40000);
 
   /* Enable U-mode access to the cycle/time/instret counters so the eapp can
    * use rdcycle/rdtime/rdinstret for self-timing. mcounteren is already all-1s
