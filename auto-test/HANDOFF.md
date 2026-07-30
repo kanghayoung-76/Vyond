@@ -1,13 +1,21 @@
 # 인수인계 — WorldGuard FPGA enclave 디버깅
 
-**작성 2026-07-30.** 브랜치 `worldguard-fpga`. 이 문서 기준 커밋:
+**작성 2026-07-30.** 브랜치 `worldguard-fpga` (origin에 푸시 완료). 이 문서 기준 커밋:
 
 | 커밋 | 내용 |
 |---|---|
-| `05dc59a55` | bitstream: SD SPI 저속 클럭, 8/16/32-world VCU118 config |
-| `0766c1cfb` | examples: host runner `-static` 복구, `enter-exit-test` 추가, `paper_eval` 활성화 |
-| `ec3ae5e9d` | runtime/SDK: 부트 파라미터를 로더·eyrie·SDK 전 구간에 추적 출력 |
-| `d315e86d6` | **SM: WGC 슬롯 매핑 버그 2건 수정, 고정주소 스태시 제거, 디버그 계측 제거** |
+| `85247828d` | gitignore: Vivado 잔여물·보드 로그·SD 스테이징·eapp 빌드 트리 (untracked 124→0) |
+| `6b8c9dab2` | SM: `scrub_epm()`을 3인자 `flush_epm_to_memory`에 맞춤 |
+| `b4b75b6ed` | build.sh: 커널 Image를 인자로 |
+| `b1b8d6503` | tooling: 안전한 시리얼 스크립트, 이 문서, 실험 아카이브 |
+| `9083a6fef` | bitstream: SD SPI 저속 클럭, 8/16/32-world VCU118 config |
+| `adaa0c819` | examples: host runner `-static` 복구, `enter-exit-test` 추가 |
+| `09e020517` | runtime/SDK: 부트 파라미터를 로더·eyrie·SDK 전 구간에 추적 출력 |
+| `bc6d63fcd` | **SM: WGC 슬롯 매핑 버그 2건 수정, 고정주소 스태시 제거, 디버그 계측 제거** |
+
+원격에 있던 3개 커밋(`beebs`/`paper_eval`) 위로 rebase했다. 충돌 해소 2건:
+`isolator.rs` OS catch-all은 **all-perm @ HW slot 7**(우리 쪽) 채택 — 원격의 `OS+TRUSTED`만 주는 변형은
+enclave가 hang한다는 실측 기록이 있고 오늘 측정도 전자 구성이다. `examples/CMakeLists.txt`는 양쪽 다 유지.
 
 ---
 
@@ -19,7 +27,7 @@
 | 비트스트림 | `chipyard-1.11.0/fpga/generated-src/chipyard.fpga.vcu118.VCU118FPGATestHarness.WGRocket8VCU118Config/obj/VCU118FPGATestHarness.bit` (07-27 15:09 빌드) · nWorlds 8 / nSlots 8 / 50 MHz |
 | 커널 | `Vyond-main/build-riscv64/arch/riscv/boot/Image` (Linux 6.9.0) — **`prebuilt/Image` 쓰면 조용히 hang** |
 | SD | p1 = raw fw_payload, p2 = ext2 "rootfs" (BusyBox + `/apps/keystone-driver.ko` + `*.ke`) |
-| SM fw 해시 | 이 커밋들에서 빌드 시 `a1c3eb794ed93f07` |
+| SM fw 해시 | 현재 소스 = **`a994c1438f847ae7`** / 아래 3절 측정에 쓴 fw = `a1c3eb794ed93f07` (**서로 다름**, 5절 참고) |
 | UART 로그 | `uart-console.log` (`dd if=/dev/ttyUSB6`가 상시 append, tmux 옆 pane이 `tail -F`) |
 
 ### 빌드
@@ -84,6 +92,10 @@ auto-test/serial/runapp.sh       <ke> <라벨> <횟수> [타임아웃]
 
 ## 3. 최종 측정 (fw `a1c3eb79` + 이 커밋들로 빌드한 `.ke`, 클린 부팅)
 
+> **주의**: 이 측정은 `scrub_epm()`이 **없는** fw(`a1c3eb79`)에서 나왔다. rebase로 원격의
+> `scrub_epm`(destroy 시 EPM flush→0-clear→flush)이 들어와 현재 소스는 `a994c143`을 만든다.
+> 아래 수치를 현재 소스의 성능으로 인용하지 말 것 — 5절 0번 항목이 재측정이다.
+
 | 앱 | 완주 | 상세 |
 |---|---|---|
 | `hello-native` | **3/3** (오늘 누적 **8/8**) | `Enclave said: "Hello World"` 정상 출력, OCALL 왕복·destroy 완결 |
@@ -142,12 +154,18 @@ auto-test/serial/runapp.sh       <ke> <라벨> <횟수> [타임아웃]
 
 ### 4-4. 부수 개선거리
 
-- 드라이버가 **UTM을 0으로 지우지 않는다** (`keystone-page.c:131`; EPM은 `:91`에서 `memset(0)`).
-- destroy 시 EPM을 지우지 않아 해제된 페이지에 enclave 데이터가 남는다(기밀성). `/* 1. clear all the data
-  in the enclave pages */` 주석만 있고 구현이 없다. 단 07-22 실험(`REWRITE_SAME_ON_DESTROY`)에서
-  "값 무관, cross-WID 접근이 트리거"로 결론났으므로 4-1의 원인으로는 기대하지 말 것.
+- 드라이버가 **UTM을 0으로 지우지 않는다** (`keystone-page.c:131`; EPM은 `:91`에서 `memset(0)`). 미해결.
+- ~~destroy 시 EPM 미소거~~ → **origin 쪽에 `scrub_epm()`이 이미 있었고 rebase로 합쳐졌다**
+  (`enclave.rs:460`, destroy의 region 해제 직전 호출). 단 07-22 실험(`REWRITE_SAME_ON_DESTROY`)에서
+  "값 무관, cross-WID 접근이 트리거"로 결론났으므로 4-1이 이것으로 해결된다고 기대하지는 말 것 —
+  그래도 5절 0번에서 실측으로 확인할 것.
 
 ## 5. 다음 작업 순서 (권장)
+
+0. **재측정 먼저** — 현재 소스 fw(`a994c143`, `scrub_epm` 포함)로 `ee-new`/`hn-new`/`ros-new`를 다시 돌려
+   3절 수치와 비교한다. `scrub_epm`은 destroy 때 EPM 전체를 M-mode(WID7)로 0-clear 하고 앞뒤로 flush하므로
+   4-1의 "스테일 라인이 호스트 페이지를 덮는다" 가설에 직접 영향을 줄 수 있다(좋아질 수도, 나빠질 수도 있다).
+   → SD 왕복 1회 + 보드 ~15분
 
 1. **4-1 판별** — 러너에 "크래시 직전 그 vtable 슬롯 재읽기" 코드를 넣어 재읽기에도 0인지 확인.
    0이면 **메모리 내용 손상**, 정상으로 돌아오면 **캐시 반환 오류**. 여기에 "왜 hello-native는 안 걸리나"
