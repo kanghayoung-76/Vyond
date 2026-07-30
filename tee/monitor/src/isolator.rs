@@ -36,6 +36,22 @@ pub fn sm_wait_for_completion() {
     }
 }
 
+/// 성능 카운터를 S/U 모드에서 읽을 수 있게 열고, 실제로 돌게 만든다.
+///
+/// 2026-07-28 실측: `mcountinhibit = 0x5`(CY·IR 정지)이고 U-mode `rdcycle`이 illegal
+/// instruction으로 트랩했다(paper_eval 러너 3종 중 2종이 여기서 SIGILL). OpenSBI가
+/// sbi_hart.c에서 mcounteren/-inhibit을 세팅하려 하지만 priv-version 게이트에 걸려
+/// 반영되지 않은 상태다. 벤치마크는 전부 사이클 측정이 전제라 SM에서 직접 켠다.
+///   mcountinhibit = 0xFFFFFFF8 : hpmcounter3+ 는 정지, CY/TM/IR 은 동작
+///   mcounteren    = !0         : S-mode 가 모든 카운터 접근 가능
+///   scounteren    = 7          : U-mode 가 CY/TM/IR 접근 가능 (Linux 가 이후 관리)
+#[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+fn enable_perf_counters() {
+    csr_write_custom!(0x320, 0xFFFF_FFF8usize); // mcountinhibit
+    csr_write_custom!(0x306, usize::MAX);       // mcounteren
+    csr_write_custom!(0x106, 7usize);           // scounteren
+}
+
 /// Opens all peripheral WGC checker last slots to all WIDs and sets mlwid = OS_WID.
 /// Required before any WG-based enclave isolation can be configured.
 #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
@@ -45,14 +61,15 @@ fn init_peripheral_wgc() {
     // WGCheckers (0x6003000/0x6004000/0x6005000), NOT FLASH/UART (0x6001000/0x6002000).
     // Accessing the absent FLASH/UART checker faults (observed: mtval=0x6001008).
     // Open the present checkers NAPOT-all for all worlds (matches Vyond-main SM).
-    // Note idx off-by-one: wg.rs idx N -> HW slot (N-1); idx=1 hits HW slot0.
+    // [2026-07-29] WGC_SLOT_OFFSET을 0x40으로 바로잡아 idx == HW slot 이 되었으므로,
+    // 최우선 슬롯인 HW slot 0에 직접 깐다(예전에는 idx=1이 HW slot0을 가리켰다).
     let perm_all = wg::WGC_ALL_PERM as u64;
     let cfg_napot_all = wg::WGC_CFG_ER | wg::WGC_CFG_EW | wg::WGC_CFG_A_NAPOT;
     for base in [wg::WGC_PLIC_BASE, wg::WGC_BOOTROM_BASE, wg::WGC_PERIPHERY_BASE] {
         let wgc = wg::WGChecker::new(base);
-        wgc.set_slot_addr(1, !0u64 >> 1); // NAPOT, covers all
-        wgc.set_slot_perm(1, perm_all);
-        wgc.set_slot_cfg(1, cfg_napot_all);
+        wgc.set_slot_addr(0, !0u64 >> 1); // NAPOT, covers all
+        wgc.set_slot_perm(0, perm_all);
+        wgc.set_slot_cfg(0, cfg_napot_all);
     }
 }
 
@@ -66,6 +83,7 @@ pub fn smm_init<'a>() -> Result<(), Error> {
     #[cfg(feature = "isolator_wg")]
     {
         init_peripheral_wgc();
+        enable_perf_counters();
         let region = wg::region_init(SMM_BASE, SMM_SIZE, 3 << (wg::TRUSTED_WID * 2), false)?;
         wg::set_wg(region)?;
         SM_REGION_ID.set(region);
@@ -101,22 +119,31 @@ pub fn osm_init<'a>() -> Result<(), Error> {
         // lower-index SMM slot wins priority so SM stays isolated, and this catch-all grants
         // every other world access elsewhere.
         //
-        // NOTE: this weakens enclave EPM isolation (OS_WID can reach EPM via the catch-all,
-        // and the on-demand slot-virtualization fault never triggers). Acceptable for the
-        // boot milestone; restore bounded OS slots once the TOR/SMM interaction is fixed.
-        // Restrict the catch-all to OS_WID + TRUSTED_WID only (was WGC_ALL_PERM
-        // = every world, which let enclave WIDs reach EPM through the catch-all
-        // and suppressed the on-demand slot-virtualization fault -> no EPM
-        // isolation). With only OS/SM granted here, an enclave WID's first EPM
-        // access misses this slot -> CAUSE_*_ACCESS -> load_enclave_slot installs
-        // the enclave-WID-only EPM slot. Stays on the NAPOT-all path (start=0),
-        // so the SMM slot is left untouched (the reason TOR was avoided).
-        let region = wg::region_init(
-            0,
-            usize::MAX,
-            (3u64 << (wg::OS_WID * 2)) | (3u64 << (wg::TRUSTED_WID * 2)),
-            true,
-        )?;
+        // PER-ENCLAVE ISOLATION (catch-all all-perm @ LOWEST priority):
+        // The catch-all grants every world but sits at HW slot 7 (lowest priority). Each
+        // enclave's EPM slot (owner_WID + OS_WID, programmed eager at a HIGHER priority)
+        // OVERRIDES it for that EPM, so:
+        //   - enclave B (WID_B) hitting enclave A's EPM: A's EPM slot wins and grants only
+        //     WID_A + OS, so WID_B is DENIED -> per-enclave EPM isolation holds even though
+        //     the catch-all would have granted WID_B (it loses on priority).
+        //   - the enclave still runs: for any address WITHOUT a dedicated slot, the catch-all
+        //     grants its WID as a fallback (this is why an OS+TRUSTED-only catch-all hung —
+        //     the enclave touches regions beyond EPM/UTM that need a WID grant).
+        //   - OS (WID6) may reach EPM (threat model allows it; also lets the host's leftover
+        //     WID-tagged eapp-load lines release across the boundary -> no coherence deadlock).
+        // BOOT-RESTORE: revert to Vyond-main's proven catch-all. The napot_region_init_at
+        // (OS catch-all forced to HW slot 7 for per-enclave override) is unproven WIP that
+        // hangs cold-boot on this bitstream; region_init auto-picks a slot on the NAPOT path
+        // (does not clobber the SMM slot). Re-apply the slot-7 isolation experiment only
+        // after boot is confirmed.
+        // [2026-07-28] catch-all을 HW 슬롯 7(최하위 우선순위)에 고정한다.
+        // WGChecker는 "히트한 슬롯 중 가장 낮은 인덱스가 이긴다"(WGCCtrl.scala Checker의
+        // reverse+foldLeft). 자동 할당은 낮은 번호부터 주므로 catch-all이 슬롯 2에 앉았고,
+        // 그러면 슬롯 3+에 프로그램되는 per-enclave EPM 슬롯을 all-perm이 매번 덮어써서
+        // 격리가 성립하지 않았다(2026-07-28 슬롯 덤프로 확인). 슬롯 7로 내려야 EPM 슬롯이 이긴다.
+        const OS_CATCHALL_SLOT: usize = 7;
+        let region = wg::napot_region_init_at(
+            0, usize::MAX, wg::WGC_ALL_PERM as u64, true, OS_CATCHALL_SLOT)?;
         wg::set_wg(region)?;
         OS_REGION_ID.set(region);
         Ok(())

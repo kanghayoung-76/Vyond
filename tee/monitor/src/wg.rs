@@ -3,7 +3,12 @@ use crate::Error;
 use volatile_register::{RO, RW};
 
 /// General WGC
-pub const WGC_SLOT_OFFSET: usize = 0x20;
+// RTL 레지스터맵(WGChecker.scala:186, WGCCtrl.scala:77): slotBase=0x20 이고 HW slot i가
+// `slotBase + 0x20*(i+1)` 에 놓인다 → **HW slot i = base + 0x40 + i*0x20**.
+// 0x20(=slotBase 자체)에는 레지스터가 없다. 예전 값(0x20)을 쓰면 idx가 한 칸 밀려서
+// idx0=빈 구간(쓰기 무시/읽기 0), idx N=HW slot N-1 이 되고 HW slot 7은 영영 접근 불가였다.
+// (2026-07-29 실측으로 확인: idx0에 cfg를 써도 반영되지 않았고 덤프에 나타나지 않았다.)
+pub const WGC_SLOT_OFFSET: usize = 0x40;
 pub const WGC_SLOT_SIZE: usize = 0x20;
 
 pub const WGC_CFG_A_OFF: u32 = 0x0;
@@ -256,8 +261,10 @@ pub fn is_wg_region_valid(region_idx: usize) -> bool {
 
 pub const WG_MAX_N_REGION: usize = 256;
 // Hardware WGC slot count — REG_BITMAP is usize (64-bit), so this must stay <= 64.
-// The actual hardware nslots register value is typically 16.
-const WGC_HW_SLOTS: usize = 32;
+// WGRocket8VCU118 비트스트림은 4개 체커 모두 nslots=8 (2026-07-29 devmem 실측).
+// idx==HW slot 로 정렬했으므로 유효 범위는 0..7 이고, 이 값을 넘겨 쓰면 존재하지 않는
+// 레지스터를 건드린다(같은 0x1000 페이지 안이라 조용히 무시될 뿐 반영되지 않음).
+const WGC_HW_SLOTS: usize = 8;
 pub const NWORLDS: u64 = 8;
 pub const TRUSTED_WID: u64 = NWORLDS - 1; // WID 7: SM
 pub const OS_WID: u64 = NWORLDS - 2;      // WID 6: host OS
@@ -532,9 +539,9 @@ pub fn invalidate_wid_in_all_slots(wid: usize) {
     // (memport) checker's nslots register returns a bogus large value, so an unbounded
     // loop walks past this checker's 0x1000 MMIO page into the absent FLASH checker
     // (0x6001000) -> load access fault (observed: mcause=5 mtval=0x6001008).
-    // Slot i lives at WGC_DRAM_BASE + 0x20 + i*0x20, so clamp to WGC_HW_SLOTS to stay
-    // inside the page. Empty/unused slots read perm=0 and are skipped, so over-scanning
-    // the real slot count is harmless.
+    // Slot i lives at WGC_DRAM_BASE + 0x40 + i*0x20 (WGC_SLOT_OFFSET), so clamp to
+    // WGC_HW_SLOTS to stay inside the page.
+    // (2026-07-29 실측: 이 비트스트림의 nslots는 8로 정상 반환된다 — 아래 clamp는 방어용.)
     let nslots = core::cmp::min(dram.get_nslots() as usize, WGC_HW_SLOTS);
     let wid_mask = 3u64 << (wid as u64 * 2);
     // NOTE: this zaps the WHOLE slot (cfg/addr/perm=0) — do NOT change to "clear only
@@ -544,7 +551,7 @@ pub fn invalidate_wid_in_all_slots(wid: usize) {
     // all-perm). Result was a ~4800-deep host ACCESS FAULT storm (eid=0, kernel VAs).
     // Fully disabling the slot lets the range fall back to the catch-all -> host OK.
     let all_perm = WGC_ALL_PERM as u64;
-    for slot_idx in 0..=nslots {
+    for slot_idx in 0..nslots {
         let perm = dram.get_slot_perm(slot_idx);
         // OS catch-all(= 모든 world 허용, boot 시 region_init(0, MAX, WGC_ALL_PERM))은 건드리지
         // 않는다. 이 슬롯도 enclave WID 비트를 갖고 있어서 예전에는 함께 0으로 지워졌고, 그
@@ -601,7 +608,7 @@ pub fn set_wg(region_idx: usize) -> Result<(), Error> {
         WGC_CFG_ER | WGC_CFG_EW | WGC_CFG_IR | WGC_CFG_IW | region.mode,
     );
     dram.set_slot_addr(reg_idx, region.wgaddr_val());
-    dram.set_slot_perm(reg_idx, region.perm); // RW for w3 only
+    dram.set_slot_perm(reg_idx, region.perm);
 
     Ok(())
 }

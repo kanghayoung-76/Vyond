@@ -171,6 +171,22 @@ static int generic_final_init(bool cold_boot)
 
 	fdt = fdt_get_address();
 
+	/* Inject an early console into /chosen/bootargs. The on-board DTB is baked
+	 * into the bootrom and carries no bootargs, so set one here: earlycon on the
+	 * SiFive UART (0x64000000, the stdout-path console) gives kernel output from
+	 * t=0 and keep_bootcon keeps it past the console handoff. Ported from
+	 * Vyond-main — without it the fpga Linux boots silently (no console). */
+	{
+		int chosen;
+		fdt_open_into(fdt, fdt, fdt_totalsize(fdt) + 128);
+		chosen = fdt_path_offset(fdt, "/chosen");
+		if (chosen < 0)
+			chosen = fdt_add_subnode(fdt, 0, "chosen");
+		if (chosen >= 0)
+			fdt_setprop_string(fdt, chosen, "bootargs",
+					   "earlycon=sifive,mmio,0x64000000 keep_bootcon");
+	}
+
 	fdt_cpu_fixup(fdt);
 	fdt_fixups(fdt);
 	fdt_domain_fixup(fdt);

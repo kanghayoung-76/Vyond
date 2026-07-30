@@ -6,3 +6,12 @@ chipyard-1.11.0/.conda-env
 prebuilt/qemu-system-riscv64
 # 내부(A 리포) 비교 분석 문서
 BRANCH-DIFF-vs-Vyond-main.md
+
+# eapp 빌드 디렉터리 (재생성 가능 — ke-rebuild-recipe 참고)
+tee/examples/build/
+tee/examples/build_static/
+tee/examples/build_static2/
+tee/examples/build_trace/
+tee/examples/build_fresh/
+# 보드 UART 상시 로그 (수십 MB로 자람)
+uart-console.log

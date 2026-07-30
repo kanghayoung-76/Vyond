@@ -1,104 +1,6 @@
 use crate::cpu;
 use crate::dbg;
 
-// FPGA teardown-wedge diagnostic: the C side (opensbi) prints "[SM] ..." over the real
-// UART via sbi_puts — this is NOT semihosting, so it is safe on the debugger-less FPGA.
-// We call it directly to emit destroy_enclave phase markers; the LAST marker printed
-// before a silent hang localizes the wedge. Remove once the wedge is fixed.
-extern "C" {
-    fn sbi_puts(s: *const u8);
-}
-#[inline(always)]
-fn sm_mark(s: &[u8]) {
-    // s must be NUL-terminated (b"...\0").
-    unsafe { sbi_puts(s.as_ptr()); }
-}
-
-// [MARKER] usize를 hex로 출력. label은 NUL 없는 바이트열(b"...")로 넘긴다.
-#[inline(never)]
-fn sm_mark_hex(label: &[u8], val: usize) {
-    let mut buf = [0u8; 64];
-    let mut i = 0usize;
-    while i < label.len() && i < 40 { buf[i] = label[i]; i += 1; }
-    buf[i] = b'0'; i += 1;
-    buf[i] = b'x'; i += 1;
-    let mut shift: i32 = 60;
-    while shift >= 0 {
-        let nib = ((val >> shift) & 0xf) as u8;
-        buf[i] = if nib < 10 { b'0' + nib } else { b'a' + (nib - 10) };
-        i += 1;
-        shift -= 4;
-    }
-    buf[i] = b'\n'; i += 1;
-    buf[i] = 0; // NUL 종단
-    unsafe { sbi_puts(buf.as_ptr()); }
-}
-
-// [PROBE2] M-mode에서 WID를 잠깐 enclave WID로 바꾸고 addr을 1워드 읽어본다.
-// enclave의 WID=1 fetch가 L2까지 접수(reqw1 증가)되고도 응답이 안 오는 게 확인됐으므로,
-// "WID1 데이터 경로 자체가 죽었는지"를 fetch와 분리해 확인하는 용도.
-//
-// 중요: RTL(worldguard CSR.scala:355) io.wid = prv==M ? mwid : prv==S ? mlwid : ...
-// → M-mode 접근은 mlwid가 아니라 **mwid(0x391)**를 쓴다. 그래서 여기서 바꿔야 하는 건
-// mwid다 (mlwid를 건드리면 M-mode 트래픽 WID는 그대로 7이라 아무것도 검증 못 함 — 2026-07-27 실측).
-// 주의: mwid=WID1인 동안 SM 자신의 fetch/스택/UART 접근도 WID1로 나간다. 그래서
-// 임계구간을 csrw-lw-csrw 3명령으로 최소화하고, 호출 전/후에만 UART로 찍는다.
-#[inline(never)]
-unsafe fn probe_read_at_wid(addr: usize, wid: usize, restore: usize) -> usize {
-    let v: usize;
-    core::arch::asm!(
-        "fence",
-        "csrw 0x391, {w}",
-        "lw   {v}, 0({a})",
-        "csrw 0x391, {r}",
-        "fence",
-        w = in(reg) wid,
-        a = in(reg) addr,
-        r = in(reg) restore,
-        v = out(reg) v,
-        options(nostack)
-    );
-    v
-}
-
-// [PROBE2-D] WID를 enclave WID로 바꾼 뒤 fence.i로 I$를 무효화해서, 이어지는 명령들이
-// 반드시 그 WID로 **재fetch**되게 만든다. enclave가 멈추는 지점이 첫 명령 fetch이므로,
-// 여기서 멈추면 "WID1 명령 fetch 경로가 죽었다"는 직접 증거(코어/L1-I 쪽)가 된다.
-// 통과하면 M-mode fetch는 WID1로 잘 되는 것 → S-mode/진입 경로 쪽으로 범위가 좁혀진다.
-#[inline(never)]
-unsafe fn probe_fetch_at_wid(wid: usize, restore: usize) {
-    core::arch::asm!(
-        "csrw 0x391, {w}",
-        "fence.i",
-        "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
-        "csrw 0x391, {r}",
-        "fence.i",
-        w = in(reg) wid,
-        r = in(reg) restore,
-        options(nostack)
-    );
-}
-
-// switch_to_host 진입 시 enclave PC(regs.mepc) 추적. 값이 바뀔 때만 출력해 flood 방지.
-// stuck  → "mepc CHANGE" 한 줄 뒤 조용(같은 PC 반복). crawl → 증가하는 값이 계속 출력.
-// [MK] 엔트리마다 찍는 hot 마커 on/off. 115200 UART로 엔트리당 ~100자를 뱉으면 한 엔트리가
-// ~10ms를 먹어서, Linux 틱(1~4ms)이 매번 이미 만료된 상태로 진입하게 된다(관측자 효과).
-// 진행률 측정을 할 때는 반드시 false. 흐름 추적이 필요할 때만 true.
-pub const VERBOSE_MK: bool = false;
-
-static mut LAST_MEPC: usize = 0xdead_beef;
-static mut STH_CNT: usize = 0;
-
-// [MK] enclave 진입 직전에 찍어두는 값들 (switch_to_host에서 차분 계산용).
-static mut ENTRY_MINSTRET: usize = 0;
-static mut ENTRY_MTIME: usize = 0;
-static mut ENTRY_MTIMECMP: usize = 0;
-
-// CLINT (Rocket/VCU118 기본 배치): mtimecmp hart0 = base+0x4000, mtime = base+0xbff8.
-const CLINT_BASE: usize = 0x0200_0000;
-const CLINT_MTIMECMP: usize = CLINT_BASE + 0x4000;
-const CLINT_MTIME: usize = CLINT_BASE + 0xbff8;
-
 use crate::encoding::*;
 use crate::isolator;
 use crate::shm;
@@ -341,7 +243,6 @@ impl Enclave {
     }
 
     pub fn switch_to_enclave(&mut self, regs: &mut TrapFrame, load_parameters: bool) {
-        if VERBOSE_MK { sm_mark(b"[MK] STE-in (host->enclave)\n\0"); }
         /* save host context */
         let thread = &mut self.threads[0].as_mut().unwrap();
 
@@ -369,20 +270,10 @@ impl Enclave {
 
             csr_write!(satp, 0);
 
-            // FPGA(WG) boot-param stash: SD의 prebuilt ros.ke 로더가 부트 파라미터를 고정 슬롯
-            // 0x83700000에서 읽는다 (레지스터 a1-a7만으로는 이 로더가 못 받음 — FPGA 실측 확인:
-            // stash 제거 시 loader가 dram=0/FATAL). SM이 미리 써두고 아래 EPM flush 전에 내림.
-            unsafe {
-                let p = BOOT_PARAM_SLOT as *mut usize;
-                p.add(0).write_volatile(self.pa_params.dram_base);
-                p.add(1).write_volatile(self.pa_params.dram_size);
-                p.add(2).write_volatile(self.pa_params.runtime_base);
-                p.add(3).write_volatile(self.pa_params.user_base);
-                p.add(4).write_volatile(self.pa_params.free_base);
-                p.add(5).write_volatile(self.pa_params.untrusted_base);
-                p.add(6).write_volatile(self.pa_params.untrusted_size);
-            }
-
+            // 부트 파라미터는 loader.S 원래 설계대로 a1~a7 레지스터로만 전달한다.
+            // (2026-07-30: 고정주소 스태시 BOOT_PARAM_SLOT=0x83700000 제거 — 고정 enclave pool
+            //  시절 유물이라 동적 할당된 EPM/UTM을 파괴할 수 있었고, 재빌드한 로더가 레지스터
+            //  전달만으로 정상 동작함을 [TRACE][LDR]로 확인했다.)
             // FPGA(WG) 캐시 코히런스 (관문4): host(OS, WID=OS_WID)가 enclave 코드(runtime+loader+
             // eapp)를 EPM에 써넣은 것이 host-WID 캐시에 갇힘. enclave는 다른 WID로 실행되어 그
             // 라인을 못 보고 stale을 읽음. L2 flush로 host dirty 라인을 메모리로 내린 뒤 fence.i로
@@ -394,28 +285,14 @@ impl Enclave {
             // (FPGA 실측 확정: OS_WID로만 flush=선택적→non-OS_WID stale 라인 누락→publisher loadElf
             //  FATAL/SHM=0. wid=0로 되돌리니 ros SHM=0xcafebabe 정상. HW의 FlushWid 레지스터
             //  0x2010218은 남아있으나 미사용 — storm 감소 최적화는 정확성을 깨서 폐기함.)
+            // [2026-07-30 제거] enclave 진입 시 EPM L2 flush + fence.i 를 제거했다(요구사항 1).
+            // 진입/이탈 캐시 플러시가 없는 원래 동작으로 되돌려 관측한다.
             if BROAD_FLUSH {
-                // enclave 풀 전체를 광역 flush (재사용 stale 라인 근절 진단)
                 flush_epm_to_memory(BROAD_FLUSH_BASE, BROAD_FLUSH_SIZE, 0);
             } else {
                 flush_epm_to_memory(self.pa_params.dram_base, self.pa_params.dram_size, 0);
             }
-            flush_epm_to_memory(BOOT_PARAM_SLOT, CACHE_BLOCK_BYTES, 0);
             unsafe { core::arch::asm!("fence.i", options(nostack)); }
-
-            // [PROBE] loader 코드가 메모리에 제대로 실렸는지 M-mode(WID7)로 dram_base 첫 4워드 확인.
-            // 기대: 첫 명령 = `la sp,_estack` = auipc x2 → 하위12비트 0x117 (즉 0x????_?117).
-            // 코드가 정상이면 → enclave(WID=1) fetch 경로 문제 확정. 0/garbage면 → 로드/flush 실패.
-            // load_parameters=true(초기 run) 경로에서만 실행되므로 run당 1회만 출력.
-            unsafe {
-                let p = self.pa_params.dram_base as *const u32;
-                sm_mark_hex(b"[PROBE] dram_base[0]= ", core::ptr::read_volatile(p) as usize);
-                sm_mark_hex(b"[PROBE] dram_base[1]= ", core::ptr::read_volatile(p.add(1)) as usize);
-                sm_mark_hex(b"[PROBE] dram_base[2]= ", core::ptr::read_volatile(p.add(2)) as usize);
-                sm_mark_hex(b"[PROBE] dram_base[3]= ", core::ptr::read_volatile(p.add(3)) as usize);
-                let bp = BOOT_PARAM_SLOT as *const usize;
-                sm_mark_hex(b"[PROBE] bootparam[0](dram_base)= ", core::ptr::read_volatile(bp) as usize);
-            }
         }
 
         switch_vector_enclave();
@@ -442,69 +319,16 @@ impl Enclave {
             }
         }
 
-        // [PROBE2] enclave WID의 "데이터 경로"가 살아있는지 M-mode에서 직접 확인한다.
-        // WGC 슬롯 프로그래밍(위 루프) 이후에 실행되므로 enclave가 보는 것과 동일한 체커 설정.
-        // 세 지점을 순서대로 읽고, 각 읽기 직전에 START 마커를 찍는다 → 멈춘 지점이 곧 원인.
-        //   A: SM 자신의 .bss  → WID1로 SM 코드/데이터 경로가 도는지 (대조군)
-        //   B: EPM dram_base   → enclave가 fetch하다 멈추는 바로 그 주소
-        //   C: BOOT_PARAM_SLOT → EPM 밖 일반 DRAM (WID1 권한 없음 → 정상이면 access fault)
-        // A OK & B hang → EPM/WGChecker 경로가 WID1 요청에 무응답 (memory-side 후보 확정)
-        // A hang        → WID1 M-mode 접근 자체가 죽음 (L2/코어 공통 경로)
-        if load_parameters {
-            let wid = self.last_wid;
-            let cur = csr_read_custom!(0x391); // 현재 M-mode WID (기본 nWorlds-1 = 7)
-            sm_mark_hex(b"[PROBE2] wid= ", wid);
-            sm_mark_hex(b"[PROBE2] mwid_restore= ", cur);
-            // 진입 직전 WG CSR 스냅샷: S-mode(enclave)는 mlwid, U-mode는 mwiddeleg==0이면 mlwid를 쓴다.
-            sm_mark_hex(b"[PROBE2] csr mwid(0x391)= ", csr_read_custom!(0x391));
-            sm_mark_hex(b"[PROBE2] csr mlwid(0x390)= ", csr_read_custom!(0x390));
-            sm_mark_hex(b"[PROBE2] csr slwid(0x190)= ", csr_read_custom!(0x190));
-            sm_mark_hex(b"[PROBE2] csr mwiddeleg(0x748)= ", csr_read_custom!(0x748));
-            // minstret(0xb02)이 실제로 도는지 확인한다. nop 사이 차분이 0이면 카운터가 죽은 것이라
-            // "instret delta=0"은 enclave가 안 돈다는 증거가 될 수 없다. mcountinhibit도 같이 본다.
-            {
-                let i0 = csr_read_custom!(0xb02);
-                unsafe {
-                    core::arch::asm!("nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
-                                     "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
-                                     options(nostack, nomem));
-                }
-                let i1 = csr_read_custom!(0xb02);
-                sm_mark_hex(b"[PROBE2] minstret self-test delta(16 nop)= ", i1.wrapping_sub(i0));
-                sm_mark_hex(b"[PROBE2] csr mcountinhibit(0x320)= ", csr_read_custom!(0x320));
-            }
-            unsafe {
-                let sm_addr = core::ptr::addr_of!(LAST_MEPC) as usize;
-                sm_mark_hex(b"[PROBE2] A start (SM .bss) addr= ", sm_addr);
-                let a = probe_read_at_wid(sm_addr, wid, cur);
-                sm_mark_hex(b"[PROBE2] A ok val= ", a);
-
-                sm_mark_hex(b"[PROBE2] B start (EPM dram_base) addr= ", self.pa_params.dram_base);
-                let b = probe_read_at_wid(self.pa_params.dram_base, wid, cur);
-                sm_mark_hex(b"[PROBE2] B ok val= ", b);
-
-                sm_mark_hex(b"[PROBE2] C start (bootparam slot) addr= ", BOOT_PARAM_SLOT);
-                let c = probe_read_at_wid(BOOT_PARAM_SLOT, wid, cur);
-                sm_mark_hex(b"[PROBE2] C ok val= ", c);
-
-                sm_mark(b"[PROBE2] D start (fence.i + fetch @wid)\n\0");
-                probe_fetch_at_wid(wid, cur);
-                sm_mark(b"[PROBE2] D ok (fetch @wid returned)\n\0");
-            }
-            sm_mark(b"[PROBE2] all done\n\0");
+        // [2026-07-28] SHM 슬롯도 진입 시 즉시 프로그램한다(기존: access-fault 시 lazy 로드).
+        // EPM 슬롯은 위 루프에서 이미 즉시 깔리지만 SHM은 fault를 기다렸기 때문에, 정상 실행
+        // 경로에 WGC fault가 섞여 들어갔다. 여기서 미리 깔면 fault 없이 진행한다.
+        #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+        {
+            let _ = program_shm_slots_for(self.eid, self.last_wid);
         }
 
         // Setup any platform specific defenses
         cpu::enter_enclave_context(self.eid, self.last_wid);
-        // [MK] 진입 직전 minstret과 타이머 상태를 저장한다. switch_to_host에서 차분을 찍어
-        // "enclave가 명령을 하나라도 retire 하는가"를 판정한다. mtimecmp <= mtime이면 mret
-        // 직후 타이머가 즉시 다시 걸려 첫 명령이 retire 전에 선점된다(=진행률 0의 다른 설명).
-        unsafe {
-            ENTRY_MINSTRET = csr_read_custom!(0xb02);
-            ENTRY_MTIME = core::ptr::read_volatile(CLINT_MTIME as *const u64) as usize;
-            ENTRY_MTIMECMP = core::ptr::read_volatile(CLINT_MTIMECMP as *const u64) as usize;
-        }
-        if VERBOSE_MK { sm_mark(b"[MK] STE-out (mret->enclave)\n\0"); }
     }
 
     /// Switch from enclave to host context.
@@ -513,81 +337,9 @@ impl Enclave {
     /// M-mode SHM IPIs can be caught directly without a host round-trip (wait_shm path).
     /// All other callers pass false to restore the standard OpenSBI `_trap_handler`.
     pub fn switch_to_host(&mut self, regs: &mut TrapFrame, keep_vec: bool) {
-        if VERBOSE_MK { sm_mark(b"[MK] STH-in (enclave->host)\n\0"); }
-        // [MARKER] enclave PC 추적: 값이 바뀔 때만 출력(loop flood 방지).
-        // regs.mepc는 아직 host 컨텍스트로 swap되기 전이라 enclave의 PC(타이머 경로는 -4 상태).
-        unsafe {
-            if regs.mepc != LAST_MEPC {
-                sm_mark_hex(b"[MK] mepc CHANGE -> ", regs.mepc);
-                LAST_MEPC = regs.mepc;
-            }
-            // [MARKER] L2 cross-WID 진단 카운터: 512 bounce마다 스냅샷. enclave가 진입 fetch에서
-            // 멈춘 동안 oth(cross-WID onlyTagHit)/stall이 어떻게 변하는지로 병목 경로를 조준한다.
-            // oth 계속 증가 → acquire가 반복적으로 cross-WID 경로. stall만 증가 → 요청 미수락.
-            // 둘 다 정체 → 정지가 L2 밖(memory-side WGChecker/core). base 0x2010000.
-            STH_CNT += 1;
-            // [MK] 이번 엔트리 동안 retire된 명령 수와 타이머 상태. 진입 시 저장한 값과의 차분.
-            // instret 차분이 SM 트랩 진입 오버헤드 수준(수십)에 머물면 enclave는 정말 아무것도
-            // 실행하지 않은 것. 수백~수천이면 실행은 되는데 PC가 되감기는 것.
-            // t_left = mtimecmp - mtime (진입 시점): 음수/0이면 mret 즉시 재선점.
-            if (STH_CNT & 0x1ff) == 0 {
-                let now_instret = csr_read_custom!(0xb02);
-                sm_mark_hex(b"[MK] instret delta= ", now_instret.wrapping_sub(ENTRY_MINSTRET));
-                sm_mark_hex(b"[MK] entry mtime= ", ENTRY_MTIME);
-                sm_mark_hex(b"[MK] entry mtimecmp= ", ENTRY_MTIMECMP);
-                sm_mark_hex(b"[MK] entry t_left= ", ENTRY_MTIMECMP.wrapping_sub(ENTRY_MTIME));
-            }
-            if (STH_CNT & 0x1ff) == 0 {
-                let oth   = core::ptr::read_volatile(0x0201_0300 as *const u32) as usize;
-                let rel   = core::ptr::read_volatile(0x0201_0308 as *const u32) as usize;
-                let stall = core::ptr::read_volatile(0x0201_0310 as *const u32) as usize;
-                let outa  = core::ptr::read_volatile(0x0201_0318 as *const u32) as usize;
-                let outd  = core::ptr::read_volatile(0x0201_0320 as *const u32) as usize;
-                let reqw1 = core::ptr::read_volatile(0x0201_0328 as *const u32) as usize;
-                sm_mark_hex(b"[MK] STHcnt= ", STH_CNT);
-                sm_mark_hex(b"[MK] L2 oth= ", oth);
-                sm_mark_hex(b"[MK] L2 rel= ", rel);
-                sm_mark_hex(b"[MK] L2 stall= ", stall);
-                sm_mark_hex(b"[MK] L2 outa= ", outa);
-                sm_mark_hex(b"[MK] L2 outd= ", outd);
-                sm_mark_hex(b"[MK] L2 reqw1= ", reqw1);
-                // inner 채널(코어↔L2) 총량과, EPM 주소창 요청의 WID별 분포.
-                // 판독: EPM 창에 wid=1 요청이 늘어나는데 ind가 안 늘면 L2가 grant를 안 돌려주는 것,
-                // 다른 wid 칸이 늘면 fetch가 엉뚱한 WID로 나가는 것, 전부 0이면 요청이 코어 밖으로
-                // 안 나가는 것(프론트엔드 정지).
-                let ind = core::ptr::read_volatile(0x0201_0330 as *const u32) as usize;
-                let ina = core::ptr::read_volatile(0x0201_0338 as *const u32) as usize;
-                sm_mark_hex(b"[MK] L2 inD= ", ind);
-                sm_mark_hex(b"[MK] L2 inA= ", ina);
-                let mut w = 0usize;
-                while w < 8 {
-                    let c = core::ptr::read_volatile((0x0201_0340 + 8 * w) as *const u32) as usize;
-                    // "[MK] EPM wid<n>= 0x...."
-                    let label: &[u8] = match w {
-                        0 => b"[MK] EPM wid0= ",
-                        1 => b"[MK] EPM wid1= ",
-                        2 => b"[MK] EPM wid2= ",
-                        3 => b"[MK] EPM wid3= ",
-                        4 => b"[MK] EPM wid4= ",
-                        5 => b"[MK] EPM wid5= ",
-                        6 => b"[MK] EPM wid6= ",
-                        _ => b"[MK] EPM wid7= ",
-                    };
-                    sm_mark_hex(label, c);
-                    w += 1;
-                }
-            }
-        }
-        // FPGA(WG) OCALL coherence: on an enclave->host switch (e.g. an OCALL), write the
-        // enclave's edge-call buffer in UTM back to memory so the host reads fresh data.
-        // The enclave filled UTM (edge_call struct + args, e.g. the "Hello World" string)
-        // under its own WID; the host reads UTM as OS_WID and otherwise sees stale lines.
-        // Only the head of UTM holds the edge_call payload, so flush a bounded window
-        // (the full multi-MB UTM would crawl). Done ONLY here (not on re-entry) — flushing
-        // on switch_to_enclave previously invalidated the host's just-written reply.
+        // FPGA(WG) OCALL coherence: enclave->host 전환 시 UTM 머리(edge_call 구조체 + 인자)를
+        // 메모리로 내려 호스트가 fresh 데이터를 읽게 한다.
         let utm_flush = core::cmp::min(self.pa_params.untrusted_size, OCALL_UTM_FLUSH_BYTES);
-        // wid=0 (onlyTagHit) so the enclave-WID edge-call lines are written back regardless of
-        // which WID tagged them; small window, so the cross-WID path cost is negligible.
         flush_epm_to_memory(self.pa_params.untrusted_base, utm_flush, 0);
 
         let _ = isolator::set_isolator(isolator::os_region_id(), false);
@@ -629,7 +381,6 @@ impl Enclave {
         }
 
         cpu::exit_enclave_context();
-        if VERBOSE_MK { sm_mark(b"[MK] STH-out (mret->host)\n\0"); }
     }
 }
 
@@ -667,7 +418,6 @@ const CACHE_BLOCK_BYTES: usize = 64;
 const OCALL_UTM_FLUSH_BYTES: usize = 16 * 1024;
 /// loader가 부트 파라미터를 복구하는 고정 EPM scratch slot. SD의 prebuilt ros.ke 로더가
 /// 이 주소에서 읽으므로 SM이 switch_to_enclave에서 써둔다. (런타임 로더와 주소 일치 필수)
-const BOOT_PARAM_SLOT: usize = 0x83700000;
 
 /// 주어진 물리범위를 캐시블록 단위로 L2 flush 레지스터에 흘려 메모리로 writeback.
 /// enclave 첫 진입 전 1회 호출 → enclave가 host-WID L1에 갇힌 stale 대신 host가 로드한
@@ -837,6 +587,50 @@ pub fn get_enclave_dram_info(eid: usize) -> Option<(usize, usize)> {
 
 /// Loads the WGC slot for the EPM region containing fault_addr.
 /// Returns true if slot was loaded (resume), false if not found (exit enclave).
+/// eid가 접근 권한을 가진 모든 SHM 영역의 WGC 슬롯을 지금 프로그램한다.
+///
+/// 기존에는 이 작업이 access-fault 핸들러(load_enclave_slot)에서만 일어나는 lazy 방식이었다.
+/// 즉 enclave가 SHM을 처음 만질 때마다 fault -> M-mode 진입 -> 슬롯 갱신 -> 재실행을 거쳤고,
+/// 그만큼 실행 경로에 fault가 섞여 들어가 재현성과 성능을 모두 해쳤다. 진입 시점에 한 번에
+/// 깔아두면 정상 실행 경로에서 WGC fault가 사라진다(2026-07-28 변경).
+#[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
+pub fn program_shm_slots_for(eid: usize, wid: usize) -> usize {
+    let mut programmed = 0usize;
+    for shm_idx in 0..MAX_SHARED_REGIONS {
+        unsafe {
+            if let Some(ref shm) = SHARED_MEM[shm_idx] {
+                if shm.perm_conf.get_perm(eid).is_none() {
+                    continue;
+                }
+                let mut perm: u64 = 0;
+                for copt in shm.perm_conf.conf_list.iter() {
+                    if let Some(c) = copt {
+                        if c.eid == 11 {
+                            // eid 11 = host(OS)
+                            perm |= 3u64 << (crate::wg::OS_WID as u64 * 2);
+                        } else {
+                            let w = if c.eid == eid {
+                                wid
+                            } else {
+                                match find_enclave(c.eid) {
+                                    Some(e) => e.last_wid,
+                                    None => continue,
+                                }
+                            };
+                            perm |= 3u64 << (w as u64 * 2);
+                        }
+                    }
+                }
+                if perm != 0 {
+                    let _ = isolator::set_shm_perm(shm.id, perm);
+                    programmed += 1;
+                }
+            }
+        }
+    }
+    programmed
+}
+
 pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
     if let Some(enclave) = find_enclave(eid) {
         let dram_base = enclave.pa_params.dram_base;
@@ -856,38 +650,8 @@ pub fn load_enclave_slot(eid: usize, fault_addr: usize) -> bool {
                             enclave.last_wid = wid;
                             let _ = isolator::set_isolator_with_wid(region_id, wid);
                             csr_write_custom!(0x390, wid);
-                            // Pre-configure all SHM slots accessible by this enclave using
-                            // the newly assigned WID.  This prevents a second IOMMU flush
-                            // while enc2 is executing — the SHM fault handler's set_shm_perm
-                            // call triggers wgchecker_iommu_notify_all which corrupts QEMU's
-                            // instruction-fetch TLB and causes "Bad ram pointer" crash.
-                            for shm_idx in 0..MAX_SHARED_REGIONS {
-                                unsafe {
-                                    if let Some(ref shm) = SHARED_MEM[shm_idx] {
-                                        if shm.perm_conf.get_perm(eid).is_some() {
-                                            let mut perm: u64 = 0;
-                                            for copt in shm.perm_conf.conf_list.iter() {
-                                                if let Some(c) = copt {
-                                                    if c.eid == 11 {
-                                                        perm |= 3u64 << (crate::wg::OS_WID as u64 * 2);
-                                                    } else {
-                                                        let w = if c.eid == eid { wid } else {
-                                                            match find_enclave(c.eid) {
-                                                                Some(e) => e.last_wid,
-                                                                None => continue,
-                                                            }
-                                                        };
-                                                        perm |= 3u64 << (w as u64 * 2);
-                                                    }
-                                                }
-                                            }
-                                            if perm != 0 {
-                                                let _ = isolator::set_shm_perm(shm.id, perm);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            // 진입 경로와 동일한 헬퍼로 SHM 슬롯을 한 번에 프로그램한다.
+                            let _ = program_shm_slots_for(eid, wid);
                         }
                         return true;
                     }
@@ -964,7 +728,6 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
             return Err(Error::NotDestroyable);
         }
 
-        sm_mark(b"[SM] destroy D0 enter\n\0");
         let mut runstate = enclave.state.lock();
         /* update the enclave state first so that
          * no SM can run the enclave any longer */
@@ -972,7 +735,6 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
         runstate.count = 0;
         drop(runstate);
 
-        sm_mark(b"[SM] destroy D1 shm-loop begin\n\0");
         for i in 0..MAX_SHARED_REGIONS {
             unsafe {
                 let should_free = if let Some(region) = &SHARED_MEM[i] {
@@ -1016,9 +778,7 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
         // the directory out from under a same-set voluntary Release, which then never gets a
         // ReleaseAck). Fixed in MSHR.scala (nestC extension). Reverted the fence.i here for a
         // clean baseline. Keeping the single L2 flush below.
-        sm_mark(b"[SM] destroy D2 epm-flush begin\n\0");
         flush_epm_to_memory(enclave.pa_params.dram_base, enclave.pa_params.dram_size, 0);
-        sm_mark(b"[SM] destroy D2 epm-flush done\n\0");
 
         // [② 실험] 재사용 stale 근절: destroy 시 EPM 페이지를 실제로 0-clear.
         // (기존엔 아래 'clear all the data' 주석만 있고 실제로 안 지웠음 → 재사용 페이지에
@@ -1040,7 +800,6 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
         // 데이터는 안 바뀌지만 SM(WID7)의 store가 enclave-WID 라인에 cross-WID로 다시 찍힌다.
         // 트리거가 '값 변경'이 아니라 'cross-WID 접근'임을 가리는 진단. (read+write 둘 다 cross-WID)
         if REWRITE_SAME_ON_DESTROY {
-            sm_mark(b"[SM] destroy D2b rewrite-same begin\n\0");
             unsafe {
                 let base = enclave.pa_params.dram_base as *mut usize;
                 let words = enclave.pa_params.dram_size / core::mem::size_of::<usize>();
@@ -1051,12 +810,10 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
                 core::arch::asm!("fence", options(nostack));
             }
             flush_epm_to_memory(enclave.pa_params.dram_base, enclave.pa_params.dram_size, 0);
-            sm_mark(b"[SM] destroy D2b rewrite-same done\n\0");
         }
 
         // 1. clear all the data in the enclave pages
         // requires no lock (single runner)
-        sm_mark(b"[SM] destroy D3 region-free begin\n\0");
         for i in 0..MAX_ENCLAVE_REGIONS {
             if let Some(region) = &enclave.regions[i] {
                 if region.r_type == RegionType::RegionInvalid {
@@ -1077,7 +834,6 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
         });
 
         // 2. Release WID slot assignment for this enclave
-        sm_mark(b"[SM] destroy D4 release-wid begin\n\0");
         #[cfg(any(feature = "isolator_wg", feature = "isolator_hybrid"))]
         crate::wid::release_wid_for_eid(eid);
 
@@ -1089,29 +845,10 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
         // 슬롯 정리로 catch-all이 훼손된 경우 복구할 기회가 없다.
         let _ = isolator::set_isolator(isolator::os_region_id(), false);
 
-        sm_mark(b"[SM] destroy D4b slot dump (cfg/addr/perm)\n\0");
-        {
-            let dram = crate::wg::WGChecker::new(crate::wg::WGC_DRAM_BASE);
-            let mut i = 0usize;
-            while i < 8 {
-                let cfg = dram.get_slot_cfg(i) as usize;
-                let addr = dram.get_slot_addr(i) as usize;
-                let perm = dram.get_slot_perm(i) as usize;
-                if cfg != 0 || perm != 0 {
-                    sm_mark_hex(b"[SM]   slot idx= ", i);
-                    sm_mark_hex(b"[SM]     cfg= ", cfg);
-                    sm_mark_hex(b"[SM]     addr= ", addr);
-                    sm_mark_hex(b"[SM]     perm= ", perm);
-                }
-                i += 1;
-            }
-        }
 
         // 3. release eid
-        sm_mark(b"[SM] destroy D5 free-eid begin\n\0");
         let _ = Enclave::free(eid);
 
-        sm_mark(b"[SM] destroy D6 done ok\n\0");
         return Ok(());
     }
 
@@ -1119,7 +856,6 @@ pub fn destroy_enclave(eid: usize) -> Result<(), Error> {
 }
 
 pub fn enter_enclave(tf: &mut TrapFrame, eid: usize) -> Result<(), Error> {
-    sm_mark(b"[MK] ENT-in (sbi enter_enclave)\n\0");
     if let Some(enclave) = find_enclave(eid) {
         let mut runstate = enclave.state.lock();
         let runnable = runstate.state == State::Running || runstate.state == State::Stopped;
@@ -1277,6 +1013,12 @@ pub fn wait_and_resume_for_shm(tf: &mut TrapFrame, eid: usize) -> Result<(), Err
 }
 
 pub fn stop_enclave(tf: &mut TrapFrame, request: usize) -> Result<(), Error> {
+    // [OCALL 판정] request==0은 타이머 선점이라 매 틱마다 들어온다(찍으면 마커 홍수 → 관측자
+    // 효과). request!=0만 찍는다. request==1 = EdgeCallHost = enclave가 OCALL을 시도했다는 뜻.
+    // 이 줄이 안 나오면 enclave는 ocall을 아예 걸지 않은 것이고, 나오는데 호스트 dispatcher
+    // 출력이 없으면 전달/복귀 경로가 깨진 것이다.
+    if request != 0 {
+    }
     if let Some(enclave) = find_enclave(cpu::get_enclave_id()) {
         let mut runstate = enclave.state.lock();
         let runnable = runstate.state == State::Running;
@@ -1601,9 +1343,8 @@ pub fn resume_from_shm_ipi(tf: &mut TrapFrame) -> bool {
 }
 
 pub fn exit_enclave(tf: &mut TrapFrame) -> Result<(), Error> {
-    sm_mark(b"[MK] EXE-in (sbi exit_enclave)\n\0");
+    // EAPP_RETURN(x)의 x. main이 정상 리턴했는지, 그 값이 무엇인지 확인용(런당 1회).
     if let Some(enclave) = find_enclave(cpu::get_enclave_id()) {
-        sm_mark(b"[MK] EXE-found -> switch_to_host\n\0");
         let mut runstate = enclave.state.lock();
         let runnable = runstate.state == State::Running && runstate.count > 0;
 
@@ -1625,11 +1366,9 @@ pub fn exit_enclave(tf: &mut TrapFrame) -> Result<(), Error> {
             return Err(Error::IpiHandled);
         }
 
-        sm_mark(b"[MK] EXE-ok (returning to host)\n\0");
         return Ok(());
     }
 
-    sm_mark(b"[MK] EXE-NOTFOUND (find_enclave failed -> Err/panic)\n\0");
     Err(Error::Invalid)
 }
 

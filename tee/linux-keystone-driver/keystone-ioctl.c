@@ -118,6 +118,14 @@ int keystone_finalize_enclave(unsigned long arg)
   create_args.free_paddr = enclp->free_paddr;
   create_args.free_requested = enclp->free_requested;
 
+  /* [TRACE] 유저스페이스에서 받은 값과 SBI로 넘기는 값을 그대로 남긴다. 드라이버는 재계산
+   * 없이 복사만 하므로, SDK 출력과 다르면 ioctl 전달 문제, 같으면 상위(SDK)가 원인이다. */
+  keystone_err("[TRACE][DRV] finalize: epm=%#lx/%#lx utm=%#lx/%#lx runtime=%#lx user=%#lx free=%#lx free_req=%#lx\n",
+               create_args.epm_region.paddr, create_args.epm_region.size,
+               create_args.utm_region.paddr, create_args.utm_region.size,
+               create_args.runtime_paddr, create_args.user_paddr,
+               create_args.free_paddr, create_args.free_requested);
+
   ret = sbi_sm_create_enclave(&create_args);
 
   if (ret.error) {

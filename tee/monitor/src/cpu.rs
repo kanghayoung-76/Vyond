@@ -136,11 +136,6 @@ const MLWID_CSR: usize = 0x390;
 // Must match wg::OS_WID = NWORLDS - 2
 const OS_WID: usize = 6;
 
-// [MARKER] enclave 생명주기 추적용 — sbi_puts는 실 UART(semihosting 아님)라 FPGA 안전.
-extern "C" { fn sbi_puts(s: *const u8); }
-#[inline(always)]
-fn mk(s: &[u8]) { unsafe { sbi_puts(s.as_ptr()); } }
-
 /* hart state for regulating SBI */
 struct CpuState {
     is_enclave: bool,
@@ -167,7 +162,6 @@ pub fn get_enclave_id() -> usize {
 }
 
 pub fn enter_enclave_context(eid: usize, wid: usize) {
-    if crate::enclave::VERBOSE_MK { mk(b"[MK] ctx-ENTER (is_enclave=1)\n\0"); }
     let hartid = csr_read!(mhartid) as usize;
     unsafe {
         CPU_STATE[hartid].is_enclave = true;
@@ -182,7 +176,6 @@ pub fn enter_enclave_context(eid: usize, wid: usize) {
 }
 
 pub fn exit_enclave_context() {
-    if crate::enclave::VERBOSE_MK { mk(b"[MK] ctx-EXIT (is_enclave=0, mlwid=OS)\n\0"); }
     let hartid = csr_read!(mhartid) as usize;
     unsafe { CPU_STATE[hartid].is_enclave = false };
     // Restore mlwid to OS_WID so the OS/host transactions go out as world 6.
