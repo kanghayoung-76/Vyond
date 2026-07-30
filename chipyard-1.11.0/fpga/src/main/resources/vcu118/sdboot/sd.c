@@ -9,7 +9,7 @@
 #include "kprintf.h"
 
 // Total payload in B
-#define PAYLOAD_SIZE_B (30 << 20) // default: 30MiB
+#define PAYLOAD_SIZE_B (40 << 20) // 40MiB: fits worldguard-fpga fw (~38MiB, initramfs-in-kernel); was 30MiB
 // A sector is 512 bytes, so (1 << 11) * 512B = 1 MiB
 #define SECTOR_SIZE_B 512
 // Payload size in # of sectors
@@ -32,6 +32,18 @@
 // SPI clock divisor value
 // @see https://ucb-bar.gitbook.io/baremetal-ide/baremetal-ide/using-peripheral-devices/sifive-ips/serial-peripheral-interface-spi
 #define SPI_DIV 	(((F_CLK * 1000) / SPI_CLK) / 2 - 1)
+
+// SD spec requires SCLK <= 400 kHz during card init (CMD0/CMD8/ACMD41/CMD58).
+// Running init at the 25 MHz data clock makes the card never sync -> CMD0 timeout
+// (observed on the fpga-built bitstream). Use this slow divider for sd_poweron/init,
+// then copy() switches to SPI_DIV (25 MHz) for the payload data read.
+#define SPI_INIT_CLK 	400
+#define SPI_DIV_SLOW 	(((F_CLK * 1000) / SPI_INIT_CLK) / 2 - 1)
+
+// Payload data-read clock. This SD card does NOT respond to CMD18 at 25 MHz
+// (observed: init succeeds at 400 kHz, then "sd_cmd: timeout" on CMD18 at 25 MHz).
+// Use ~2.27 MHz (SCKDIV=10 @ 50 MHz TL_CLK) — the proven Vyond-main sdboot value.
+#define SPI_DIV_DATA 	(F_CLK / 5)
 
 static volatile uint32_t * const spi = (void *)(SPI_CTRL_ADDR);
 
@@ -88,9 +100,8 @@ static inline void sd_cmd_end(void)
 static void sd_poweron(void)
 {
 	long i;
-	// HACK: frequency change
-
-	REG32(spi, SPI_REG_SCKDIV) = SPI_DIV;
+	// SD init must run slow (<=400 kHz); copy() raises it to SPI_DIV (25 MHz).
+	REG32(spi, SPI_REG_SCKDIV) = SPI_DIV_SLOW;
 	REG32(spi, SPI_REG_CSMODE) = SPI_CSMODE_OFF;
 	for (i = 10; i > 0; i--) {
 		sd_dummy();
@@ -185,7 +196,7 @@ static int copy(void)
 	kprintf("LOADING 0x%x B PAYLOAD\r\n", PAYLOAD_SIZE_B);
 	kprintf("LOADING  ");
 
-	REG32(spi, SPI_REG_SCKDIV) = SPI_DIV;
+	REG32(spi, SPI_REG_SCKDIV) = SPI_DIV_DATA;
 	if (sd_cmd(0x52, BBL_PARTITION_START_SECTOR, 0xE1) != 0x00) {
 		sd_cmd_end();
 		return 1;

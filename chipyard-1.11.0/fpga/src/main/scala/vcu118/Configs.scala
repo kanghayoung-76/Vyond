@@ -73,6 +73,42 @@ class WGRocketVCU118Config extends Config(
   new WithVCU118Tweaks ++
   new chipyard.WGRocketConfig
 )
+
+// Phase 2: 8-world (nWorlds=8, widWidth=3) variant of WGRocketVCU118Config.
+// Pinned to 50 MHz to match the verified 4-world bitstream's known-good timing
+// point (WithVCU118Tweaks defaults to 75 MHz). Differs from WGRocketVCU118Config
+// only in nWorlds.
+class WGRocket8VCU118Config extends Config(
+  new WithFPGAFreq50MHz ++
+  new WithVCU118Tweaks ++
+  new chipyard.WGRocket8Config
+)
+
+// 16-world (widWidth=4) VCU118 variant, 50 MHz. Smaller than 32-world so it
+// should close timing at 50 MHz (faster than the 32-world @25MHz fallback).
+class WGRocket16VCU118Config extends Config(
+  new WithFPGAFreq50MHz ++
+  new WithVCU118Tweaks ++
+  new chipyard.WGRocket16Config
+)
+
+// Architectural-maximum 32-world (widWidth=5) VCU118 variant, 50 MHz.
+// Larger design (5-bit WID tags, perm fully uses 64 bits) — timing closure
+// not guaranteed; treat the build as exploratory.
+class WGRocket32VCU118Config extends Config(
+  new WithFPGAFreq50MHz ++
+  new WithVCU118Tweaks ++
+  new chipyard.WGRocket32Config
+)
+
+// 32-world at 25 MHz. The 50 MHz variant closes timing with ~0ns margin on the
+// main system clock (harnessSysPLL), which hangs under sustained load; 25 MHz
+// gives a comfortable margin for functional validation.
+class WGRocket32VCU118Config25 extends Config(
+  new WithFPGAFreq25MHz ++
+  new WithVCU118Tweaks ++
+  new chipyard.WGRocket32Config
+)
 // DOC include end: AbstractVCU118 and Rocket
 
 class BoomVCU118Config extends Config(
