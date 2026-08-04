@@ -1,3 +1,7 @@
 [submodule "qemu"]
 	path = qemu
 	url = https://github.com/kanghayoung-76/qemu.git
+[submodule "chipyard-1.13"]
+	path = chipyard-1.13
+	url = https://github.com/starjara/chipyard.git
+	branch = worldguard
